@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./WrittenInStars.module.css";
 
 // Positions are derived deterministically from the index so the server and the
@@ -27,6 +27,17 @@ export default function WrittenInStars() {
   const toggle = (index: number) => {
     setActive((current) => (current === index ? null : index));
   };
+
+  // Escape dismisses the revealed note, matching the other overlay in the
+  // experience. (The Open When lightbox stops propagation when it is open.)
+  useEffect(() => {
+    if (active === null) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setActive(null);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [active]);
 
   return (
     <section className={styles.section} id="written-in-the-stars">

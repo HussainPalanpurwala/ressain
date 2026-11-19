@@ -20,6 +20,7 @@ const DIALOG_TITLE_ID = "open-when-dialog-title";
 export default function OpenWhen() {
   const [active, setActive] = useState<Note | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const lastTrigger = useRef<HTMLButtonElement | null>(null);
 
   const close = useCallback(() => setActive(null), []);
@@ -29,15 +30,66 @@ export default function OpenWhen() {
     setActive(note);
   };
 
-  // Escape closes the lightbox; focus moves inside while it is open.
+  // Escape closes the lightbox, Tab stays inside it, and the page behind it
+  // cannot be scrolled while the dialog is open.
   useEffect(() => {
     if (!active) return;
+
+    const dialog = dialogRef.current;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        close();
+        return;
+      }
+      if (event.key !== "Tab" || !dialog) return;
+
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      );
+      if (focusable.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const current = document.activeElement;
+
+      if (event.shiftKey) {
+        if (current === first || !dialog.contains(current)) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else if (current === last || !dialog.contains(current)) {
+        event.preventDefault();
+        first.focus();
+      }
     };
-    document.addEventListener("keydown", onKeyDown);
+
+    // Capture phase keeps Escape/Tab handling authoritative for this modal,
+    // even if another section also listens for those keys.
+    document.addEventListener("keydown", onKeyDown, true);
+
+    // Lock background scrolling, compensating for the scrollbar so opening
+    // the lightbox does not shift the layout.
+    const previousOverflow = document.body.style.overflow;
+    const previousPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = "hidden";
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
     closeRef.current?.focus();
-    return () => document.removeEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown, true);
+      document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPaddingRight;
+    };
   }, [active, close]);
 
   // Return focus to the note that opened the lightbox.
@@ -52,14 +104,14 @@ export default function OpenWhen() {
       id="open-when"
       aria-labelledby="open-when-heading"
     >
-      <div className={styles.intro}>
+      <div className={styles.intro} inert={active !== null}>
         <h2 id="open-when-heading" className={styles.heading}>
           Open When…
         </h2>
         <p className={styles.subtitle}>[ a little note for each moment ]</p>
       </div>
 
-      <div className={styles.grid}>
+      <div className={styles.grid} inert={active !== null}>
         {NOTES.map((note) => (
           <button
             key={note.id}
@@ -81,6 +133,7 @@ export default function OpenWhen() {
       {active && (
         <div className={styles.lightbox} onClick={close}>
           <div
+            ref={dialogRef}
             className={styles.letter}
             role="dialog"
             aria-modal="true"
