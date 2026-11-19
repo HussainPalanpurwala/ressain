@@ -132,6 +132,10 @@ export default function TimeGrid() {
     resize();
     const observer = new ResizeObserver(resize);
     observer.observe(parent);
+    // ResizeObserver watches the parent's box, but a viewport change (zoom,
+    // orientation, moving to a different-DPI screen) can change the ratio or
+    // the canvas' percentage height without resizing that box.
+    window.addEventListener("resize", resize);
     const visibilityObserver = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
       if (visible) start();
@@ -146,6 +150,7 @@ export default function TimeGrid() {
     start();
 
     return () => {
+      window.removeEventListener("resize", resize);
       cancelAnimationFrame(frame);
       observer.disconnect();
       visibilityObserver.disconnect();

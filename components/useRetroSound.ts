@@ -16,6 +16,15 @@ export default function useRetroSound() {
   const pendingRef = useRef<Tone[][]>([]);
   const scheduleRef = useRef<(tones: Tone[]) => void>(() => {});
   const [enabled, setEnabled] = useState(true);
+  // Mirrors `enabled` so the unlock/play callbacks (which are created once)
+  // always see the current mute state instead of a stale captured value.
+  const enabledRef = useRef(enabled);
+  enabledRef.current = enabled;
+
+  useEffect(() => {
+    // Nothing queued before a mute should ever sound if sound is re-enabled.
+    if (!enabled) pendingRef.current = [];
+  }, [enabled]);
 
   const schedule = useCallback(
     (tones: Tone[]) => {
@@ -74,7 +83,11 @@ export default function useRetroSound() {
       void ctx.resume().then(() => {
         const queued = pendingRef.current;
         pendingRef.current = [];
-        queued.forEach((tones) => scheduleRef.current(tones));
+        if (!enabledRef.current) return;
+        // Only the newest sound is still relevant. Replaying every blip that
+        // queued while the context was locked would stack them into one burst.
+        const latest = queued[queued.length - 1];
+        if (latest) scheduleRef.current(latest);
       });
     };
     const events = ["pointerdown", "touchstart", "keydown", "click"];
@@ -89,18 +102,20 @@ export default function useRetroSound() {
 
   const play = useCallback(
     (tones: Tone[]) => {
-      if (!enabled) return;
+      if (!enabledRef.current) return;
       const ctx = ctxRef.current;
       if (!ctx) return;
       if (ctx.state !== "running") {
         // Queue it — it will sound as soon as a gesture unlocks audio.
+        // Keep only the newest request so a long locked boot (startup fanfare
+        // plus every stage blip) cannot all fire at once on the first gesture.
         void ctx.resume();
-        pendingRef.current.push(tones);
+        pendingRef.current = [tones];
         return;
       }
       schedule(tones);
     },
-    [enabled, schedule]
+    [schedule]
   );
 
   // Console-style power-on fanfare.

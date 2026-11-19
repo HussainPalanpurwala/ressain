@@ -908,3 +908,12 @@
     transition: none;
   }
 }
+
+/* Real prose, shown in place of a dashed text placeholder once `text` is filled. */
+.storyText {
+  margin: 0;
+  font-size: clamp(0.55rem, 1.5vw, 0.78rem);
+  line-height: 2.2;
+  color: var(--ink);
+  white-space: pre-wrap;
+}

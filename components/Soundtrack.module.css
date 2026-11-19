@@ -1,0 +1,296 @@
+.section {
+  --burgundy: #2b0a18;
+  --wine: #4a1024;
+  --cherry: #f0254b;
+  --blush: #e453a3;
+  --cream: #fff0dc;
+  --paper: #eee1c8;
+  --near-black: #0b0509;
+
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: clamp(3rem, 9vh, 7rem) clamp(1rem, 5vw, 3rem);
+  overflow: hidden;
+  font-family: "Press Start 2P", monospace;
+  color: var(--cream);
+  background:
+    radial-gradient(ellipse at 50% 38%, #3d1026 0%, #1a0710 58%, var(--near-black) 100%);
+}
+
+/* Faint CRT scanlines, like the rest of the arcade-styled sections. */
+.section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 3px,
+    rgba(0, 0, 0, 0.16) 4px
+  );
+}
+
+.panel {
+  position: relative;
+  z-index: 1;
+  width: min(92vw, 760px);
+  padding: clamp(12px, 2.4vw, 18px);
+  background: linear-gradient(145deg, #3a2230 0%, #241019 52%, #140810 100%);
+  border: 4px solid var(--burgundy);
+  box-shadow:
+    0 0 0 3px var(--blush),
+    0 0 0 6px var(--burgundy),
+    12px 12px 0 rgba(0, 0, 0, 0.55),
+    0 0 34px rgba(228, 83, 163, 0.18);
+}
+
+.panelTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 2px clamp(10px, 2vw, 14px);
+  font-size: clamp(0.38rem, 1.1vw, 0.55rem);
+  letter-spacing: 0.06em;
+  color: var(--blush);
+}
+
+.led {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  background: var(--cherry);
+  box-shadow: 0 0 0 2px #1c0710, 0 0 8px var(--cherry);
+  animation: ledBlink 1.6s steps(1) infinite;
+}
+
+.brandTag {
+  color: var(--cream);
+  opacity: 0.8;
+}
+
+.panelDots {
+  letter-spacing: 0.3em;
+  animation: ledBlink 2.4s steps(1) infinite;
+}
+
+.panelBody {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(240px, 1.1fr);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  padding: clamp(18px, 4vw, 30px) clamp(14px, 3.5vw, 26px);
+  background: #0c060a;
+  border: 4px solid var(--burgundy);
+  box-shadow:
+    inset 0 0 0 2px rgba(228, 83, 163, 0.3),
+    inset 0 0 34px rgba(228, 83, 163, 0.1);
+}
+
+/* Cassette recess */
+.deck {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 5 / 3;
+  padding: clamp(12px, 3vw, 22px);
+  background: radial-gradient(ellipse at center, #2a1220 0%, #0a0509 72%);
+  border: 2px solid #4a2a3a;
+  box-shadow: inset 0 0 20px rgba(228, 83, 163, 0.14);
+}
+
+/* The cassette itself */
+.cassette {
+  position: relative;
+  width: 100%;
+  padding: clamp(8px, 2vw, 12px);
+  background: linear-gradient(160deg, #efe4d0 0%, #d9c7a8 100%);
+  border: 2px solid #1c0710;
+  box-shadow:
+    4px 4px 0 #1c0710,
+    inset 0 0 0 2px rgba(74, 16, 36, 0.18);
+  color: var(--burgundy);
+  transform: rotate(-2deg);
+}
+
+.cassetteLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 7px;
+  font-size: clamp(0.34rem, 1vw, 0.5rem);
+  letter-spacing: 0.08em;
+  color: var(--cream);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--cherry) 0 8px,
+    var(--blush) 8px 16px
+  );
+  border: 1px solid var(--burgundy);
+  text-shadow: 1px 1px 0 #1c0710;
+}
+
+.tapeWindow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: clamp(58px, 15vw, 92px);
+  margin-top: clamp(7px, 1.6vw, 11px);
+  padding: 0 clamp(8px, 3vw, 20px);
+  background: #24121c;
+  border: 2px solid rgba(74, 16, 36, 0.65);
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.8);
+}
+
+.tapeBand {
+  flex: 1 1 auto;
+  height: 8px;
+  margin: 0 4px;
+  background: linear-gradient(to bottom, #5a3a48, #2a1420);
+  border-top: 1px solid rgba(228, 83, 163, 0.35);
+}
+
+.reel {
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(38px, 9vw, 58px);
+  height: clamp(38px, 9vw, 58px);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, var(--paper) 0 16%, #1c0710 16% 26%, #efe4d0 26% 34%, #24121c 34% 100%),
+    repeating-conic-gradient(from 0deg, #3a202c 0 12deg, #24121c 12deg 24deg);
+  border: 2px solid #0a0509;
+  box-shadow: 0 0 0 1px rgba(228, 83, 163, 0.35), 1px 2px 4px #000;
+}
+
+.reel::after {
+  content: "";
+  position: absolute;
+  inset: 34%;
+  border-radius: 50%;
+  background: var(--blush);
+  box-shadow: 0 0 0 2px #1c0710;
+}
+
+.reelLeft {
+  animation: spin 2.8s linear infinite;
+}
+
+.reelRight {
+  animation: spin 2.8s linear infinite reverse;
+}
+
+.cassetteFooter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(24px, 10vw, 60px);
+  margin-top: clamp(7px, 1.6vw, 11px);
+}
+
+.screw {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #8a8a94;
+  border: 1px solid #1c0710;
+  box-shadow: inset 1px 1px 0 #e4e4ea;
+}
+
+/* Track details */
+.details {
+  min-width: 0;
+}
+
+.heading {
+  margin: 0 0 clamp(1.25rem, 3vh, 2rem);
+  font-size: clamp(0.95rem, 3vw, 1.7rem);
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--blush);
+  text-shadow: 3px 3px 0 #1c0710, 0 0 18px rgba(228, 83, 163, 0.4);
+}
+
+.trackList {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.9rem, 2.4vh, 1.4rem);
+}
+
+.trackRow {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: clamp(10px, 2.2vw, 14px) clamp(10px, 2.4vw, 16px);
+  background: rgba(228, 83, 163, 0.05);
+  border: 1px dashed rgba(228, 83, 163, 0.45);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.4);
+}
+
+.trackTerm {
+  font-size: clamp(0.36rem, 1vw, 0.5rem);
+  letter-spacing: 0.14em;
+  color: var(--cherry);
+}
+
+.trackValue {
+  margin: 0;
+  font-size: clamp(0.45rem, 1.25vw, 0.65rem);
+  line-height: 1.8;
+  color: var(--cream);
+  opacity: 0.9;
+}
+
+.footerNote {
+  margin: clamp(1.25rem, 3vh, 2rem) 0 0;
+  font-size: clamp(0.4rem, 1.05vw, 0.54rem);
+  line-height: 1.8;
+  color: var(--blush);
+  opacity: 0.75;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ledBlink {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0.15;
+  }
+}
+
+@media (max-width: 660px) {
+  .panelBody {
+    grid-template-columns: 1fr;
+  }
+
+  .deck {
+    width: min(100%, 360px);
+    margin: 0 auto;
+  }
+
+  .cassette {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reelLeft,
+  .reelRight,
+  .led,
+  .panelDots {
+    animation: none !important;
+  }
+}

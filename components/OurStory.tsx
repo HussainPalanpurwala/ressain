@@ -1,68 +1,88 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type {
+  StoryPhoto,
+  StorySong,
+  StoryTextBlock,
+  StoryVideo,
+} from "@/content/story";
+import { story } from "@/content/story";
 import styles from "./OurStory.module.css";
 
-function TextPlaceholder({ label, lines = 3 }: { label: string; lines?: number }) {
+function TextPlaceholder({ block }: { block: StoryTextBlock }) {
+  const hasText = block.text.trim().length > 0;
   return (
     <div className={styles.textPlaceholder} data-reveal>
-      <span className={styles.phLabel}>[ {label} — text to be provided ]</span>
-      <div className={styles.phLines} aria-hidden="true">
-        {Array.from({ length: lines }, (_, index) => (
-          <span key={index} style={{ width: `${94 - index * 9}%` }} />
-        ))}
-      </div>
+      {hasText ? (
+        <p className={styles.storyText}>{block.text}</p>
+      ) : (
+        <>
+          <span className={styles.phLabel}>[ {block.label} — text to be provided ]</span>
+          <div className={styles.phLines} aria-hidden="true">
+            {Array.from({ length: block.lines }, (_, index) => (
+              <span key={index} style={{ width: `${94 - index * 9}%` }} />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
 function PhotoPlaceholder({
-  label,
-  shape = "wide",
+  photo,
   onClick,
 }: {
-  label: string;
-  shape?: "wide" | "tall" | "square";
-  onClick: (label: string) => void;
+  photo: StoryPhoto;
+  onClick: (photo: StoryPhoto) => void;
 }) {
+  const { label, shape, src, caption } = photo;
   return (
     <button
       type="button"
       className={`${styles.photo} ${styles[shape]}`}
-      onClick={() => onClick(label)}
+      onClick={() => onClick(photo)}
       aria-label={`Open ${label}`}
       data-reveal
     >
       <span className={styles.paperClip} aria-hidden="true" />
-      <span className={styles.photoInner}>
-        <span className={styles.clip} aria-hidden="true" />
-        <span className={styles.photoIcon} aria-hidden="true">
-          ▧
+      {src ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={src} alt={label} />
+          {caption && <span className={styles.photoCaption}>{caption}</span>}
+        </>
+      ) : (
+        <span className={styles.photoInner}>
+          <span className={styles.clip} aria-hidden="true" />
+          <span className={styles.photoIcon} aria-hidden="true">
+            ▧
+          </span>
+          <span className={styles.phLabel}>[ {label} — photo to be provided ]</span>
+          <span className={styles.photoCaption}>[ handwritten caption to be provided ]</span>
         </span>
-        <span className={styles.phLabel}>[ {label} — photo to be provided ]</span>
-        <span className={styles.photoCaption}>[ handwritten caption to be provided ]</span>
-      </span>
+      )}
     </button>
   );
 }
 
-function VideoPlaceholder({
-  label,
-  featured = false,
-}: {
-  label: string;
-  featured?: boolean;
-}) {
+function VideoPlaceholder({ video }: { video: StoryVideo }) {
   const [active, setActive] = useState(false);
+  const { label, featured, src } = video;
   return (
     <div
       className={`${styles.video} ${featured ? styles.videoFeatured : ""}`}
       data-reveal
     >
       <div className={styles.videoThumb}>
-        <span className={styles.phLabel}>
-          [ {label} — {active ? "video playback here" : "video to be provided"} ]
-        </span>
+        {src ? (
+          <video src={src} controls playsInline preload="metadata" />
+        ) : (
+          <span className={styles.phLabel}>
+            [ {label} — {active ? "video playback here" : "video to be provided"} ]
+          </span>
+        )}
       </div>
       <button
         type="button"
@@ -75,9 +95,21 @@ function VideoPlaceholder({
   );
 }
 
+function SongDetail({ song }: { song: StorySong }) {
+  const hasSong = song.title.trim() || song.artist.trim() || song.lyrics.trim();
+  if (!hasSong) return <span className={styles.phLabel}>{song.label}</span>;
+  return (
+    <div>
+      {song.title && <span className={styles.letterHeading}>{song.title}</span>}
+      {song.artist && <span className={styles.phLabel}>{song.artist}</span>}
+      {song.lyrics && <p className={styles.storyText}>{song.lyrics}</p>}
+    </div>
+  );
+}
+
 export default function OurStory() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [lightbox, setLightbox] = useState<string | null>(null);
+  const [lightbox, setLightbox] = useState<StoryPhoto | null>(null);
   const [letterOpen, setLetterOpen] = useState(false);
 
   useEffect(() => {
@@ -117,16 +149,16 @@ export default function OurStory() {
     };
   }, []);
 
+  const { intro, memories, momentToRemember, personalNote } = story;
+  const { beginning, conversations, surprise, palace, temple, train } = memories;
+
   return (
     <section ref={sectionRef} className={styles.section} id="our-story">
       <div className={styles.blendFromTimer} aria-hidden="true" />
 
       <div className={styles.intro} data-reveal>
-        <h2 className={styles.sectionTitle}>Our Story</h2>
-        <p className={styles.introLine}>
-          A few moments, a few places, and a little bit of everything that
-          brought us here.
-        </p>
+        <h2 className={styles.sectionTitle}>{intro.title}</h2>
+        <p className={styles.introLine}>{intro.line}</p>
       </div>
 
       <div className={styles.timeline}>
@@ -134,27 +166,23 @@ export default function OurStory() {
 
         {/* 01 — The Beginning */}
         <article className={`${styles.memory} ${styles.memoryMinimal}`} data-reveal>
-          <span className={styles.marker}>01</span>
+          <span className={styles.marker}>{beginning.marker}</span>
           <div className={styles.memoryBody}>
-            <h3 className={styles.memoryTitle}>The Beginning</h3>
-            <TextPlaceholder label="The Beginning story" lines={4} />
-            <span className={styles.diaryAnnotation}>
-              [ handwritten note in the margin — to be provided ]
-            </span>
+            <h3 className={styles.memoryTitle}>{beginning.title}</h3>
+            <TextPlaceholder block={beginning.story} />
+            <span className={styles.diaryAnnotation}>{beginning.marginNote}</span>
             <div className={styles.instagramDetail}>
               <span className={styles.igDot} aria-hidden="true" />
-              <span className={styles.phLabel}>
-                [ small Instagram-inspired detail — to be provided ]
-              </span>
+              <span className={styles.phLabel}>{beginning.instagramDetail}</span>
             </div>
           </div>
         </article>
 
         {/* 02 — The Conversations */}
         <article className={`${styles.memory} ${styles.memoryLetter}`} data-reveal>
-          <span className={styles.marker}>02</span>
+          <span className={styles.marker}>{conversations.marker}</span>
           <div className={styles.memoryBody}>
-            <h3 className={styles.memoryTitle}>The Conversations</h3>
+            <h3 className={styles.memoryTitle}>{conversations.title}</h3>
             <div className={styles.letterLayout}>
               <button
                 type="button"
@@ -163,15 +191,13 @@ export default function OurStory() {
                 data-reveal
               >
                 <span className={styles.letterSeal} aria-hidden="true">✦</span>
-                <span className={styles.letterHeading}>The original letter</span>
-                <span className={styles.phLabel}>
-                  [ letter text to be provided ]
-                </span>
-                <span className={styles.letterOpen}>Read the letter →</span>
+                <span className={styles.letterHeading}>{conversations.letter.heading}</span>
+                <span className={styles.phLabel}>{conversations.letter.cardPreview}</span>
+                <span className={styles.letterOpen}>{conversations.letter.readLabel}</span>
               </button>
               <div className={styles.videoStack}>
-                <VideoPlaceholder label="First video response" />
-                <VideoPlaceholder label="Second video response" featured />
+                <VideoPlaceholder video={conversations.firstVideo} />
+                <VideoPlaceholder video={conversations.secondVideo} />
               </div>
             </div>
           </div>
@@ -179,51 +205,51 @@ export default function OurStory() {
 
         {/* 03 — The Jammu Surprise */}
         <article className={`${styles.memory} ${styles.memorySurprise}`} data-reveal>
-          <span className={styles.marker}>03</span>
+          <span className={styles.marker}>{surprise.marker}</span>
           <div className={styles.memoryBody}>
-            <h3 className={styles.memoryTitle}>The Jammu Surprise</h3>
-            <VideoPlaceholder label="Surprise reaction video" featured />
+            <h3 className={styles.memoryTitle}>{surprise.title}</h3>
+            <VideoPlaceholder video={surprise.reactionVideo} />
             <div className={styles.miniGallery}>
-              <PhotoPlaceholder label="Jammu photo 1" shape="square" onClick={setLightbox} />
-              <PhotoPlaceholder label="Jammu photo 2" shape="square" onClick={setLightbox} />
-              <PhotoPlaceholder label="Jammu photo 3" shape="square" onClick={setLightbox} />
+              {surprise.gallery.map((photo) => (
+                <PhotoPlaceholder key={photo.label} photo={photo} onClick={setLightbox} />
+              ))}
             </div>
-            <TextPlaceholder label="The Jammu Surprise story" lines={3} />
+            <TextPlaceholder block={surprise.story} />
           </div>
         </article>
 
         {/* 04 — Hari Niwas Palace */}
         <article className={`${styles.memory} ${styles.memoryPalace}`} data-reveal>
-          <span className={styles.marker}>04</span>
+          <span className={styles.marker}>{palace.marker}</span>
           <div className={styles.memoryBody}>
-            <h3 className={styles.memoryTitle}>Hari Niwas Palace</h3>
+            <h3 className={styles.memoryTitle}>{palace.title}</h3>
             <div className={styles.palaceTop}>
-              <PhotoPlaceholder label="Blue painting" shape="tall" onClick={setLightbox} />
-              <TextPlaceholder label="Blue sky and her dad" lines={4} />
+              <PhotoPlaceholder photo={palace.bluePainting} onClick={setLightbox} />
+              <TextPlaceholder block={palace.blueSky} />
             </div>
             <div className={styles.palaceBottom}>
-              <TextPlaceholder label="The drunk uncle story" lines={3} />
-              <VideoPlaceholder label="Hiding video" />
+              <TextPlaceholder block={palace.drunkUncle} />
+              <VideoPlaceholder video={palace.hidingVideo} />
             </div>
           </div>
         </article>
 
         {/* 05 — The Temple */}
         <article className={`${styles.memory} ${styles.memoryTemple}`} data-reveal>
-          <span className={styles.marker}>05</span>
+          <span className={styles.marker}>{temple.marker}</span>
           <div className={styles.memoryBody}>
-            <h3 className={styles.memoryTitle}>The Temple</h3>
-            <TextPlaceholder label="The Temple story" lines={4} />
-            <PhotoPlaceholder label="Temple photo" shape="wide" onClick={setLightbox} />
+            <h3 className={styles.memoryTitle}>{temple.title}</h3>
+            <TextPlaceholder block={temple.story} />
+            <PhotoPlaceholder photo={temple.photo} onClick={setLightbox} />
           </div>
         </article>
 
         {/* 06 — The Missed Train */}
         <article className={`${styles.memory} ${styles.memoryTrain}`} data-reveal>
-          <span className={styles.marker}>06</span>
+          <span className={styles.marker}>{train.marker}</span>
           <div className={styles.memoryBody}>
-            <h3 className={styles.memoryTitle}>The Missed Train</h3>
-            <TextPlaceholder label="The Missed Train story" lines={5} />
+            <h3 className={styles.memoryTitle}>{train.title}</h3>
+            <TextPlaceholder block={train.story} />
             <div className={styles.trainMotif} aria-hidden="true">
               <span />
               <span />
@@ -235,21 +261,21 @@ export default function OurStory() {
 
       {/* Transition */}
       <div className={styles.transition} data-reveal>
-        <h2 className={styles.transitionTitle}>A Moment to Remember</h2>
+        <h2 className={styles.transitionTitle}>{momentToRemember.title}</h2>
         <div className={styles.narrowReading}>
-          <TextPlaceholder label="A Moment to Remember text" lines={4} />
+          <TextPlaceholder block={momentToRemember.text} />
         </div>
       </div>
 
       {/* Personal note */}
       <div className={styles.note} data-reveal>
-        <h2 className={styles.noteTitle}>A Personal Note</h2>
+        <h2 className={styles.noteTitle}>{personalNote.title}</h2>
         <div className={styles.notePaper}>
-          <TextPlaceholder label="Personal note — opening" lines={3} />
-          <TextPlaceholder label="Personal note — middle (keep full approved wording)" lines={7} />
-          <TextPlaceholder label="Personal note — ending leading into the song" lines={3} />
+          <TextPlaceholder block={personalNote.opening} />
+          <TextPlaceholder block={personalNote.middle} />
+          <TextPlaceholder block={personalNote.ending} />
           <div className={styles.songDetail}>
-            <span className={styles.phLabel}>[ song details and selected lyrics — to be provided ]</span>
+            <SongDetail song={personalNote.song} />
           </div>
         </div>
       </div>
@@ -264,7 +290,17 @@ export default function OurStory() {
             >
               ✕
             </button>
-            <span className={styles.phLabel}>[ {lightbox} — full-size photo to be provided ]</span>
+            {lightbox.src ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={lightbox.src} alt={lightbox.label} />
+                {lightbox.caption && <span className={styles.photoCaption}>{lightbox.caption}</span>}
+              </>
+            ) : (
+              <span className={styles.phLabel}>
+                [ {lightbox.label} {story.lightbox.photoLabel} ]
+              </span>
+            )}
           </div>
         </div>
       )}
@@ -282,8 +318,8 @@ export default function OurStory() {
             >
               ✕
             </button>
-            <h3 className={styles.memoryTitle}>The original letter</h3>
-            <TextPlaceholder label="Full original letter — preserve exactly as supplied" lines={12} />
+            <h3 className={styles.memoryTitle}>{conversations.letter.heading}</h3>
+            <TextPlaceholder block={conversations.letter.fullText} />
           </div>
         </div>
       )}

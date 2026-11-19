@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import PixelHeart from "./PixelHeart";
 import TypedMessage from "./TypedMessage";
 import usePrefersReducedMotion from "./usePrefersReducedMotion";
@@ -28,6 +28,28 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   const [phase, setPhase] = useState<Phase>("loading");
   const rootRef = useRef<HTMLDivElement>(null);
   const finishedRef = useRef(false);
+  const didEnterRef = useRef(false);
+  const onEnterRef = useRef(onEnter);
+  onEnterRef.current = onEnter;
+
+  // The opacity transition and the timeout fallback can both report the exit
+  // as complete; make sure the parent is only told once.
+  const finishEnter = useCallback(() => {
+    if (didEnterRef.current) return;
+    didEnterRef.current = true;
+    onEnterRef.current();
+  }, []);
+
+  // The boot is a full-screen overlay: scrolling the page behind it would
+  // leave the experience at a random position once "Enter" is pressed.
+  useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, []);
+
   const {
     enabled: soundOn,
     setEnabled: setSoundOn,
@@ -104,16 +126,19 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
       event.propertyName === "opacity" &&
       phase === "exiting"
     ) {
-      onEnter();
+      finishEnter();
     }
   };
 
   // Fallback in case the CSS transition does not fire an opacity event.
   useEffect(() => {
     if (phase !== "exiting") return;
-    const timer = window.setTimeout(onEnter, reduceMotion ? 50 : 1000);
+    const timer = window.setTimeout(
+      finishEnter,
+      reduceMotion ? 50 : 1000
+    );
     return () => window.clearTimeout(timer);
-  }, [phase, onEnter, reduceMotion]);
+  }, [phase, finishEnter, reduceMotion]);
 
   return (
     <div

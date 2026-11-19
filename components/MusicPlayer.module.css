@@ -190,7 +190,10 @@
 .seek {
   flex: 1;
   min-width: 0;
-  height: 24px;
+  /* 44px touch target; negative margins keep the 24px layout box (and the
+     centred track) exactly where it was. */
+  height: 44px;
+  margin-block: -10px;
   appearance: none;
   background: transparent;
   cursor: pointer;
@@ -234,7 +237,9 @@
 .volumeRow input {
   flex: 1;
   min-width: 0;
-  height: 24px;
+  /* Same 44px hit area / 24px layout box treatment as the seek slider. */
+  height: 44px;
+  margin-block: -10px;
   appearance: none;
   background: transparent;
 }
