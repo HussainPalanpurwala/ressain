@@ -44,15 +44,25 @@ const CONSTELLATIONS: Constellation[] = [
 // A deterministic, CSS-only starfield for the section BACKGROUND only. These
 // dots decorate the space AROUND the star map — the uploaded /star-map.jpg is
 // never redrawn or given a glow. A fixed seed keeps server and client markup
-// identical (no hydration mismatch), while still giving natural variation in
-// size, position, colour and twinkle timing.
+// identical (no hydration mismatch). Every animatable quality — brightness
+// range, peak scale, drift direction/distance, speed, phase and keyframe
+// variant — is seeded too, so the dots feel organic instead of pulsing in
+// unison. All colours are strictly in the white → rose → red family.
+type StarColor = "white" | "pearl" | "rose" | "cherry" | "garnet";
+
 type Star = {
   x: number;
   y: number;
   size: number;
-  color: "cream" | "blush" | "cherry";
+  color: StarColor;
   delay: number;
   duration: number;
+  variant: 0 | 1 | 2;
+  minOpacity: number;
+  maxOpacity: number;
+  scale: number;
+  driftX: number;
+  driftY: number;
 };
 
 const STARS: Star[] = (() => {
@@ -61,14 +71,29 @@ const STARS: Star[] = (() => {
     seed = (seed * 1664525 + 1013904223) >>> 0;
     return seed / 4294967296;
   };
-  const colors: Star["color"][] = ["cream", "blush", "cherry"];
+  const r2 = (n: number) => Math.round(n * 100) / 100; // tidy, deterministic values
+  // Weighted toward white/near-white with occasional rose and red accents —
+  // every tone stays inside the white/red family (no cream or yellow tints).
+  const colors: StarColor[] = [
+    "white", "white", "white",
+    "pearl", "pearl",
+    "rose", "rose",
+    "cherry", "cherry",
+    "garnet",
+  ];
   return Array.from({ length: 84 }, () => ({
-    x: 3 + rand() * 94, // keep dots away from the very edges
-    y: 6 + rand() * 88,
-    size: 1.5 + rand() * 2.5, // 1.5–4px
+    x: r2(3 + rand() * 94), // keep dots away from the very edges
+    y: r2(6 + rand() * 88),
+    size: r2(1.5 + rand() * 2.5), // 1.5–4px
     color: colors[Math.floor(rand() * colors.length)],
-    delay: rand() * -8, // negative so dots start at different fade points
-    duration: 4 + rand() * 5, // 4–9s, a slow and restrained twinkle
+    delay: r2(rand() * -12), // negative so dots start at different fade points
+    duration: r2(4.5 + rand() * 6), // 4.5–10.5s, slow and restrained
+    variant: Math.floor(rand() * 3) as 0 | 1 | 2,
+    minOpacity: r2(0.15 + rand() * 0.25), // 0.15–0.40 floor
+    maxOpacity: r2(0.7 + rand() * 0.3), // 0.70–1.00 ceiling
+    scale: r2(1.15 + rand() * 0.35), // 1.15–1.50 peak scale
+    driftX: r2((rand() * 2 - 1) * 6), // -6..6px, direction varies per star
+    driftY: r2((rand() * 2 - 1) * 6), // -6..6px
   }));
 })();
 
@@ -132,6 +157,7 @@ export default function WrittenInStars() {
             key={index}
             className={styles.star}
             data-color={star.color}
+            data-variant={star.variant}
             style={
               {
                 "--sx": `${star.x}%`,
@@ -139,6 +165,11 @@ export default function WrittenInStars() {
                 "--ss": `${star.size}px`,
                 "--sd": `${star.delay}s`,
                 "--sdur": `${star.duration}s`,
+                "--smin": `${star.minOpacity}`,
+                "--smax": `${star.maxOpacity}`,
+                "--sscale": `${star.scale}`,
+                "--sdx": `${star.driftX}px`,
+                "--sdy": `${star.driftY}px`,
               } as React.CSSProperties
             }
           />

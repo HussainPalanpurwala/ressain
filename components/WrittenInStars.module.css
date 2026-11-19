@@ -115,40 +115,106 @@
   height: var(--ss);
   border-radius: 50%;
   background: var(--star-color);
-  /* A clearly visible, layered halo in the same palette colour. Three soft
-     shadows build a warm bloom rather than a hard sparkle, and stay elegant
-     because the outer layers are translucent. */
+  /* A clearly visible, layered halo in the same colour. Three soft shadows
+     build a gentle bloom rather than a hard sparkle; the outer layers are
+     translucent so it stays elegant. */
   box-shadow:
     0 0 calc(var(--ss) * 2) var(--star-color),
     0 0 calc(var(--ss) * 7) var(--star-glow),
     0 0 calc(var(--ss) * 14) var(--star-glow);
-  opacity: 0.55;
-  animation: starTwinkle var(--sdur) ease-in-out var(--sd) infinite alternate;
+  /* Seeded fallbacks; the keyframes below resolve these values per star. */
+  opacity: var(--smin, 0.35);
+  transform: translate3d(0, 0, 0) scale(1);
+  animation-duration: var(--sdur);
+  animation-timing-function: ease-in-out;
+  animation-delay: var(--sd);
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-fill-mode: both;
 }
 
-.star[data-color="cream"] {
-  --star-color: var(--cream);
-  --star-glow: rgba(255, 240, 220, 0.6);
+/* Red / white family only. Dedicated star tokens keep the section's text and
+   focus colours (heading, hit outlines) exactly as they were. */
+.star[data-color="white"] {
+  --star-color: #ffffff;
+  --star-glow: rgba(255, 255, 255, 0.55);
 }
 
-.star[data-color="blush"] {
-  --star-color: var(--blush);
-  --star-glow: rgba(228, 83, 163, 0.55);
+.star[data-color="pearl"] {
+  --star-color: #fff0f3;
+  --star-glow: rgba(255, 240, 243, 0.5);
+}
+
+.star[data-color="rose"] {
+  --star-color: #f6c1cf;
+  --star-glow: rgba(246, 193, 207, 0.5);
 }
 
 .star[data-color="cherry"] {
-  --star-color: var(--cherry);
-  --star-glow: rgba(192, 40, 75, 0.55);
+  --star-color: #e4535f;
+  --star-glow: rgba(228, 83, 95, 0.5);
 }
 
-@keyframes starTwinkle {
+.star[data-color="garnet"] {
+  --star-color: #8b1a2b;
+  --star-glow: rgba(139, 26, 43, 0.55);
+}
+
+/* Three deliberately different twinkle shapes, assigned by the seeded index,
+   so neighbouring dots rarely peak together. Every brightness, scale and drift
+   value comes from a per-star custom property, so no two stars animate alike. */
+.star[data-variant="0"] {
+  animation-name: starTwinkleA;
+}
+
+.star[data-variant="1"] {
+  animation-name: starTwinkleB;
+}
+
+.star[data-variant="2"] {
+  animation-name: starTwinkleC;
+}
+
+@keyframes starTwinkleA {
   from {
-    opacity: 0.25;
-    transform: scale(0.8);
+    opacity: var(--smin);
+    transform: translate3d(0, 0, 0) scale(0.85);
   }
   to {
-    opacity: 0.95;
-    transform: scale(1.25);
+    opacity: var(--smax);
+    transform: translate3d(var(--sdx), var(--sdy), 0) scale(var(--sscale));
+  }
+}
+
+@keyframes starTwinkleB {
+  0% {
+    opacity: var(--smin);
+    transform: translate3d(0, 0, 0) scale(0.9);
+  }
+  55% {
+    opacity: var(--smax);
+    transform: translate3d(var(--sdx), var(--sdy), 0) scale(var(--sscale));
+  }
+  100% {
+    opacity: calc(var(--smin) + (var(--smax) - var(--smin)) * 0.4);
+    transform: translate3d(calc(var(--sdx) * 0.35), calc(var(--sdy) * 0.35), 0)
+      scale(1.05);
+  }
+}
+
+@keyframes starTwinkleC {
+  0% {
+    opacity: var(--smax);
+    transform: translate3d(var(--sdx), var(--sdy), 0) scale(var(--sscale));
+  }
+  45% {
+    opacity: var(--smin);
+    transform: translate3d(0, 0, 0) scale(0.82);
+  }
+  100% {
+    opacity: calc(var(--smin) + (var(--smax) - var(--smin)) * 0.6);
+    transform: translate3d(calc(var(--sdx) * -0.45), calc(var(--sdy) * -0.45), 0)
+      scale(1.1);
   }
 }
 
