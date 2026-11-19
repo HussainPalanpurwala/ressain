@@ -201,11 +201,6 @@ export default function OurStory() {
           <div className={styles.memoryBody}>
             <h3 className={styles.memoryTitle}>{beginning.title}</h3>
             <TextPlaceholder block={beginning.story} />
-            <span className={styles.diaryAnnotation}>{beginning.marginNote}</span>
-            <div className={styles.instagramDetail}>
-              <span className={styles.igDot} aria-hidden="true" />
-              <span className={styles.phLabel}>{beginning.instagramDetail}</span>
-            </div>
           </div>
         </article>
 

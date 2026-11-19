@@ -74,8 +74,6 @@ export interface StoryContent {
       marker: string;
       title: string;
       story: StoryTextBlock;
-      marginNote: string;
-      instagramDetail: string;
     };
     conversations: {
       marker: string;
@@ -160,8 +158,6 @@ I only knew that you were fun to talk to.
 
 And somehow, that was enough to make me want to know more.`,
       },
-      marginNote: "[ handwritten note in the margin — to be provided ]",
-      instagramDetail: "[ small Instagram-inspired detail — to be provided ]",
     },
     conversations: {
       marker: "02",

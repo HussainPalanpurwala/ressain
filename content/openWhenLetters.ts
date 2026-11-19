@@ -1,5 +1,5 @@
 /**
- * The 15 Open When letters. Supplied copy is final — do not rewrite,
+ * The 16 Open When letters. Supplied copy is final — do not rewrite,
  * polish, shorten or correct anything. Paragraph breaks are preserved as
  * blank lines inside each `body` string.
  */
@@ -298,5 +298,24 @@ Although, I would appreciate it if you occasionally let me finish answering one 
 Anyway.
 
 What's on your mind?`,
+  },
+  {
+    id: "reminds",
+    title: "Open when something reminds you of me.",
+    body: `Well, I hope you smiled a little.
+
+I wonder what it was. A song? A place? Something someone said? Or perhaps something completely random that only makes sense to you.
+
+I think it's quite lovely how people can become associated with the smallest things. A particular song, a certain time of day, a familiar place, or even something as silly as a random conversation.
+
+I wonder how many little things in your day have somehow become connected to me without either of us realising.
+
+And if something does remind you of me, I hope you don't just brush it aside. Stay with that thought for a moment. Maybe smile, maybe roll your eyes, maybe tell me about it later.
+
+I'd love to know what it was.
+
+And if you're reading this because you happened to miss me, then well...
+
+You know where to find me!`,
   },
 ];
