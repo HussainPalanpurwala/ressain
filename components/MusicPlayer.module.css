@@ -161,12 +161,6 @@
   place-items: center;
 }
 
-.recordLabel {
-  font-size: 0.3rem;
-  color: #0a0509;
-  pointer-events: none;
-}
-
 .spinning {
   animation: spin 2.6s linear infinite;
 }

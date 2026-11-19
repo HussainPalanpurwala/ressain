@@ -155,9 +155,7 @@ export default function MusicPlayer({
           <span className={styles.deck} aria-hidden="true">
             <span
               className={`${styles.record} ${playing ? styles.spinning : ""}`}
-            >
-              <span className={styles.recordLabel}>R♥H</span>
-            </span>
+            />
             <span className={styles.tonearm} />
             <span className={styles.tonearmPivot} />
             <span
