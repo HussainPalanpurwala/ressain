@@ -28,7 +28,14 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   const [phase, setPhase] = useState<Phase>("loading");
   const rootRef = useRef<HTMLDivElement>(null);
   const finishedRef = useRef(false);
-  const { enabled: soundOn, setEnabled: setSoundOn, play } = useRetroSound();
+  const {
+    enabled: soundOn,
+    setEnabled: setSoundOn,
+    play,
+    startLoading,
+    updateLoading,
+    stopLoading,
+  } = useRetroSound();
 
   // Progress runs on its own clock, independent of any network activity, and
   // always reaches 100%.
@@ -67,15 +74,17 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   const filled = Math.min(HEART_COUNT, Math.ceil(progress / 10));
   const isComplete = phase !== "loading";
 
-  // Little arcade blip as each loading line appears.
+  // One continuous swell while loading, rather than a blip per stage.
+  useEffect(() => {
+    if (phase === "loading") startLoading();
+    else stopLoading();
+    return () => stopLoading();
+  }, [phase, startLoading, stopLoading]);
+
   useEffect(() => {
     if (phase !== "loading") return;
-    play([
-      { freq: 660, duration: 0.07, volume: 0.14 },
-      { freq: 990, duration: 0.06, delay: 0.07, volume: 0.12 },
-      { freq: 1320, duration: 0.05, delay: 0.14, type: "triangle", volume: 0.1 },
-    ]);
-  }, [messageIndex, phase, play]);
+    updateLoading(Math.round(progress) / 100);
+  }, [Math.round(progress), phase, updateLoading]);
 
   // Success chime when the boot finishes.
   useEffect(() => {

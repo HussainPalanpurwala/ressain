@@ -14,7 +14,50 @@ type Tone = {
 export default function useRetroSound() {
   const ctxRef = useRef<AudioContext | null>(null);
   const unlockedRef = useRef(false);
+  const loadingRef = useRef<{
+    osc: OscillatorNode;
+    osc2: OscillatorNode;
+    gain: GainNode;
+  } | null>(null);
+  const loadingActiveRef = useRef(false);
+  const startLoadingRef = useRef<() => void>(() => {});
   const [enabled, setEnabled] = useState(true);
+
+  // One continuous sound that grows from near-silence to a soft presence as
+  // the loading bar fills — no gaps between stages.
+  const startLoading = useCallback(() => {
+    loadingActiveRef.current = true;
+    const ctx = ctxRef.current;
+    if (!ctx || !enabled || ctx.state !== "running" || loadingRef.current) {
+      return;
+    }
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.connect(ctx.destination);
+
+    const osc = ctx.createOscillator();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(90, ctx.currentTime);
+
+    const osc2 = ctx.createOscillator();
+    osc2.type = "square";
+    osc2.frequency.setValueAtTime(180, ctx.currentTime);
+    const layerGain = ctx.createGain();
+    layerGain.gain.value = 0.22;
+
+    osc.connect(gain);
+    osc2.connect(layerGain);
+    layerGain.connect(gain);
+    osc.start();
+    osc2.start();
+
+    loadingRef.current = { osc, osc2, gain };
+  }, [enabled]);
+
+  useEffect(() => {
+    startLoadingRef.current = startLoading;
+  }, [startLoading]);
 
   useEffect(() => {
     const AudioCtx =
@@ -26,20 +69,51 @@ export default function useRetroSound() {
     const ctx = new AudioCtx();
     ctxRef.current = ctx;
 
-    // Mobile browsers only allow audio after a real user gesture. Unlock on
-    // the first touch / tap / key press anywhere on the page.
     const unlock = () => {
       unlockedRef.current = true;
       if (ctx.state === "suspended") void ctx.resume();
+      if (loadingActiveRef.current) startLoadingRef.current();
     };
     const events = ["pointerdown", "touchstart", "keydown", "click"];
     events.forEach((event) => window.addEventListener(event, unlock, true));
 
     return () => {
       events.forEach((event) => window.removeEventListener(event, unlock, true));
+      const loading = loadingRef.current;
+      if (loading) {
+        try {
+          loading.osc.stop();
+          loading.osc2.stop();
+        } catch {
+          // already stopped
+        }
+      }
       void ctx.close();
       ctxRef.current = null;
+      loadingRef.current = null;
     };
+  }, []);
+
+  const updateLoading = useCallback((progress: number) => {
+    const loading = loadingRef.current;
+    const ctx = ctxRef.current;
+    if (!loading || !ctx) return;
+    const now = ctx.currentTime;
+    loading.gain.gain.setTargetAtTime(0.006 + progress * 0.1, now, 0.3);
+    loading.osc.frequency.setTargetAtTime(90 + progress * 150, now, 0.5);
+    loading.osc2.frequency.setTargetAtTime(180 + progress * 320, now, 0.5);
+  }, []);
+
+  const stopLoading = useCallback(() => {
+    loadingActiveRef.current = false;
+    const loading = loadingRef.current;
+    const ctx = ctxRef.current;
+    if (!loading || !ctx) return;
+    const now = ctx.currentTime;
+    loading.gain.gain.setTargetAtTime(0.0001, now, 0.12);
+    loading.osc.stop(now + 0.6);
+    loading.osc2.stop(now + 0.6);
+    loadingRef.current = null;
   }, []);
 
   const play = useCallback(
@@ -48,8 +122,6 @@ export default function useRetroSound() {
       const ctx = ctxRef.current;
       if (!ctx) return;
       if (ctx.state === "suspended") {
-        // Not unlocked yet (mobile). Try once; the gesture handler above will
-        // resume it, and later boot stages will be heard normally.
         void ctx.resume();
         return;
       }
@@ -89,5 +161,12 @@ export default function useRetroSound() {
     [enabled]
   );
 
-  return { enabled, setEnabled, play };
+  return {
+    enabled,
+    setEnabled,
+    play,
+    startLoading,
+    updateLoading,
+    stopLoading,
+  };
 }
