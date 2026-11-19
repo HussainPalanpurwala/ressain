@@ -3,8 +3,8 @@
   top: -18%;
   left: 0;
   width: 100%;
-  /* Extends into the trailing space so the grid fades toward Our Story. */
-  height: 190%;
+  /* Extends just past the timer bottom so the grid fades toward Our Story. */
+  height: 126%;
   z-index: 0;
   pointer-events: none;
   opacity: calc(0.7 + var(--enter, 0) * 0.3);

@@ -408,18 +408,18 @@ body {
   font-family: "Press Start 2P", monospace;
   font-size: clamp(1.35rem, 5.4vw, 4.4rem);
   line-height: 1.2;
-  color: #ff559e;
+  color: #c0284b;
   text-transform: uppercase;
   transform: skewX(-8deg) rotate(-2deg);
   -webkit-text-stroke: 0;
   text-shadow:
-    0 0 0 #ff559e,
-    1px 0 0 #ff559e,
-    -1px 0 0 #ff559e,
-    0 1px 0 #ff559e,
-    0 -1px 0 #ff559e,
-    1px 1px 0 #ff559e,
-    -1px -1px 0 #ff559e,
+    0 0 0 #c0284b,
+    1px 0 0 #c0284b,
+    -1px 0 0 #c0284b,
+    0 1px 0 #c0284b,
+    0 -1px 0 #c0284b,
+    1px 1px 0 #c0284b,
+    -1px -1px 0 #c0284b,
     2px 2px 0 #000,
     3px 3px 0 #000,
     4px 4px 0 #000,
