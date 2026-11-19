@@ -257,12 +257,12 @@
 .paperClip {
   display: block;
   position: absolute;
-  top: -10px;
+  top: -12px;
   left: 24px;
-  width: 14px;
-  height: 26px;
-  border: 2px solid #8d8792;
-  border-radius: 7px;
+  width: clamp(18px, 4vw, 22px);
+  height: clamp(38px, 8vw, 48px);
+  border: 3px solid #8d8792;
+  border-radius: 10px;
   transform: rotate(-12deg);
   box-shadow: 1px 2px 2px rgba(74, 16, 36, 0.25);
   pointer-events: none;
@@ -271,37 +271,39 @@
 .paperClip::after {
   content: "";
   position: absolute;
-  top: 5px;
-  left: 3px;
-  width: 8px;
-  height: 16px;
-  border: 2px solid #b3adb6;
+  top: 6px;
+  left: 5px;
+  width: clamp(6px, 1.2vw, 8px);
+  height: clamp(24px, 5vw, 32px);
+  border: 3px solid #b3adb6;
   border-radius: 5px;
 }
 
-/* Each clip sits somewhere different — no repeated placement. */
+/* Each clip sits somewhere different — no repeated placement. Positions are
+   spread a little wider and nudged up so the larger clips still straddle the
+   polaroid's top edge without sliding off its sides. */
 .miniGallery .photo:nth-child(1) .paperClip {
-  left: 16%;
-  top: -9px;
+  left: 12%;
+  top: -13px;
   transform: rotate(-19deg);
 }
 
 .miniGallery .photo:nth-child(2) .paperClip {
   left: auto;
-  right: 18%;
-  top: -11px;
+  right: 14%;
+  top: -15px;
   transform: rotate(13deg);
 }
 
 .miniGallery .photo:nth-child(3) .paperClip {
-  left: 58%;
-  top: -8px;
+  left: 60%;
+  top: -11px;
   transform: rotate(-5deg);
 }
 
 .miniGallery .photo:nth-child(4) .paperClip {
-  left: 34%;
-  top: -10px;
+  left: 32%;
+  top: -14px;
   transform: rotate(11deg);
 }
 
@@ -327,13 +329,13 @@
 }
 
 .memoryTrain .paperClip {
-  top: -12px;
+  top: -14px;
   left: 42%;
   transform: rotate(-4deg);
 }
 
 .memoryPalace .paperClip {
-  top: -11px;
+  top: -13px;
   left: 30%;
   transform: rotate(9deg);
 }
@@ -648,14 +650,27 @@
 .memoryTrain .clip {
   display: block;
   position: absolute;
-  top: -8px;
+  top: -10px;
   left: 50%;
-  width: 26px;
-  height: 12px;
+  width: clamp(28px, 6vw, 34px);
+  height: clamp(14px, 3vw, 18px);
   transform: translateX(-50%) rotate(2deg);
   background: linear-gradient(#c8c8d0, #8a8a94);
-  border: 1px solid #5a5a62;
-  border-radius: 2px;
+  border: 2px solid #5a5a62;
+  border-radius: 3px;
+}
+
+/* Longer inner loop of the pinned-wall clip. */
+.memorySurprise .clip::after,
+.memoryTrain .clip::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  right: 3px;
+  height: clamp(6px, 1.4vw, 9px);
+  border: 2px solid #5a5a62;
+  border-radius: 3px;
 }
 
 /* 2x2 square grid on every screen so all four slots fit evenly. */
