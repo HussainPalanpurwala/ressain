@@ -399,7 +399,10 @@ export default function RevleenArcade() {
       aria-labelledby="revleen-arcade-title"
       aria-describedby="revleen-arcade-subtitle"
     >
-      <div className={styles.pixels} aria-hidden="true">
+      <div
+        className={`${styles.pixels} ${phase === "attract" ? styles.pixelsHidden : ""}`}
+        aria-hidden="true"
+      >
         {PIXELS.map((pixel, index) => (
           <span
             key={index}
@@ -462,13 +465,6 @@ export default function RevleenArcade() {
                   {phase === "attract" ? (
                     /* ---- Attract screen ---- */
                     <div className={styles.attract}>
-                      <div className={styles.attractPixels} aria-hidden="true">
-                        <span>♥</span>
-                        <span>✿</span>
-                        <span>★</span>
-                        <span>✦</span>
-                        <span>♥</span>
-                      </div>
                       <p className={styles.ready}>READY, PLAYER ONE?</p>
                       <div className={styles.scores} aria-hidden="true">
                         <span>1UP 000000</span>
@@ -627,6 +623,17 @@ export default function RevleenArcade() {
                           NEXT QUESTION <span aria-hidden="true">→</span>
                         </button>
                       </div>
+
+                      <div className={styles.exitRow}>
+                        <button
+                          type="button"
+                          className={`${styles.backButton} ${styles.exitButton}`}
+                          onClick={handleReturn}
+                          onMouseEnter={playHover}
+                        >
+                          EXIT GAME
+                        </button>
+                      </div>
                     </div>
                   ) : phase === "categoryDone" ? (
                     /* ---- Category completion screen ---- */
@@ -673,6 +680,17 @@ export default function RevleenArcade() {
                             ? "CONTINUE"
                             : "SEE RESULTS"}{" "}
                           <span aria-hidden="true">→</span>
+                        </button>
+                      </div>
+
+                      <div className={styles.exitRow}>
+                        <button
+                          type="button"
+                          className={`${styles.backButton} ${styles.exitButton}`}
+                          onClick={handleReturn}
+                          onMouseEnter={playHover}
+                        >
+                          EXIT GAME
                         </button>
                       </div>
                     </div>
