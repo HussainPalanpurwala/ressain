@@ -472,6 +472,18 @@ body {
   background: #000000;
 }
 
+/* Soften the seam into the timer section: fade the scanlines and edge hearts
+   into the same black the next section starts with, so no hard line appears. */
+.landing::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: clamp(72px, 12vh, 140px);
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #000000 100%);
+}
+
 /* Ambient hearts fade in and out around the edges only — the centre stays
    clear so nothing ever sits behind the title or the permanent hearts. */
 .ambient-hearts {
@@ -595,9 +607,9 @@ body {
     10px 10px 0 #000,
     11px 11px 0 #000,
     12px 12px 0 #000,
-    0 0 14px rgba(228, 83, 163, 0.7),
-    0 0 30px rgba(228, 83, 163, 0.45),
-    0 0 52px rgba(192, 40, 75, 0.3);
+    0 0 8px rgba(228, 83, 163, 0.45),
+    0 0 18px rgba(228, 83, 163, 0.28),
+    0 0 32px rgba(192, 40, 75, 0.18);
 }
 
 /* Permanent hearts around the title — outlined in black, never animated */
@@ -762,13 +774,8 @@ body {
     font-size: clamp(1.5rem, 6.4vw, 2.5rem);
     -webkit-text-stroke: 0;
     transform: skewX(-6deg);
-    text-shadow:
-      2px 2px 0 #000,
-      3px 3px 0 #000,
-      4px 4px 0 #000,
-      0 0 10px rgba(228, 83, 163, 0.7),
-      0 0 22px rgba(228, 83, 163, 0.45),
-      0 0 38px rgba(192, 40, 75, 0.3);
+    /* Glow and hard black offsets inherit unchanged from the desktop rule so
+       mobile can never be stronger or a different colour. */
   }
 
   .landing__heart--tl {

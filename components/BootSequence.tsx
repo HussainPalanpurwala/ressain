@@ -14,7 +14,7 @@ const MESSAGES = [
   { at: 13, text: "SEARCHING THE STARS..." },
   { at: 25, text: "LOCATING TWO SOULS..." },
   { at: 38, text: "ESTABLISHING A CONNECTION..." },
-  { at: 50, text: "CONNECTING TWO SOULS ACROSS THE UNIVERSE..." },
+  { at: 48, text: "CONNECTING TWO SOULS ACROSS THE UNIVERSE..." },
   { at: 63, text: "SYNCHRONISING MEMORIES..." },
   { at: 75, text: "CONNECTION ESTABLISHED." },
   { at: 88, text: "WELCOME TO OUR LITTLE UNIVERSE." },

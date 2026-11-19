@@ -22,7 +22,7 @@ export default function TypedMessage({ text, reduceMotion }: TypedMessageProps) 
       index += 1;
       setShown(text.slice(0, index));
       if (index >= text.length) window.clearInterval(timer);
-    }, 22);
+    }, 32);
 
     return () => window.clearInterval(timer);
   }, [text, reduceMotion]);
