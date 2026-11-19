@@ -156,6 +156,20 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
         <div className="boot__glow" aria-hidden="true" />
 
         <div className="boot__box">
+          <span className="boot__corners" aria-hidden="true">
+            <span className="boot__corner boot__corner--tl" />
+            <span className="boot__corner boot__corner--tr" />
+            <span className="boot__corner boot__corner--bl" />
+            <span className="boot__corner boot__corner--br" />
+          </span>
+
+          <div className="boot__status" aria-hidden="true">
+            <span className="boot__status-id">BOOT v1.0.4</span>
+            <span className="boot__status-state">
+              SYS: <span className="boot__status-ok">OK</span>
+            </span>
+          </div>
+
           <button
             type="button"
             className="boot__sound"
@@ -189,6 +203,30 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
 
           <div className="boot__percent">{Math.round(progress)}%</div>
 
+          <div className="boot__diag" aria-hidden="true">
+            <div className="boot__diag-row">
+              <span className="boot__diag-key">CORE</span>
+              <span className="boot__diag-leader" />
+              <span className="boot__diag-status boot__diag-status--ok">OK</span>
+            </div>
+            <div className="boot__diag-row">
+              <span className="boot__diag-key">UPLINK</span>
+              <span className="boot__diag-leader" />
+              <span className="boot__diag-status boot__diag-status--ok">OK</span>
+            </div>
+            <div className="boot__diag-row">
+              <span className="boot__diag-key">READY</span>
+              <span className="boot__diag-leader" />
+              <span
+                className={`boot__diag-status${
+                  isComplete ? " boot__diag-status--ok" : ""
+                }`}
+              >
+                {isComplete ? "OK" : "--"}
+              </span>
+            </div>
+          </div>
+
           <button
             type="button"
             className={`boot__enter${
@@ -201,6 +239,15 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
           </button>
         </div>
       </div>
+
+      <button
+        type="button"
+        className="boot__skip"
+        onClick={finishEnter}
+        aria-label="Skip boot sequence"
+      >
+        SKIP
+      </button>
     </div>
   );
 }

@@ -303,6 +303,161 @@ body {
   outline: none;
 }
 
+/* --- Retro interface dressing (labels only, no narrative copy) --- */
+
+/* Pixel corner brackets sit on the panel frame without affecting layout. */
+.boot__corners {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.boot__corner {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border: 0 solid rgba(255, 158, 210, 0.8);
+}
+
+.boot__corner--tl {
+  top: -1px;
+  left: -1px;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+
+.boot__corner--tr {
+  top: -1px;
+  right: -1px;
+  border-top-width: 2px;
+  border-right-width: 2px;
+}
+
+.boot__corner--bl {
+  bottom: -1px;
+  left: -1px;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+}
+
+.boot__corner--br {
+  bottom: -1px;
+  right: -1px;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+}
+
+/* Slim header bar: build version + system status. Right padding clears the
+   sound toggle pinned to the panel's top-right corner. */
+.boot__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: clamp(12px, 2.6vh, 20px);
+  padding: 0 44px 6px 0;
+  border-bottom: 1px solid rgba(255, 210, 235, 0.28);
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.4rem, 1.15vw, 0.5rem);
+  line-height: 1.6;
+  letter-spacing: 0.03em;
+  color: rgba(255, 194, 224, 0.72);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.boot__status-ok {
+  color: #ff8fc6;
+}
+
+/* Compact framed diagnostics with leader dots and bracketed status. */
+.boot__diag {
+  margin: clamp(12px, 2.4vh, 18px) 0 0;
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 210, 235, 0.32);
+  background: rgba(8, 2, 8, 0.42);
+  text-align: left;
+}
+
+.boot__diag-row {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.42rem, 1.2vw, 0.52rem);
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  color: rgba(255, 194, 224, 0.7);
+  white-space: nowrap;
+}
+
+.boot__diag-leader {
+  flex: 1 1 auto;
+  min-width: 6px;
+  margin: 0 6px;
+  border-bottom: 1px dotted rgba(255, 210, 235, 0.28);
+  transform: translateY(-2px);
+}
+
+.boot__diag-status {
+  flex: 0 0 auto;
+  min-width: 6ch;
+  text-align: center;
+  color: rgba(255, 158, 210, 0.6);
+}
+
+.boot__diag-status::before {
+  content: "[";
+}
+
+.boot__diag-status::after {
+  content: "]";
+}
+
+.boot__diag-status--ok {
+  color: #ff8fc6;
+}
+
+/* Unobtrusive pixel SKIP control in the overlay's bottom-right corner. The
+   44px box keeps a comfortable tap target while the glyph stays small. */
+.boot__skip {
+  position: absolute;
+  right: clamp(8px, 3vw, 20px);
+  bottom: clamp(8px, 3vw, 20px);
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.45rem, 1.2vw, 0.55rem);
+  letter-spacing: 0.04em;
+  color: rgba(255, 158, 210, 0.7);
+  background: rgba(11, 4, 16, 0.55);
+  border: 1px solid rgba(228, 83, 163, 0.35);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.boot__skip:hover,
+.boot__skip:focus-visible {
+  color: #fff0f7;
+  background: rgba(228, 83, 163, 0.14);
+  border-color: rgba(255, 61, 158, 0.85);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot__skip {
+    transition: none;
+  }
+}
+
 /* ============================================================
    SECTION 02 — MAIN LANDING
    ============================================================ */
@@ -657,6 +812,19 @@ body {
 
   .boot__label {
     margin-bottom: 8px;
+  }
+
+  .boot__status {
+    margin-bottom: 8px;
+  }
+
+  .boot__diag {
+    margin-top: 8px;
+    padding: 4px 7px;
+  }
+
+  .boot__diag-row {
+    line-height: 1.6;
   }
 
   .boot__message {

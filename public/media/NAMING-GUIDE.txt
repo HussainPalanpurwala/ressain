@@ -1,0 +1,27 @@
+DROP YOUR FILES IN THIS FOLDER (public/media) USING THESE EXACT NAMES.
+Paths in content/story.ts are written as /media/<filename>.
+
+CONVERSATIONS (chat screenshots)
+  chat-1.jpg  -> first chat image
+  chat-2.jpg  -> second chat image
+
+JAMMU SURPRISE
+  surprise-reaction.mp4 -> surprise reaction video (the centrepiece)
+  jammu-1.jpg
+  jammu-2.jpg
+  jammu-3.jpg
+  jammu-4.jpg
+
+HARI NIWAS PALACE
+  blue-painting.jpg   -> the blue painting in the museum
+  blue-sky.jpg        -> the blue sky photo
+  hiding-video.mp4    -> the video of hiding from the drunk uncle
+
+TEMPLE
+  temple.jpg
+
+TIPS
+- Use .jpg/.png/.webp for images; .mp4 (H.264) for video.
+- Keep filenames lowercase, no spaces.
+- Compress large videos before dropping them here — long high-res clips slow the page down on mobile.
+- After dropping files, tell me and I will wire the src paths in content/story.ts.
