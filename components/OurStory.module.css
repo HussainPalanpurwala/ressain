@@ -3,15 +3,21 @@
   --cherry: #f0254b;
   --blush: #e453a3;
   --cream: #f7efe2;
-  --muted: #cbbbaa;
+  --muted: #d9c7b6;
   --silver: #c8c8d0;
   --near-black: #0b0509;
 
   position: relative;
+  /* Pull up into the timer section's trailing space so the chapters meet. */
+  margin-top: -55vh;
   padding: clamp(5rem, 12vh, 9rem) clamp(1rem, 5vw, 4rem);
-  background: linear-gradient(to bottom, #000000 0%, var(--near-black) 8%, var(--burgundy) 42%, var(--near-black) 88%, #000000 100%);
+  font-family: "Press Start 2P", monospace;
   color: var(--cream);
-  font-family: "Inter", sans-serif;
+  background-color: #0b0410;
+  background-image:
+    radial-gradient(ellipse at 50% 30%, rgba(92, 20, 74, 0.4) 0%, rgba(20, 5, 18, 0.1) 55%, transparent 80%),
+    radial-gradient(rgba(228, 83, 163, 0.16) 1px, transparent 1px);
+  background-size: 100% 100%, 18px 18px;
 }
 
 .intro {
@@ -24,26 +30,25 @@
 .memoryTitle,
 .transitionTitle,
 .noteTitle {
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-weight: 500;
+  font-weight: 400;
+  color: #ff559e;
+  text-shadow:
+    3px 3px 0 #000000,
+    0 0 22px rgba(255, 85, 158, 0.35);
 }
 
 .sectionTitle {
   margin: 0;
-  font-size: clamp(2.8rem, 7vw, 5.5rem);
-  line-height: 1;
-  letter-spacing: -0.01em;
-  color: var(--cream);
-  text-shadow: 0 0 36px rgba(228, 83, 163, 0.2);
+  font-size: clamp(1.7rem, 5vw, 3.6rem);
+  line-height: 1.5;
 }
 
 .introLine {
   margin: clamp(1.5rem, 4vh, 2.5rem) auto 0;
   max-width: 560px;
-  font-size: clamp(0.95rem, 1.8vw, 1.2rem);
-  line-height: 1.9;
-  font-weight: 300;
-  color: var(--muted);
+  font-size: clamp(0.55rem, 1.5vw, 0.78rem);
+  line-height: 2.2;
+  color: var(--cream);
 }
 
 /* Timeline */
@@ -59,16 +64,20 @@
   top: 0;
   bottom: 0;
   left: 15px;
-  width: 1px;
-  background: rgba(247, 239, 226, 0.16);
+  width: 3px;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(228, 83, 163, 0.35) 0 6px,
+    transparent 6px 12px
+  );
 }
 
 .timelineFill {
   display: block;
   width: 100%;
   height: calc(var(--line-progress) * 100%);
-  background: linear-gradient(to bottom, var(--blush), var(--cherry));
-  box-shadow: 0 0 10px rgba(228, 83, 163, 0.5);
+  background: var(--blush);
+  box-shadow: 0 0 10px rgba(228, 83, 163, 0.6);
 }
 
 .memory {
@@ -85,20 +94,17 @@
   place-items: center;
   width: 31px;
   height: 31px;
-  border-radius: 50%;
-  border: 1px solid var(--blush);
+  border: 2px solid var(--blush);
   background: var(--near-black);
   color: var(--blush);
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: 0.85rem;
-  letter-spacing: 0.04em;
+  font-size: 0.55rem;
+  box-shadow: 3px 3px 0 #000;
 }
 
 .memoryTitle {
   margin: 0 0 clamp(1.5rem, 3vh, 2.2rem);
-  font-size: clamp(2rem, 4.5vw, 3.4rem);
-  line-height: 1.1;
-  color: var(--cream);
+  font-size: clamp(1rem, 2.8vw, 2rem);
+  line-height: 1.6;
 }
 
 .memoryBody {
@@ -108,18 +114,17 @@
 /* Placeholders — deliberately obvious and easy to swap out */
 .phLabel {
   display: block;
-  font-size: 0.7rem;
-  line-height: 1.6;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--blush);
+  font-size: clamp(0.42rem, 1vw, 0.58rem);
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+  color: #ff8ec7;
 }
 
 .textPlaceholder {
   padding: clamp(1.2rem, 3vw, 2rem);
-  background: rgba(247, 239, 226, 0.04);
-  border: 1px dashed rgba(247, 239, 226, 0.28);
-  border-radius: 2px;
+  background: rgba(20, 6, 16, 0.72);
+  border: 2px dashed rgba(228, 83, 163, 0.4);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.6);
 }
 
 .phLines {
@@ -131,9 +136,8 @@
 
 .phLines span {
   display: block;
-  height: 7px;
-  border-radius: 4px;
-  background: rgba(247, 239, 226, 0.12);
+  height: 6px;
+  background: rgba(255, 142, 199, 0.22);
 }
 
 .photo,
@@ -143,7 +147,7 @@
   place-items: center;
   width: 100%;
   padding: 0;
-  border: 1px solid rgba(200, 200, 208, 0.45);
+  border: 2px solid rgba(200, 200, 208, 0.5);
   background: linear-gradient(145deg, #1c0c16, #0c050a);
   color: var(--cream);
   overflow: hidden;
@@ -156,14 +160,13 @@
 .photoInner {
   display: grid;
   place-items: center;
-  gap: 10px;
+  gap: 12px;
   padding: 1rem;
 }
 
 .photoIcon {
-  font-size: 2.4rem;
+  font-size: 2rem;
   color: var(--silver);
-  opacity: 0.7;
 }
 
 .wide {
@@ -189,15 +192,14 @@
   gap: 10px;
   margin-top: clamp(1.5rem, 3vh, 2rem);
   padding: 12px 16px;
-  border-left: 2px solid var(--blush);
-  background: rgba(228, 83, 163, 0.06);
+  border-left: 3px solid var(--blush);
+  background: rgba(228, 83, 163, 0.08);
 }
 
 .igDot {
   width: 14px;
   height: 14px;
   border: 2px solid var(--blush);
-  border-radius: 4px;
   flex: 0 0 auto;
 }
 
@@ -218,9 +220,10 @@
   text-align: left;
   background: #f3e7d3;
   color: var(--burgundy);
-  border: 1px solid #c9b49c;
-  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
+  border: 3px solid var(--blush);
+  box-shadow: 6px 6px 0 #000;
   cursor: pointer;
+  font-family: "Press Start 2P", monospace;
 }
 
 .letterCard .phLabel {
@@ -228,20 +231,19 @@
 }
 
 .letterSeal {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   color: var(--cherry);
 }
 
 .letterHeading {
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(1.3rem, 2.5vw, 1.9rem);
+  font-size: clamp(0.8rem, 2vw, 1.2rem);
+  line-height: 1.6;
 }
 
 .letterOpen {
   margin-top: auto;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 0.55rem;
+  letter-spacing: 0.04em;
   color: var(--cherry);
 }
 
@@ -262,7 +264,6 @@
 }
 
 .videoFeatured .videoThumb {
-  aspect-ratio: 16 / 9;
   border-color: var(--blush);
   box-shadow: 0 0 24px rgba(228, 83, 163, 0.2);
 }
@@ -270,9 +271,8 @@
 .playButton {
   align-self: flex-start;
   padding: 9px 14px;
-  font-family: "Inter", sans-serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.55rem;
   color: var(--cream);
   background: transparent;
   border: 1px solid var(--blush);
@@ -304,7 +304,7 @@
 .palaceBottom {
   margin-top: clamp(2.5rem, 6vh, 4rem);
   padding-top: clamp(2rem, 4vh, 3rem);
-  border-top: 1px solid rgba(247, 239, 226, 0.16);
+  border-top: 2px dashed rgba(228, 83, 163, 0.35);
 }
 
 /* 05 — Temple */
@@ -329,19 +329,18 @@
 
 .trainMotif span {
   width: 44px;
-  height: 2px;
+  height: 3px;
   background: linear-gradient(to right, var(--blush), transparent);
-  opacity: 0.6;
 }
 
 .trainMotif span:nth-child(2) {
   width: 28px;
-  opacity: 0.4;
+  opacity: 0.6;
 }
 
 .trainMotif span:nth-child(3) {
   width: 16px;
-  opacity: 0.25;
+  opacity: 0.35;
 }
 
 /* Transition */
@@ -353,9 +352,8 @@
 
 .transitionTitle {
   margin: 0 0 clamp(1.5rem, 4vh, 2.5rem);
-  font-size: clamp(2.2rem, 5vw, 3.8rem);
-  font-style: italic;
-  color: var(--cream);
+  font-size: clamp(1.2rem, 3.4vw, 2.2rem);
+  line-height: 1.6;
 }
 
 .narrowReading {
@@ -370,13 +368,16 @@
   padding: clamp(2rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem);
   background: #f7efe2;
   color: var(--burgundy);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  border: 4px solid var(--blush);
+  box-shadow: 10px 10px 0 #000;
 }
 
 .noteTitle {
   margin: 0 0 clamp(2rem, 5vh, 3rem);
-  font-size: clamp(2.4rem, 5.5vw, 4rem);
-  color: var(--burgundy);
+  font-size: clamp(1.3rem, 3.6vw, 2.4rem);
+  line-height: 1.6;
+  color: var(--cherry);
+  text-shadow: 3px 3px 0 #000000;
 }
 
 .notePaper {
@@ -388,8 +389,9 @@
 }
 
 .notePaper .textPlaceholder {
-  background: rgba(43, 10, 24, 0.03);
-  border-color: rgba(43, 10, 24, 0.22);
+  background: rgba(43, 10, 24, 0.04);
+  border-color: rgba(43, 10, 24, 0.3);
+  box-shadow: 4px 4px 0 rgba(43, 10, 24, 0.12);
 }
 
 .notePaper .phLabel {
@@ -397,13 +399,13 @@
 }
 
 .notePaper .phLines span {
-  background: rgba(43, 10, 24, 0.14);
+  background: rgba(43, 10, 24, 0.16);
 }
 
 .songDetail {
   margin-top: clamp(1rem, 3vh, 2rem);
   padding-top: clamp(1.5rem, 3vh, 2rem);
-  border-top: 1px solid rgba(43, 10, 24, 0.2);
+  border-top: 2px dashed rgba(43, 10, 24, 0.25);
 }
 
 .songDetail .phLabel {
@@ -435,7 +437,7 @@
   display: grid;
   place-items: center;
   padding: 1.5rem;
-  background: rgba(6, 3, 6, 0.92);
+  background: rgba(6, 3, 6, 0.94);
   cursor: zoom-out;
 }
 
@@ -447,9 +449,10 @@
   display: grid;
   place-items: center;
   padding: clamp(2rem, 5vw, 4rem);
-  border: 1px solid var(--blush);
+  border: 3px solid var(--blush);
   background: #140810;
   text-align: center;
+  box-shadow: 8px 8px 0 #000;
   cursor: default;
 }
 
@@ -458,6 +461,7 @@
   text-align: left;
   background: #f3e7d3;
   color: var(--burgundy);
+  font-family: "Press Start 2P", monospace;
 }
 
 .letterReading .phLabel {
@@ -465,17 +469,19 @@
 }
 
 .letterReading .memoryTitle {
-  color: var(--burgundy);
+  color: var(--cherry);
+  text-shadow: 2px 2px 0 #000;
 }
 
 .letterReading .textPlaceholder {
   margin-top: 1.5rem;
-  background: rgba(43, 10, 24, 0.03);
-  border-color: rgba(43, 10, 24, 0.25);
+  background: rgba(43, 10, 24, 0.04);
+  border-color: rgba(43, 10, 24, 0.3);
+  box-shadow: 4px 4px 0 rgba(43, 10, 24, 0.12);
 }
 
 .letterReading .phLines span {
-  background: rgba(43, 10, 24, 0.14);
+  background: rgba(43, 10, 24, 0.16);
 }
 
 .closeButton {
@@ -484,7 +490,7 @@
   right: 14px;
   width: 34px;
   height: 34px;
-  border: 1px solid var(--blush);
+  border: 2px solid var(--blush);
   background: transparent;
   color: var(--blush);
   cursor: pointer;
@@ -508,7 +514,7 @@
   .marker {
     width: 27px;
     height: 27px;
-    font-size: 0.75rem;
+    font-size: 0.45rem;
   }
 }
 
