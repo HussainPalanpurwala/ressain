@@ -4,9 +4,9 @@ import { useEffect, useRef } from "react";
 import styles from "./TimeGrid.module.css";
 
 const SPACING = 42;
-const SAMPLE = 14;
-const RADIUS = 190;
-const STRENGTH = 30;
+const SAMPLE = 16;
+const RADIUS = 270;
+const STRENGTH = 9;
 
 export default function TimeGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,16 +23,16 @@ export default function TimeGrid() {
 
     let width = 0;
     let height = 0;
-    let alpha = 0.12;
-    let targetAlpha = 0.12;
+    let alpha = 0.06;
+    let targetAlpha = 0.06;
     const mouse = { x: -9999, y: -9999 };
     const target = { x: -9999, y: -9999 };
     let frame = 0;
 
     const resize = () => {
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
-      width = parent.clientWidth;
-      height = parent.clientHeight;
+      width = canvas.clientWidth;
+      height = canvas.clientHeight;
       canvas.width = Math.floor(width * ratio);
       canvas.height = Math.floor(height * ratio);
       canvas.style.width = `${width}px`;
@@ -42,14 +42,14 @@ export default function TimeGrid() {
 
     const onMove = (event: PointerEvent) => {
       if (!canHover) return;
-      const rect = parent.getBoundingClientRect();
+      const rect = canvas.getBoundingClientRect();
       target.x = event.clientX - rect.left;
       target.y = event.clientY - rect.top;
-      targetAlpha = 0.62;
+      targetAlpha = 0.3;
     };
 
     const onLeave = () => {
-      targetAlpha = 0.12;
+      targetAlpha = 0.06;
       target.x = -9999;
       target.y = -9999;
     };
@@ -60,7 +60,9 @@ export default function TimeGrid() {
       const dy = y - mouse.y;
       const distance = Math.hypot(dx, dy);
       if (distance >= RADIUS || distance < 0.001) return { x, y };
-      const falloff = (1 - distance / RADIUS) ** 2;
+      const t = 1 - distance / RADIUS;
+      // Smoothstep: gentle bends instead of a sharp pinpoint bulge.
+      const falloff = t * t * (3 - 2 * t);
       const push = falloff * STRENGTH;
       return {
         x: x + (dx / distance) * push,
@@ -81,10 +83,10 @@ export default function TimeGrid() {
     };
 
     const render = () => {
-      alpha += (targetAlpha - alpha) * 0.08;
+      alpha += (targetAlpha - alpha) * 0.035;
       if (!reduced) {
-        mouse.x += (target.x - mouse.x) * 0.18;
-        mouse.y += (target.y - mouse.y) * 0.18;
+        mouse.x += (target.x - mouse.x) * 0.12;
+        mouse.y += (target.y - mouse.y) * 0.12;
       }
 
       ctx.clearRect(0, 0, width, height);

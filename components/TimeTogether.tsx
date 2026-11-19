@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import PixelHeart from "./PixelHeart";
 import TimeGrid from "./TimeGrid";
 import styles from "./TimeTogether.module.css";
 
@@ -75,26 +76,37 @@ const pad = (value: number) => String(value).padStart(2, "0");
 export default function TimeTogether() {
   const [time, setTime] = useState<Time>(ZERO);
   const sectionRef = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
 
+  // Drive the reveal from scroll position so the section blends in gradually
+  // instead of switching on at a single threshold.
   useEffect(() => {
-    const node = sectionRef.current;
-    if (!node) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0 }
-    );
-    observer.observe(node);
-    // Fallback so the timer can never stay hidden if the observer is missed.
-    const fallback = window.setTimeout(() => setVisible(true), 1200);
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const node = sectionRef.current;
+      if (!node) return;
+      const rect = node.getBoundingClientRect();
+      const distance = window.innerHeight * 1.35;
+      const progress = Math.max(
+        0,
+        Math.min(1, (window.innerHeight - rect.top) / distance)
+      );
+      node.style.setProperty("--enter", progress.toFixed(3));
+      node.style.setProperty(
+        "--enter-close",
+        Math.max(0, Math.min(1, (progress - 0.28) / 0.72)).toFixed(3)
+      );
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
     return () => {
-      observer.disconnect();
-      window.clearTimeout(fallback);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      if (frame) cancelAnimationFrame(frame);
     };
   }, []);
 
@@ -112,12 +124,20 @@ export default function TimeTogether() {
   ];
 
   return (
-    <section
-      ref={sectionRef}
-      className={`${styles.section} ${visible ? styles.visible : ""}`}
-      id="our-time-together"
-    >
+    <section ref={sectionRef} className={styles.section} id="our-time-together">
       <TimeGrid />
+
+      <div className={styles.stretchedHearts} aria-hidden="true">
+        <span className={styles.stretchOne}>
+          <PixelHeart />
+        </span>
+        <span className={styles.stretchTwo}>
+          <PixelHeart />
+        </span>
+        <span className={styles.stretchThree}>
+          <PixelHeart />
+        </span>
+      </div>
 
       <span className={`${styles.pixelDeco} ${styles.decoOne}`} aria-hidden="true" />
       <span className={`${styles.pixelDeco} ${styles.decoTwo}`} aria-hidden="true" />

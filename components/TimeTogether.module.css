@@ -49,16 +49,9 @@
     0 0 0 4px var(--blush),
     0 0 0 8px var(--burgundy),
     10px 10px 0 rgba(0, 0, 0, 0.6);
-  opacity: 0;
-  transform: translateY(48px) scale(0.94);
-  transition:
-    opacity 0.7s ease,
-    transform 0.7s cubic-bezier(0.2, 0.9, 0.25, 1.05);
-}
-
-.visible .console {
-  opacity: 1;
-  transform: translateY(0) scale(1);
+  opacity: calc(0.05 + var(--enter, 0) * 0.95);
+  transform: translateY(calc((1 - var(--enter, 0)) * 42px))
+    scale(calc(0.96 + var(--enter, 0) * 0.04));
 }
 
 .consoleTop,
@@ -257,21 +250,61 @@
   color: var(--cream);
   text-shadow: 2px 2px 0 #1c0710;
   min-height: 6em;
-  opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 0.6s ease 0.35s,
-    transform 0.6s ease 0.35s;
-}
-
-.visible .closing {
-  opacity: 1;
-  transform: translateY(0);
+  opacity: var(--enter-close, 0);
+  transform: translateY(calc((1 - var(--enter-close, 0)) * 20px));
 }
 
 .cursor {
   color: var(--blush);
   animation: blink 1s steps(1) infinite;
+}
+
+/* Very faint hearts stretching down from the previous section into the top of
+   this one, so the two sections blend instead of starting abruptly. */
+.stretchedHearts {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: calc(var(--enter, 0) * 0.55);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+}
+
+.stretchedHearts span {
+  position: absolute;
+  top: 0;
+  width: 14px;
+  color: var(--blush);
+  opacity: 0.13;
+  transform-origin: top center;
+  filter: blur(1.5px);
+}
+
+.stretchedHearts svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.stretchOne {
+  left: 18%;
+  transform: scaleY(11);
+}
+
+.stretchTwo {
+  left: 54%;
+  color: var(--cherry) !important;
+  transform: scaleY(9);
+}
+
+.stretchThree {
+  left: 82%;
+  transform: scaleY(13);
 }
 
 .pixelDeco {
