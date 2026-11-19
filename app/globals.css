@@ -25,13 +25,7 @@ body {
 }
 
 .app-main--player {
-  padding-bottom: 90px;
-}
-
-@media (max-width: 600px) {
-  .app-main--player {
-    padding-bottom: 115px;
-  }
+  padding-bottom: 24px;
 }
 
 /* ============================================================

@@ -79,8 +79,8 @@ export interface StoryContent {
       marker: string;
       title: string;
       letter: StoryLetter;
-      firstVideo: StoryVideo;
-      secondVideo: StoryVideo;
+      firstChatImage: StoryPhoto;
+      secondChatImage: StoryPhoto;
     };
     surprise: {
       marker: string;
@@ -93,6 +93,7 @@ export interface StoryContent {
       marker: string;
       title: string;
       bluePainting: StoryPhoto;
+      blueSkyPhoto: StoryPhoto;
       blueSky: StoryTextBlock;
       drunkUncle: StoryTextBlock;
       hidingVideo: StoryVideo;
@@ -187,8 +188,8 @@ I sometimes wonder how many little moments we experience without realising that 
 Maybe that's what makes a memory special. Not how extraordinary it was when it happened, but how much of it stays with us.`,
         },
       },
-      firstVideo: { label: "First video response", featured: false, src: "" },
-      secondVideo: { label: "Second video response", featured: true, src: "" },
+      firstChatImage: { label: "First chat image", shape: "tall", src: "", caption: "" },
+      secondChatImage: { label: "Second chat image", shape: "tall", src: "", caption: "" },
     },
     surprise: {
       marker: "03",
@@ -226,6 +227,7 @@ I'm especially glad we have that video. Some reactions are just too precious to 
       marker: "04",
       title: "Hari Niwas Palace",
       bluePainting: { label: "Blue painting", shape: "tall", src: "", caption: "" },
+      blueSkyPhoto: { label: "Blue sky photo", shape: "square", src: "", caption: "" },
       blueSky: {
         label: "Blue sky and her dad",
         lines: 4,

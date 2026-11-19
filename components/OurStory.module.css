@@ -510,6 +510,14 @@
   align-items: start;
 }
 
+/* Blue painting + the extra blue-sky photo sit together beside the story. */
+.palacePhotoPair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
 .letterCard {
   position: relative;
   display: flex;
@@ -615,9 +623,10 @@
   border-radius: 2px;
 }
 
+/* 2x2 square grid on every screen so all four photos fit evenly. */
 .miniGallery {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   margin: clamp(1.5rem, 3vh, 2rem) 0;
 }
@@ -675,11 +684,25 @@
   margin: 0 auto;
   padding: clamp(2rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem);
   background: #f7efe2;
-  background-image: repeating-linear-gradient(
-    45deg,
-    rgba(74, 16, 36, 0.02) 0 2px,
-    transparent 2px 4px
-  );
+  /* Ruled old-school notebook paper: faint horizontal lines across the cream
+     panel plus a soft red margin rule. Content/type/scroll are untouched. */
+  background-image:
+    linear-gradient(
+      to right,
+      transparent 0 56px,
+      rgba(192, 40, 75, 0.16) 56px 57px,
+      transparent 57px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 31px,
+      rgba(74, 16, 36, 0.09) 31px 32px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(74, 16, 36, 0.02) 0 2px,
+      transparent 2px 4px
+    );
   color: var(--burgundy);
   border: 4px solid var(--blush);
   box-shadow: 10px 10px 0 rgba(74, 16, 36, 0.35);

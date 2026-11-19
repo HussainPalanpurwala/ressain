@@ -52,9 +52,11 @@ function TextPlaceholder({ block }: { block: StoryTextBlock }) {
 function PhotoPlaceholder({
   photo,
   onClick,
+  placeholderText,
 }: {
   photo: StoryPhoto;
   onClick: (photo: StoryPhoto) => void;
+  placeholderText?: string;
 }) {
   const { label, shape, src, caption } = photo;
   return (
@@ -78,7 +80,9 @@ function PhotoPlaceholder({
           <span className={styles.photoIcon} aria-hidden="true">
             ▧
           </span>
-          <span className={styles.phLabel}>[ {label} — photo to be provided ]</span>
+          <span className={styles.phLabel}>
+            {placeholderText ?? `[ ${label} — photo to be provided ]`}
+          </span>
           <span className={styles.photoCaption}>[ handwritten caption to be provided ]</span>
         </span>
       )}
@@ -223,8 +227,16 @@ export default function OurStory() {
                 <span className={styles.letterOpen}>{conversations.letter.readLabel}</span>
               </button>
               <div className={styles.videoStack}>
-                <VideoPlaceholder video={conversations.firstVideo} />
-                <VideoPlaceholder video={conversations.secondVideo} />
+                <PhotoPlaceholder
+                  photo={conversations.firstChatImage}
+                  onClick={setLightbox}
+                  placeholderText="[ chat image to be provided ]"
+                />
+                <PhotoPlaceholder
+                  photo={conversations.secondChatImage}
+                  onClick={setLightbox}
+                  placeholderText="[ chat image to be provided ]"
+                />
               </div>
             </div>
           </div>
@@ -251,7 +263,10 @@ export default function OurStory() {
           <div className={styles.memoryBody}>
             <h3 className={styles.memoryTitle}>{palace.title}</h3>
             <div className={styles.palaceTop}>
-              <PhotoPlaceholder photo={palace.bluePainting} onClick={setLightbox} />
+              <div className={styles.palacePhotoPair}>
+                <PhotoPlaceholder photo={palace.bluePainting} onClick={setLightbox} />
+                <PhotoPlaceholder photo={palace.blueSkyPhoto} onClick={setLightbox} />
+              </div>
               <TextPlaceholder block={palace.blueSky} />
             </div>
             <div className={styles.palaceBottom}>
