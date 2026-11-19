@@ -14,6 +14,7 @@
   justify-content: center;
   gap: clamp(2rem, 5vh, 3.5rem);
   padding: clamp(3rem, 8vh, 6rem) 1rem;
+  overflow-x: clip;
   font-family: "Press Start 2P", monospace;
   background:
     linear-gradient(to bottom, #000000 0%, rgba(0, 0, 0, 0) 26%),
