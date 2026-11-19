@@ -33,7 +33,7 @@ function PhotoPlaceholder({
       aria-label={`Open ${label}`}
       data-reveal
     >
-      <span className={styles.pin} aria-hidden="true" />
+      <span className={styles.paperClip} aria-hidden="true" />
       <span className={styles.photoInner}>
         <span className={styles.clip} aria-hidden="true" />
         <span className={styles.photoIcon} aria-hidden="true">

@@ -55,8 +55,8 @@
 
 .sectionTitle {
   margin: 0;
-  color: #ff9ed2;
-  text-shadow: 3px 3px 0 #1a0710, 0 0 24px rgba(228, 83, 163, 0.45);
+  color: var(--blush);
+  text-shadow: 3px 3px 0 #1a0710, 0 0 22px rgba(228, 83, 163, 0.4);
   font-size: clamp(1.7rem, 5vw, 3.6rem);
   line-height: 1.5;
 }
@@ -212,22 +212,46 @@
   transform: rotate(-16deg);
 }
 
-.pin {
-  display: none;
-}
-
-.memorySurprise .pin,
-.memoryTrain .pin,
-.memoryPalace .pin {
+/* Paper clips in place of pins */
+.paperClip {
   display: block;
   position: absolute;
-  top: -7px;
-  left: 22px;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffb3d1, #a81638);
-  box-shadow: 1px 2px 3px rgba(74, 16, 36, 0.4);
+  top: -10px;
+  left: 24px;
+  width: 14px;
+  height: 26px;
+  border: 2px solid #8d8792;
+  border-radius: 7px;
+  transform: rotate(-12deg);
+  box-shadow: 1px 2px 2px rgba(74, 16, 36, 0.25);
+  pointer-events: none;
+}
+
+.paperClip::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 3px;
+  width: 8px;
+  height: 16px;
+  border: 2px solid #b3adb6;
+  border-radius: 5px;
+}
+
+.memorySurprise .paperClip {
+  left: auto;
+  right: 26px;
+  transform: rotate(14deg);
+}
+
+.memoryTrain .paperClip {
+  top: -12px;
+  left: 46%;
+  transform: rotate(-4deg);
+}
+
+.memoryPalace .paperClip {
+  transform: rotate(8deg);
 }
 
 .memoryMinimal .textPlaceholder::before {
@@ -265,6 +289,64 @@
 .memoryTrain .textPlaceholder::before {
   left: 80%;
   transform: translateX(-50%) rotate(-4deg);
+}
+
+/* Tape also runs down sides and across upper corners. */
+.textPlaceholder::after,
+.letterCard::after,
+.video::before {
+  content: "";
+  position: absolute;
+  right: -12px;
+  top: 38%;
+  width: 18px;
+  height: 64px;
+  transform: rotate(9deg);
+  background: rgba(228, 83, 163, 0.24);
+  border: 1px solid rgba(74, 16, 36, 0.12);
+  pointer-events: none;
+}
+
+.memoryMinimal .textPlaceholder::after {
+  right: auto;
+  left: -12px;
+  top: 30%;
+  transform: rotate(-8deg);
+}
+
+.memoryPalace .textPlaceholder::after {
+  top: -14px;
+  right: 16px;
+  width: 62px;
+  height: 18px;
+  transform: rotate(7deg);
+}
+
+.memoryTemple .textPlaceholder::after {
+  right: -10px;
+  top: 55%;
+  transform: rotate(-6deg);
+}
+
+.letterCard::after {
+  right: 14px;
+  top: -14px;
+  width: 66px;
+  height: 18px;
+  transform: rotate(-8deg);
+}
+
+.video {
+  position: relative;
+}
+
+.video::before {
+  left: -11px;
+  right: auto;
+  top: 26%;
+  height: 56px;
+  transform: rotate(-7deg);
+  background: rgba(74, 16, 36, 0.16);
 }
 
 .memorySurprise .photo::before {
