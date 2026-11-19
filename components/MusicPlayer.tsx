@@ -35,54 +35,6 @@ export default function MusicPlayer({
 
   return (
     <div className={styles.wrapper}>
-      {open && (
-        <div className={styles.panel}>
-          <span className={styles.label}>NOW PLAYING</span>
-          <span className={styles.track}>{TRACK}</span>
-          <span className={styles.artist}>{ARTIST}</span>
-
-          <div className={styles.seekRow}>
-            <span className={styles.time}>{formattedTime}</span>
-            <input
-              type="range"
-              min="0"
-              max={duration || 100}
-              step="0.1"
-              value={Math.min(currentTime, duration || 100)}
-              onChange={(event) => onSeek(Number(event.target.value))}
-              aria-label="Seek"
-              className={styles.seek}
-            />
-            <span className={styles.time}>{formattedDuration}</span>
-          </div>
-
-          <button type="button" className={styles.control} onClick={onToggle}>
-            {playing ? "❚❚ PAUSE" : "▶ PLAY"}
-          </button>
-
-          <label className={styles.volumeRow}>
-            <span>VOL</span>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={Math.round(volume * 100)}
-              onChange={(event) =>
-                onVolumeChange(Number(event.target.value) / 100)
-              }
-              aria-label="Volume"
-            />
-            <span>{Math.round(volume * 100)}</span>
-          </label>
-
-          {error && (
-            <span className={styles.hint}>
-              Add the song file at public/audio/california-dreamin.mp3
-            </span>
-          )}
-        </div>
-      )}
-
       <button
         type="button"
         className={styles.turntable}
@@ -100,6 +52,57 @@ export default function MusicPlayer({
           <span className={`${styles.status} ${playing ? styles.statusOn : ""}`} />
         </span>
       </button>
+
+      {open && (
+        <div className={styles.panel}>
+          <div className={styles.meta}>
+            <span className={styles.label}>NOW PLAYING</span>
+            <span className={styles.track}>{TRACK}</span>
+            <span className={styles.artist}>{ARTIST}</span>
+          </div>
+
+          <div className={styles.seekRow}>
+            <span className={styles.time}>{formattedTime}</span>
+            <input
+              type="range"
+              min="0"
+              max={duration || 100}
+              step="0.1"
+              value={Math.min(currentTime, duration || 100)}
+              onChange={(event) => onSeek(Number(event.target.value))}
+              aria-label="Seek"
+              className={styles.seek}
+            />
+            <span className={styles.time}>{formattedDuration}</span>
+          </div>
+
+          <div className={styles.bottomRow}>
+            <button type="button" className={styles.control} onClick={onToggle}>
+              {playing ? "❚❚ PAUSE" : "▶ PLAY"}
+            </button>
+            <label className={styles.volumeRow}>
+              <span>VOL</span>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={Math.round(volume * 100)}
+                onChange={(event) =>
+                  onVolumeChange(Number(event.target.value) / 100)
+                }
+                aria-label="Volume"
+              />
+              <span>{Math.round(volume * 100)}</span>
+            </label>
+          </div>
+
+          {error && (
+            <span className={styles.hint}>
+              Add the song file at public/audio/california-dreamin.mp3
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
