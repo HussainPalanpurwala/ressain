@@ -37,14 +37,14 @@ export default function useRetroSound() {
     gain.connect(ctx.destination);
 
     const osc = ctx.createOscillator();
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(90, ctx.currentTime);
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
 
     const osc2 = ctx.createOscillator();
-    osc2.type = "square";
-    osc2.frequency.setValueAtTime(180, ctx.currentTime);
+    osc2.type = "triangle";
+    osc2.frequency.setValueAtTime(659.25, ctx.currentTime);
     const layerGain = ctx.createGain();
-    layerGain.gain.value = 0.22;
+    layerGain.gain.value = 0.1;
 
     osc.connect(gain);
     osc2.connect(layerGain);
@@ -99,9 +99,10 @@ export default function useRetroSound() {
     const ctx = ctxRef.current;
     if (!loading || !ctx) return;
     const now = ctx.currentTime;
-    loading.gain.gain.setTargetAtTime(0.006 + progress * 0.1, now, 0.3);
-    loading.osc.frequency.setTargetAtTime(90 + progress * 150, now, 0.5);
-    loading.osc2.frequency.setTargetAtTime(180 + progress * 320, now, 0.5);
+    // Very quiet, high and soft — a shimmer, never a low boom.
+    loading.gain.gain.setTargetAtTime(0.002 + progress * 0.016, now, 0.3);
+    loading.osc.frequency.setTargetAtTime(523 + progress * 120, now, 0.5);
+    loading.osc2.frequency.setTargetAtTime(659 + progress * 150, now, 0.5);
   }, []);
 
   const stopLoading = useCallback(() => {

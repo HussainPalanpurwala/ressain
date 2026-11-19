@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import BootSequence from "./BootSequence";
 import Landing from "./Landing";
+import MusicPlayer from "./MusicPlayer";
 import TimeTogether from "./TimeTogether";
 
 export default function Experience() {
@@ -21,6 +22,7 @@ export default function Experience() {
     <main>
       <Landing />
       <TimeTogether />
+      {entered && <MusicPlayer />}
       {!entered && <BootSequence onEnter={() => setEntered(true)} />}
     </main>
   );
