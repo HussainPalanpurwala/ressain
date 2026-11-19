@@ -165,30 +165,41 @@ const PIXELS: ScatterPixel[] = (() => {
   const round = (value: number) => Math.round(value * 10) / 10;
   const tints = ["#f0254b", "#e9a6bb", "#f6cbd6", "#fff0dc"];
 
-  // One piece per reserved slot. Slots are spaced further apart than the
-  // largest glyph plus its drift, so nothing can overlap another piece, while
-  // jitter inside each slot keeps the arrangement feeling scattered.
-  const slots: { x: number; y: number }[] = [];
+  // Seeded random placement with a minimum-distance check. Positions really
+  // are scattered (not a grid), but the deterministic seed keeps SSR and
+  // client output identical and the distance rule stops any overlap.
+  const MIN_GAP_X = 5.5; // percent of section width
+  const MIN_GAP_Y = 6.5; // percent of section height
+  const placed: { x: number; y: number }[] = [];
 
-  // Two side gutters, seven rows each.
-  for (let row = 0; row < 7; row += 1) {
-    const y = 29 + row * 7.2 + between(-1, 1);
-    slots.push({ x: 4.5 + between(-1, 1), y });
-    slots.push({ x: 95.5 + between(-1, 1), y });
-  }
-
-  // Two rows across the bottom, ten columns each.
-  for (let row = 0; row < 2; row += 1) {
-    for (let col = 0; col < 10; col += 1) {
-      slots.push({
-        x: 6 + col * 9.8 + between(-1, 1),
-        y: 87 + row * 6 + between(-0.75, 0.75),
-      });
+  const randomPoint = (): { x: number; y: number } => {
+    // Most pieces flank the cabinet; the rest gather in the bottom strip.
+    if (rand() < 0.62) {
+      const leftGutter = rand() < 0.5;
+      return {
+        x: leftGutter ? between(2, 9) : between(91, 98),
+        y: between(26, 80),
+      };
     }
-  }
+    return {
+      x: between(4, 96),
+      y: between(84, 97),
+    };
+  };
+
+  const farEnough = (point: { x: number; y: number }) =>
+    placed.every(
+      (other) =>
+        Math.abs(point.x - other.x) >= MIN_GAP_X ||
+        Math.abs(point.y - other.y) >= MIN_GAP_Y
+    );
 
   return PIXEL_GLYPHS.map((glyph, index) => {
-    const slot = slots[index];
+    let slot = randomPoint();
+    for (let attempt = 0; attempt < 160 && !farEnough(slot); attempt += 1) {
+      slot = randomPoint();
+    }
+    placed.push(slot);
     return {
       glyph,
       style: {
