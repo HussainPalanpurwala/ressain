@@ -133,20 +133,92 @@ const FLAVOUR: Record<QuizCategoryId, string> = {
   future: styles.flavourFuture,
 };
 
-/* Decorative pixel confetti scattered around the cabinet (aria-hidden).
-   A fixed seed keeps the server and client renders byte-for-byte identical
-   (no hydration mismatch), but the pieces land in varied, non-repeating
-   places. They are confined to the far left/right gutters and the strip below
-   the cabinet, so nothing is ever placed above the "READY, PLAYER ONE?" copy
-   in the middle of the screen. */
-type ScatterPixel = { glyph: string; style: CSSProperties };
+/* Decorative retro-arcade motifs scattered around the cabinet (aria-hidden).
+   The little sprites are hand-built from 8-bit rectangles — cassette tapes,
+   coins, joysticks, floppy disks, arrows, D-pads and pixel-block clusters —
+   with no text, hearts, flowers or stars. Placement uses seeded 2D blue-noise
+   (Poisson-disk style) sampling: every new piece must sit at least
+   MIN_DISTANCE away — measured euclidean in normalized percent space — from
+   every piece already placed. This is what stops them lining up in rows,
+   columns or gutters. A fixed seed keeps server/client renders identical.
+   x spans almost the full width and y runs from 24% to 97%; the only excluded
+   patch is the upper-centre area above the "READY, PLAYER ONE?" attract copy. */
+type PixelRect = readonly [number, number, number, number]; // x, y, w, h on a 16x16 pixel grid
+type ArcadeMotif = { blocks: PixelRect[]; cuts?: PixelRect[] };
+type ScatterPixel = { motif: ArcadeMotif; style: CSSProperties };
 
-const PIXEL_GLYPHS = [
-  "♥", "✿", "★", "✦", "♥", "✿", "★", "♥", "✿", "★",
-  "✦", "♥", "✿", "★", "✦", "♥", "✿", "★", "♥", "✦",
-  "♥", "✿", "★", "✦", "♥", "✿", "★", "♥", "✿", "★",
-  "✦", "♥", "✿", "★",
+const ARCADE_MOTIFS: ArcadeMotif[] = [
+  // Coin / token — chunky octagonal disc with a centre slot.
+  {
+    blocks: [
+      [6, 2, 4, 1], [4, 3, 8, 1], [3, 4, 10, 2], [2, 6, 12, 4],
+      [3, 10, 10, 2], [4, 12, 8, 1], [6, 13, 4, 1],
+    ],
+    cuts: [[7, 7, 2, 3]],
+  },
+  // Cassette tape — shell, two reels and a label strip.
+  {
+    blocks: [[3, 3, 10, 1], [2, 4, 12, 9], [3, 13, 10, 1]],
+    cuts: [[5, 6, 2, 2], [9, 6, 2, 2], [5, 10, 6, 1]],
+  },
+  // Joystick — ball, shaft and wide base.
+  {
+    blocks: [[6, 2, 4, 4], [7, 6, 2, 5], [3, 11, 10, 3], [2, 13, 12, 1]],
+    cuts: [[5, 12, 2, 1]],
+  },
+  // Pixel-block cluster — a loose tetromino-like scatter.
+  {
+    blocks: [
+      [2, 7, 3, 3], [5, 4, 3, 3], [8, 7, 3, 3], [5, 10, 3, 3], [11, 2, 3, 3],
+    ],
+  },
+  // Floppy disk — shell, head window and label.
+  {
+    blocks: [[4, 1, 8, 1], [3, 2, 10, 12]],
+    cuts: [[6, 3, 4, 4], [5, 9, 6, 4]],
+  },
+  // Chunky 8-bit arrow.
+  {
+    blocks: [[2, 6, 8, 4], [8, 2, 3, 4], [8, 10, 3, 4], [11, 5, 3, 6]],
+  },
+  // D-pad — plus-shaped controller pad.
+  {
+    blocks: [[6, 2, 4, 12], [2, 6, 12, 4]],
+    cuts: [[6, 6, 4, 4]],
+  },
 ];
+
+function PixelMotif({ motif }: { motif: ArcadeMotif }) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      shapeRendering="crispEdges"
+      focusable="false"
+      aria-hidden="true"
+    >
+      {motif.blocks.map(([x, y, w, h], index) => (
+        <rect
+          key={`block-${index}`}
+          x={x}
+          y={y}
+          width={w}
+          height={h}
+          fill="currentColor"
+        />
+      ))}
+      {motif.cuts?.map(([x, y, w, h], index) => (
+        <rect
+          key={`cut-${index}`}
+          x={x}
+          y={y}
+          width={w}
+          height={h}
+          fill="#0a0409"
+        />
+      ))}
+    </svg>
+  );
+}
 
 function seededRandom(seed: number) {
   let state = seed >>> 0;
@@ -161,50 +233,60 @@ function seededRandom(seed: number) {
 
 const PIXELS: ScatterPixel[] = (() => {
   const rand = seededRandom(0x7265766c); // "revl" — constant, deterministic.
+  const motifRand = seededRandom(0x61726364); // "acd" — separate motif stream.
   const between = (min: number, max: number) => min + rand() * (max - min);
   const round = (value: number) => Math.round(value * 10) / 10;
   const tints = ["#f0254b", "#e9a6bb", "#f6cbd6", "#fff0dc"];
 
-  // Seeded random placement with a minimum-distance check. Positions really
-  // are scattered (not a grid), but the deterministic seed keeps SSR and
-  // client output identical and the distance rule stops any overlap.
-  const MIN_GAP_X = 5.5; // percent of section width
-  const MIN_GAP_Y = 6.5; // percent of section height
+  const MIN_DISTANCE = 9.5; // euclidean gap in normalized percent space
+  const ASPECT = 1.2; // weight x a little more so pieces feel evenly spaced
+  const MAX_ATTEMPTS = 400; // plenty of tries so late pieces still find a gap
   const placed: { x: number; y: number }[] = [];
 
   const randomPoint = (): { x: number; y: number } => {
-    // Most pieces flank the cabinet; the rest gather in the bottom strip.
-    if (rand() < 0.62) {
-      const leftGutter = rand() < 0.5;
-      return {
-        x: leftGutter ? between(2, 9) : between(91, 98),
-        y: between(26, 80),
-      };
+    // Anywhere from 24% to 97% vertically, except the upper-centre patch
+    // directly above the attract heading (which sits around 46% down). Sides
+    // and everything below 44% are fair game — the pieces sit behind the
+    // cabinet (z-index 0 vs content z-index 1).
+    for (;;) {
+      const x = between(2, 98);
+      const y = between(24, 97);
+      if (y < 44 && x > 15 && x < 85) continue;
+      return { x, y };
     }
-    return {
-      x: between(4, 96),
-      y: between(84, 97),
-    };
   };
 
-  const farEnough = (point: { x: number; y: number }) =>
-    placed.every(
-      (other) =>
-        Math.abs(point.x - other.x) >= MIN_GAP_X ||
-        Math.abs(point.y - other.y) >= MIN_GAP_Y
-    );
+  const distance = (a: { x: number; y: number }, b: { x: number; y: number }) =>
+    Math.hypot((a.x - b.x) * ASPECT, a.y - b.y);
 
-  return PIXEL_GLYPHS.map((glyph, index) => {
-    let slot = randomPoint();
-    for (let attempt = 0; attempt < 160 && !farEnough(slot); attempt += 1) {
-      slot = randomPoint();
+  const gapToPlaced = (point: { x: number; y: number }) =>
+    placed.length === 0
+      ? Infinity
+      : Math.min(...placed.map((other) => distance(point, other)));
+
+  return Array.from({ length: 40 }, (_, index) => {
+    let best = randomPoint();
+    let bestGap = gapToPlaced(best);
+    // Dart-throwing: reject candidates that crowd an existing piece. If the
+    // field gets tight, keep whichever sampled candidate is farthest away.
+    for (
+      let attempt = 0;
+      attempt < MAX_ATTEMPTS && bestGap < MIN_DISTANCE;
+      attempt += 1
+    ) {
+      const candidate = randomPoint();
+      const gap = gapToPlaced(candidate);
+      if (gap > bestGap) {
+        bestGap = gap;
+        best = candidate;
+      }
     }
-    placed.push(slot);
+    placed.push(best);
     return {
-      glyph,
+      motif: ARCADE_MOTIFS[Math.floor(motifRand() * ARCADE_MOTIFS.length)],
       style: {
-        "--px": `${round(slot.x)}%`,
-        "--py": `${round(slot.y)}%`,
+        "--px": `${round(best.x)}%`,
+        "--py": `${round(best.y)}%`,
         "--ps": round(between(0.65, 1.25)),
         "--pr": `${round(between(-16, 16))}deg`,
         "--pdx": `${round(between(-4, 4))}px`,
@@ -488,7 +570,7 @@ export default function RevleenArcade() {
       <div className={styles.pixels} aria-hidden="true">
         {PIXELS.map((pixel, index) => (
           <span key={index} className={styles.pixel} style={pixel.style}>
-            {pixel.glyph}
+            <PixelMotif motif={pixel.motif} />
           </span>
         ))}
       </div>
