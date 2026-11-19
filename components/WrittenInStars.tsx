@@ -1,111 +1,150 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./WrittenInStars.module.css";
 
-// Positions are derived deterministically from the index so the server and the
-// client render an identical starfield (no hydration mismatch, no Math.random).
-const BACKGROUND_STARS = Array.from({ length: 64 }, (_, index) => ({
-  id: index,
-  x: 3 + ((index * 37 + 11) % 94),
-  y: 5 + ((index * 53 + 29) % 90),
-  size: 2 + (index % 3),
-  delay: ((index * 17) % 40) / 10,
-  duration: 3 + (index % 5),
-}));
+// Coordinates were read directly from public/star-map.jpg (4134 x 2953) and
+// are percentages of the FULL image, including its white margin. Because the
+// frame is locked to the image's exact aspect ratio, these stay aligned at
+// every viewport size. They sit on the constellation NAME LABELS, not on the
+// star geometry.
+type Constellation = {
+  name: string;
+  x: number;
+  y: number;
+  w: number; // hit-region width, as a percentage of the frame
+};
 
-// The few stars a visitor can actually interact with.
-const CLICKABLE_STARS = [
-  { label: "Star 01", x: 20, y: 42, delay: 0, duration: 4 },
-  { label: "Star 02", x: 50, y: 32, delay: 1.2, duration: 4.6 },
-  { label: "Star 03", x: 80, y: 46, delay: 2.1, duration: 5.2 },
+const CONSTELLATIONS: Constellation[] = [
+  { name: "Swan", x: 24.3, y: 12.3, w: 8 },
+  { name: "Dragon", x: 40.6, y: 12.4, w: 9 },
+  { name: "Little Dipper", x: 52.3, y: 10.8, w: 13 },
+  { name: "Big Dipper", x: 77.0, y: 13.8, w: 12 },
+  { name: "Hunting Dogs", x: 69.5, y: 27.2, w: 13 },
+  { name: "Little Lion", x: 88.0, y: 24.4, w: 11 },
+  { name: "Lyre", x: 28.2, y: 38.3, w: 7 },
+  { name: "Hercules", x: 41.3, y: 38.6, w: 10 },
+  { name: "Northern Crown", x: 48.9, y: 41.0, w: 14 },
+  { name: "Herdsman", x: 56.4, y: 38.5, w: 10 },
+  { name: "Berenice's Hair", x: 73.0, y: 43.8, w: 15 },
+  { name: "Lion", x: 93.0, y: 39.4, w: 7 },
+  { name: "Little Fox", x: 17.3, y: 41.0, w: 10 },
+  { name: "Arrow", x: 19.0, y: 45.0, w: 8 },
+  { name: "Dolphin", x: 6.6, y: 50.2, w: 9 },
+  { name: "Eagle", x: 17.5, y: 54.5, w: 8 },
+  { name: "Serpent", x: 23.5, y: 61.0, w: 9 },
+  { name: "Ophiuchus", x: 37.0, y: 64.4, w: 11 },
+  { name: "Serpent.", x: 51.6, y: 64.6, w: 9 },
+  { name: "Virgin", x: 72.5, y: 69.0, w: 8 },
+  { name: "Shield", x: 21.5, y: 76.5, w: 8 },
+  { name: "Crow", x: 81.5, y: 82.0, w: 7 },
+  { name: "Cup", x: 88.5, y: 77.5, w: 7 },
 ];
 
 export default function WrittenInStars() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [visible, setVisible] = useState(false);
   const [active, setActive] = useState<number | null>(null);
 
-  const toggle = (index: number) => {
-    setActive((current) => (current === index ? null : index));
-  };
+  // Opening reveal: start almost completely dark, then fade the image in once
+  // the section scrolls into view. Reduced-motion users see it immediately.
+  useEffect(() => {
+    const node = sectionRef.current;
+    if (!node) return;
 
-  // Escape dismisses the revealed note, matching the other overlay in the
-  // experience. (The Open When lightbox stops propagation when it is open.)
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      typeof IntersectionObserver === "undefined"
+    ) {
+      setVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.25 }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  // A touch/tap outside the label regions ends the highlight.
   useEffect(() => {
     if (active === null) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setActive(null);
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target?.closest("[data-hit]")) setActive(null);
     };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown, true);
+    return () => document.removeEventListener("pointerdown", onPointerDown, true);
   }, [active]);
 
+  const lit = active !== null ? CONSTELLATIONS[active] : null;
+  const frameStyle = {
+    "--gx": lit ? `${lit.x}%` : "50%",
+    "--gy": lit ? `${lit.y}%` : "50%",
+    // A glow just wider than the label itself, so only that name lights up.
+    "--grx": lit ? `calc(${lit.w}% / 2 + 2%)` : "6%",
+  } as React.CSSProperties;
+
   return (
-    <section className={styles.section} id="written-in-the-stars">
-      {/* Decorative starfield — purely presentational */}
-      <div className={styles.sky} aria-hidden="true">
-        {BACKGROUND_STARS.map((star) => (
-          <span
-            key={star.id}
-            className={styles.star}
+    <section
+      ref={sectionRef}
+      className={styles.section}
+      id="written-in-the-stars"
+      data-visible={visible}
+    >
+      <div className={styles.frame} style={frameStyle}>
+        {/* The only image on the page — never redrawn or replaced. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className={styles.map}
+          src="/star-map.jpg"
+          alt="A star map titled The Day We Met, showing the night sky on 19th November 2025 in India, with the constellation names labelled."
+        />
+
+        {/* Atmosphere over the image only: a restrained glow and a one-off shimmer. */}
+        <div className={styles.aura} aria-hidden="true" />
+        <div className={styles.shimmer} aria-hidden="true" />
+
+        {/* A duplicate of the same image, brightened and masked to a soft pool
+            around the active label, so the existing label lights up in place. */}
+        <div className={styles.illumination} data-on={lit !== null} aria-hidden="true" />
+        <div className={styles.halo} data-on={lit !== null} aria-hidden="true" />
+
+        {/* Transparent hit regions over each printed constellation name. */}
+        {CONSTELLATIONS.map((constellation, index) => (
+          <button
+            key={`${constellation.name}-${index}`}
+            type="button"
+            data-hit
+            className={styles.hit}
             style={
               {
-                "--x": `${star.x}%`,
-                "--y": `${star.y}%`,
-                "--s": `${star.size}px`,
-                "--delay": `${star.delay}s`,
-                "--duration": `${star.duration}s`,
+                "--hx": `${constellation.x}%`,
+                "--hy": `${constellation.y}%`,
+                "--hw": `${constellation.w}%`,
               } as React.CSSProperties
             }
+            aria-label={`Illuminate the ${constellation.name} label`}
+            onPointerEnter={(event) => {
+              if (event.pointerType === "mouse") setActive(index);
+            }}
+            onPointerLeave={(event) => {
+              if (event.pointerType === "mouse") {
+                setActive((current) => (current === index ? null : current));
+              }
+            }}
+            onFocus={() => setActive(index)}
+            onBlur={() => setActive((current) => (current === index ? null : current))}
+            onTouchStart={() => setActive(index)}
           />
         ))}
-      </div>
-
-      <div className={styles.content}>
-        <h2 className={styles.title}>Written in the Stars</h2>
-        <p className={styles.hint}>[ select a star to reveal its note ]</p>
-      </div>
-
-      {/* Clickable stars are real buttons so they work with keyboard + AT */}
-      {CLICKABLE_STARS.map((star, index) => (
-        <button
-          key={star.label}
-          type="button"
-          className={styles.clickStar}
-          style={
-            {
-              "--x": `${star.x}%`,
-              "--y": `${star.y}%`,
-              "--delay": `${star.delay}s`,
-              "--duration": `${star.duration}s`,
-            } as React.CSSProperties
-          }
-          data-active={active === index}
-          aria-label={`Reveal note from ${star.label}`}
-          aria-expanded={active === index}
-          aria-controls="written-stars-note"
-          onClick={() => toggle(index)}
-        >
-          <span className={styles.starMark} aria-hidden="true" />
-        </button>
-      ))}
-
-      <div className={styles.noteDock} id="written-stars-note" aria-live="polite">
-        {active !== null && (
-          <div className={styles.noteCard} role="status">
-            <button
-              type="button"
-              className={styles.noteClose}
-              onClick={() => setActive(null)}
-              aria-label="Close note"
-            >
-              ✕
-            </button>
-            <span className={styles.noteTag}>
-              [ {CLICKABLE_STARS[active].label} — note ]
-            </span>
-            <p className={styles.noteText}>[ note to be provided ]</p>
-          </div>
-        )}
       </div>
     </section>
   );
