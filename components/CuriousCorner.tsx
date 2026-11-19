@@ -78,6 +78,15 @@ const SOUNDS: Record<
 
 type DrawResult = { question: Question; remaining: number[] };
 
+/* Display-only personalisation for the perspective badge. The question data,
+   filters and saved matching keep their canonical "Me"/"You"/"Both" values —
+   only the label rendered on screen is swapped. */
+function perspectiveLabel(perspective: Question["perspective"]): string {
+  if (perspective === "Me") return "Hussain";
+  if (perspective === "You") return "Revleen";
+  return perspective;
+}
+
 function filterQuestions(
   categories: QuestionCategory[],
   depths: QuestionDepth[]
@@ -510,7 +519,9 @@ export default function CuriousCorner() {
                             </span>
                             <span>{current.depth}</span>
                           </span>
-                          <span className={styles.perspective}>{current.perspective}</span>
+                          <span className={styles.perspective}>
+                            {perspectiveLabel(current.perspective)}
+                          </span>
                         </div>
                         <span className={styles.questionLabel} aria-hidden="true">QUESTION</span>
                         <p className={styles.questionText}>{current.text}</p>
