@@ -33,6 +33,7 @@ function PhotoPlaceholder({
       aria-label={`Open ${label}`}
     >
       <span className={styles.photoInner}>
+        <span className={styles.clip} aria-hidden="true" />
         <span className={styles.photoIcon} aria-hidden="true">
           ▧
         </span>
@@ -132,9 +133,7 @@ export default function OurStory() {
       </div>
 
       <div ref={timelineRef} className={styles.timeline}>
-        <div className={styles.timelineLine} aria-hidden="true">
-          <span className={styles.timelineFill} />
-        </div>
+        <div className={styles.stitching} aria-hidden="true" />
 
         {/* 01 — The Beginning */}
         <article className={`${styles.memory} ${styles.memoryMinimal}`} data-reveal>

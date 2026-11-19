@@ -23,8 +23,8 @@ export default function TimeGrid() {
 
     let width = 0;
     let height = 0;
-    let alpha = 0.06;
-    let targetAlpha = 0.06;
+    let alpha = 0.3;
+    let targetAlpha = 0.3;
     const mouse = { x: -9999, y: -9999 };
     const target = { x: -9999, y: -9999 };
     let frame = 0;
@@ -45,11 +45,11 @@ export default function TimeGrid() {
       const rect = canvas.getBoundingClientRect();
       target.x = event.clientX - rect.left;
       target.y = event.clientY - rect.top;
-      targetAlpha = 0.3;
+      targetAlpha = 0.55;
     };
 
     const onLeave = () => {
-      targetAlpha = 0.06;
+      targetAlpha = 0.3;
       target.x = -9999;
       target.y = -9999;
     };

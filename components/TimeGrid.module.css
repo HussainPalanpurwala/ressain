@@ -6,23 +6,21 @@
   height: 118%;
   z-index: 0;
   pointer-events: none;
-  opacity: calc(0.2 + var(--enter, 0) * 0.8);
+  opacity: calc(0.7 + var(--enter, 0) * 0.3);
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent 12%,
-    rgba(0, 0, 0, 0.2) 20%,
-    #000000 42%,
-    #000000 86%,
+    rgba(0, 0, 0, 0.55) 10%,
+    #000000 24%,
+    #000000 88%,
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent 12%,
-    rgba(0, 0, 0, 0.2) 20%,
-    #000000 42%,
-    #000000 86%,
+    rgba(0, 0, 0, 0.55) 10%,
+    #000000 24%,
+    #000000 88%,
     transparent 100%
   );
 }
