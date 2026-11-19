@@ -510,11 +510,11 @@
   align-items: start;
 }
 
-/* Blue painting + the extra blue-sky photo sit together beside the story. */
+/* Blue painting above, the extra blue-sky photo below it. */
 .palacePhotoPair {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 18px;
   align-items: start;
 }
 
