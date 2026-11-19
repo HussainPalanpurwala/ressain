@@ -21,13 +21,17 @@
   overflow: hidden;
   color: var(--cream);
   font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
-  background-color: #0a0409;
+  /* Retro arcade-carpet / synthwave-floor treatment: a deep plum-to-black
+     base, soft cherry/blush neon pools behind the cabinet, a subtle vignette,
+     a diagonal pixel-dither weave and a faint receding floor grid. Kept low
+     contrast so the cabinet stays the centrepiece and all copy stays legible. */
+  background-color: #0b0512;
   background-image:
     /* Seam blend: Written in the Stars ends on #000000, so the top edge is
        exactly #000000 too — no line, no lighter band. The bottom still lands
-       on the page's near-black. Both pseudo-elements are already used here
-       (scanlines + pixel grid), so the blend is the topmost background layer
-       instead — behind content, no pointer capture, mobile-safe. */
+       on the page's near-black (#0b0509). Both pseudo-elements are in use
+       (carpet dither + perspective floor), so the blend stays the topmost
+       background layer — behind content, no pointer capture, mobile-safe. */
     linear-gradient(
       to bottom,
       #000000 0%,
@@ -35,49 +39,116 @@
       rgba(11, 5, 9, 0) 91%,
       #0b0509 100%
     ),
+    /* Soft vignette — darkens the corners and keeps focus on the cabinet. */
     radial-gradient(
-      ellipse 58% 40% at 50% 22%,
+      ellipse 82% 70% at 50% 45%,
+      transparent 40%,
+      rgba(4, 1, 6, 0.55) 100%
+    ),
+    /* Blush neon pool, left of the cabinet. */
+    radial-gradient(
+      ellipse 30% 26% at 20% 40%,
       rgba(233, 166, 187, 0.12) 0%,
-      rgba(168, 50, 74, 0.06) 48%,
+      transparent 78%
+    ),
+    /* Cherry neon pool, tucked behind the marquee/cabinet. */
+    radial-gradient(
+      ellipse 44% 32% at 50% 44%,
+      rgba(168, 50, 74, 0.22) 0%,
+      rgba(90, 23, 48, 0.08) 55%,
+      transparent 82%
+    ),
+    /* Second blush pool, right of the cabinet. */
+    radial-gradient(
+      ellipse 28% 24% at 82% 58%,
+      rgba(240, 37, 75, 0.1) 0%,
       transparent 80%
     ),
-    radial-gradient(
-      ellipse at 50% 40%,
-      #1a0712 0%,
-      #10050c 52%,
-      #080309 100%
+    /* Dark plum-to-black arcade carpet base. */
+    linear-gradient(
+      180deg,
+      #1a0a20 0%,
+      #120718 38%,
+      #0a0410 70%,
+      #07030c 100%
     );
 }
 
-/* Fine CRT scanlines over the whole field. */
+/* Diagonal pixel dither — the retro arcade-carpet weave. Traced on a soft,
+   edge-safe radial mask so it only whispers behind the cabinet and never
+   touches the top/bottom seam. */
 .section::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.5;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0 3px,
-    rgba(0, 0, 0, 0.16) 4px
+  opacity: 0.38;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgba(246, 203, 214, 0.055) 0 1px,
+      transparent 1px 7px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(168, 50, 74, 0.05) 0 1px,
+      transparent 1px 7px
+    );
+  -webkit-mask-image: radial-gradient(
+    ellipse 62% 46% at 50% 45%,
+    #000 0%,
+    rgba(0, 0, 0, 0.5) 55%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 62% 46% at 50% 45%,
+    #000 0%,
+    rgba(0, 0, 0, 0.5) 55%,
+    transparent 100%
   );
 }
 
-/* Faint pixel grid for texture. */
+/* Synthwave floor: a faint perspective grid receding toward a horizon behind
+   the cabinet. Bounded well above the bottom seam and masked at both ends, so
+   the top/bottom blends stay pixel-exact and no horizontal overflow is added. */
 .section::after {
   content: "";
   position: absolute;
-  inset: 0;
+  left: -55%;
+  right: -55%;
+  bottom: 9%;
+  height: 52%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.25;
+  opacity: 0.45;
   background-image:
-    linear-gradient(rgba(233, 166, 187, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(233, 166, 187, 0.06) 1px, transparent 1px);
-  background-size: 22px 22px;
-  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 0%, transparent 78%);
-  mask-image: radial-gradient(ellipse at 50% 50%, #000 0%, transparent 78%);
+    repeating-linear-gradient(
+      to right,
+      rgba(246, 203, 214, 0.2) 0 1px,
+      transparent 1px clamp(48px, 9vw, 96px)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(233, 166, 187, 0.16) 0 1px,
+      transparent 1px clamp(38px, 7vw, 82px)
+    );
+  transform: perspective(300px) rotateX(64deg);
+  transform-origin: center bottom;
+  -webkit-mask-image: linear-gradient(
+    to top,
+    transparent 0%,
+    #000 18%,
+    #000 55%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to top,
+    transparent 0%,
+    #000 18%,
+    #000 55%,
+    transparent 100%
+  );
 }
 
 /* ---------- Floating pixel confetti ---------- */
