@@ -238,9 +238,11 @@
   flex: 0 0 auto;
   color: var(--cherry);
   /* Enlarge the heart relative to the button's inherited small label size,
-     while keeping the flex row tidy and overflow-free on narrow screens. */
-  font-size: clamp(0.7rem, 2vw, 1rem);
+     then nudge it upward so it sits neatly beside the label. transform keeps
+     the flex row tidy and overflow-free on narrow screens. */
+  font-size: clamp(0.8rem, 2.2vw, 1.15rem);
   line-height: 1;
+  transform: translateY(-2px);
 }
 
 .savedToggle:hover,
