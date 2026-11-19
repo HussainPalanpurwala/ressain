@@ -248,7 +248,7 @@ I'm especially glad we have that video. Some reactions are just too precious to 
       marker: "04",
       title: "Hari Niwas Palace",
       bluePainting: { label: "Blue painting", shape: "tall", src: "", caption: "" },
-      blueSkyPhoto: { label: "Blue sky photo", shape: "square", src: "", caption: "" },
+      blueSkyPhoto: { label: "Blue sky photo", shape: "square", src: "/media/blue-sky.jpg", caption: "" },
       blueSky: {
         label: "Blue sky and her dad",
         lines: 4,
