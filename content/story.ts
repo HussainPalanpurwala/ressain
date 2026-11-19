@@ -217,12 +217,12 @@ I would keep trying until my very last breath`,
       reactionVideo: {
         label: "Surprise reaction video",
         featured: true,
-        src: "",
+        src: "/media/surprise-reaction.mp4",
       },
       gallery: [
-        { label: "Jammu photo 1", shape: "square", src: "", caption: "" },
-        { label: "Jammu photo 2", shape: "square", src: "", caption: "" },
-        { label: "Jammu photo 3", shape: "square", src: "", caption: "" },
+        { label: "Jammu photo 1", shape: "square", src: "/media/jammu-1.jpg", caption: "" },
+        { label: "Jammu photo 2", shape: "square", src: "/media/jammu-2.jpg", caption: "" },
+        { label: "Jammu photo 3", shape: "square", src: "/media/jammu-3.jpg", caption: "" },
         { label: "Jammu photo 4", shape: "square", src: "", caption: "" },
       ],
       story: {
