@@ -1,57 +1,40 @@
 .grid {
   position: absolute;
-  top: -18%;
+  /* Pin the canvas exactly to the timer section's own box. The section only
+     clips horizontally (overflow-x: clip), so an over-tall canvas could spill
+     its still-visible lines into the bottom padding — the same band Our Story's
+     blend strip overlaps — and read as grid bleeding onto that section. With
+     top/height locked to the section box, no grid pixel can ever leave it on
+     any viewport, desktop or mobile. */
+  top: 0;
   left: 0;
   width: 100%;
-  /* Stop inside the timer's bottom edge instead of running past it: this
-     section only clips horizontally (overflow-x: clip), so anything drawn
-     below the edge bleeds into Our Story. The mask fades the grid out fully
-     before the canvas ends, keeping all visible grid inside the timer. */
-  height: 116%;
+  height: 100%;
   /* Above the section's z-index:0 decorative layers (scanlines, blend strip,
      stretched hearts, pixel deco) but below the z-index:1 console content. */
   z-index: 1;
   pointer-events: none;
   opacity: calc(0.85 + var(--enter, 0) * 0.15);
+  /* Fade in gently at the top, stay clearly visible through the middle, then
+     dissolve slowly into the section's dark→paper gradient: opaque until 62%,
+     a long smooth falloff to fully transparent by 95%. Reaching transparent
+     before the box ends guarantees the grid never stops abruptly or bleeds. */
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(0, 0, 0, 0.5) 6%,
-    #000000 16%,
-    #000000 80%,
-    transparent 100%
+    rgba(0, 0, 0, 0.35) 5%,
+    #000000 15%,
+    #000000 62%,
+    rgba(0, 0, 0, 0.5) 79%,
+    transparent 95%
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(0, 0, 0, 0.5) 6%,
-    #000000 16%,
-    #000000 80%,
-    transparent 100%
+    rgba(0, 0, 0, 0.35) 5%,
+    #000000 15%,
+    #000000 62%,
+    rgba(0, 0, 0, 0.5) 79%,
+    transparent 95%
   );
-}
-
-/* On small screens the timer grows taller as its content wraps, so pull the
-   canvas and its fade further inside to guarantee the grid never paints past
-   the timer's bottom edge into Our Story. The desktop cursor warp is untouched. */
-@media (max-width: 600px) {
-  .grid {
-    height: 112%;
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(0, 0, 0, 0.5) 6%,
-      #000000 16%,
-      #000000 76%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(0, 0, 0, 0.5) 6%,
-      #000000 16%,
-      #000000 76%,
-      transparent 100%
-    );
-  }
 }
