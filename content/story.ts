@@ -85,7 +85,8 @@ export interface StoryContent {
       marker: string;
       title: string;
       reactionVideo: StoryVideo;
-      gallery: StoryPhoto[];
+      /** Mixed gallery: the first three slots are photos, the fourth is a video. */
+      gallery: (StoryPhoto | StoryVideo)[];
       story: StoryTextBlock;
     };
     palace: {
@@ -223,7 +224,7 @@ I would keep trying until my very last breath`,
         { label: "Jammu photo 1", shape: "square", src: "/media/jammu-1.jpg", caption: "" },
         { label: "Jammu photo 2", shape: "square", src: "/media/jammu-2.jpg", caption: "" },
         { label: "Jammu photo 3", shape: "square", src: "/media/jammu-3.jpg", caption: "" },
-        { label: "Jammu photo 4", shape: "square", src: "", caption: "" },
+        { label: "Jammu photo 4 video", featured: false, src: "/media/jammu-4.mp4" },
       ],
       story: {
         label: "The Jammu Surprise story",

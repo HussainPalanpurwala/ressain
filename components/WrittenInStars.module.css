@@ -68,6 +68,79 @@
   );
 }
 
+/* CSS-only glowing starfield in the section BACKGROUND. It sits at z-index 0
+   — behind .content (z-index 1), so behind both the heading and the star-map
+   image. pointer-events:none and the section's overflow:hidden keep it from
+   ever catching taps or causing scrollbars. The uploaded /star-map.jpg itself
+   is plain and untouched: these dots only decorate the space around it. */
+.starfield {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* Fade the field out at the very top and bottom so it blends with the seam
+     strips (::before/::after) instead of leaving a hard dot at either edge. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 12%,
+    #000 88%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 12%,
+    #000 88%,
+    transparent 100%
+  );
+  /* Joins the opening reveal: fades in just after the section comes into view. */
+  opacity: 0;
+  transition: opacity 1.8s ease 0.4s;
+}
+
+.section[data-visible="true"] .starfield {
+  opacity: 1;
+}
+
+.star {
+  position: absolute;
+  left: var(--sx);
+  top: var(--sy);
+  width: var(--ss);
+  height: var(--ss);
+  border-radius: 50%;
+  background: var(--star-color);
+  /* A faint halo of the same palette colour — restrained, not a hard sparkle. */
+  box-shadow: 0 0 calc(var(--ss) * 2.5) var(--star-color);
+  opacity: 0.4;
+  animation: starTwinkle var(--sdur) ease-in-out var(--sd) infinite alternate;
+}
+
+.star[data-color="cream"] {
+  --star-color: var(--cream);
+}
+
+.star[data-color="blush"] {
+  --star-color: var(--blush);
+}
+
+.star[data-color="cherry"] {
+  --star-color: var(--cherry);
+}
+
+@keyframes starTwinkle {
+  from {
+    opacity: 0.12;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 0.7;
+    transform: scale(1.15);
+  }
+}
+
 /* Heading + image stacked in one centred column. */
 .content {
   position: relative;
@@ -167,9 +240,16 @@
 
 @media (prefers-reduced-motion: reduce) {
   .title,
-  .map {
+  .map,
+  .starfield {
     opacity: 1;
     transition: none;
+  }
+
+  /* Static, gently-lit stars — no twinkle or fade animation. */
+  .star {
+    animation: none;
+    opacity: 0.45;
   }
 
   .frame[data-active="true"] .map {

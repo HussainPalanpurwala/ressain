@@ -41,6 +41,37 @@ const CONSTELLATIONS: Constellation[] = [
   { name: "Cup", x: 88.5, y: 77.5, w: 7 },
 ];
 
+// A deterministic, CSS-only starfield for the section BACKGROUND only. These
+// dots decorate the space AROUND the star map — the uploaded /star-map.jpg is
+// never redrawn or given a glow. A fixed seed keeps server and client markup
+// identical (no hydration mismatch), while still giving natural variation in
+// size, position, colour and twinkle timing.
+type Star = {
+  x: number;
+  y: number;
+  size: number;
+  color: "cream" | "blush" | "cherry";
+  delay: number;
+  duration: number;
+};
+
+const STARS: Star[] = (() => {
+  let seed = 20251119;
+  const rand = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+  const colors: Star["color"][] = ["cream", "blush", "cherry"];
+  return Array.from({ length: 38 }, () => ({
+    x: 3 + rand() * 94, // keep dots away from the very edges
+    y: 6 + rand() * 88,
+    size: 1 + rand() * 2, // 1–3px
+    color: colors[Math.floor(rand() * colors.length)],
+    delay: rand() * -8, // negative so dots start at different fade points
+    duration: 4 + rand() * 5, // 4–9s, a slow and restrained twinkle
+  }));
+})();
+
 export default function WrittenInStars() {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
@@ -93,6 +124,27 @@ export default function WrittenInStars() {
       aria-labelledby="written-in-stars-heading"
       data-visible={visible}
     >
+      {/* Background-only glowing starfield. Sits at z-index 0, behind the
+          heading and the image, ignores pointers, and never touches the map. */}
+      <div className={styles.starfield} aria-hidden="true">
+        {STARS.map((star, index) => (
+          <span
+            key={index}
+            className={styles.star}
+            data-color={star.color}
+            style={
+              {
+                "--sx": `${star.x}%`,
+                "--sy": `${star.y}%`,
+                "--ss": `${star.size}px`,
+                "--sd": `${star.delay}s`,
+                "--sdur": `${star.duration}s`,
+              } as React.CSSProperties
+            }
+          />
+        ))}
+      </div>
+
       <div className={styles.content}>
         <h2 id="written-in-stars-heading" className={styles.title}>
           Written in the Stars

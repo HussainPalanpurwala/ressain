@@ -29,6 +29,10 @@ export default function TimeGrid() {
     const target = { x: -9999, y: -9999 };
     let frame = 0;
     let visible = false;
+    // True while the pointer is over the section. The warp must keep rendering
+    // for as long as there is a live hover target, even if the eased mouse
+    // position happens to catch up to the pointer for a frame.
+    let hovering = false;
 
     const resize = () => {
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -53,16 +57,25 @@ export default function TimeGrid() {
 
     const onMove = (event: PointerEvent) => {
       if (!canHover) return;
-      const rect = canvas.getBoundingClientRect();
-      target.x = event.clientX - rect.left;
-      target.y = event.clientY - rect.top;
+      if (!reduced) {
+        const rect = canvas.getBoundingClientRect();
+        target.x = event.clientX - rect.left;
+        target.y = event.clientY - rect.top;
+      }
       targetAlpha = 0.55;
+      hovering = true;
+      // The loop may have already settled since the last move. Wake it up so
+      // the new target is actually eased toward and redrawn.
+      start();
     };
 
     const onLeave = () => {
       targetAlpha = 0.3;
       target.x = -9999;
       target.y = -9999;
+      hovering = false;
+      // Keep rendering while the warp eases back out to its resting position.
+      start();
     };
 
     const warped = (x: number, y: number) => {
@@ -100,11 +113,16 @@ export default function TimeGrid() {
         mouse.x += (target.x - mouse.x) * 0.12;
         mouse.y += (target.y - mouse.y) * 0.12;
       }
-      const settled =
+      const converged =
         Math.abs(targetAlpha - alpha) < 0.001 &&
         Math.abs(target.x - mouse.x) < 0.1 &&
         Math.abs(target.y - mouse.y) < 0.1;
-      if (settled) {
+      // Stop only when there is no hover target left AND the eased values have
+      // caught up. While hovering, keep the loop alive so the warp can follow
+      // every pointer move instead of freezing at a half-finished bend.
+      // Reduced motion has no warp to follow, so it may settle while hovering.
+      const done = converged && (reduced || !hovering);
+      if (done) {
         alpha = targetAlpha;
         mouse.x = target.x;
         mouse.y = target.y;
@@ -122,7 +140,7 @@ export default function TimeGrid() {
       }
       ctx.globalAlpha = 1;
 
-      if (!settled && visible) frame = requestAnimationFrame(render);
+      if (visible && !done) frame = requestAnimationFrame(render);
     };
 
     const start = () => {
