@@ -43,7 +43,9 @@ export default function useBackgroundMusic() {
     };
   }, []);
 
-  const play = useCallback(async () => {
+  // Low-level transport used by MediaCoordinator. These change ACTUAL
+  // playback only; the user's intent lives in the coordinator.
+  const start = useCallback(async () => {
     const audio = audioRef.current;
     if (!audio) return;
     try {
@@ -55,15 +57,21 @@ export default function useBackgroundMusic() {
     }
   }, []);
 
+  const stop = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio || audio.paused) return;
+    audio.pause();
+    setPlaying(false);
+  }, []);
+
+  // Kept for callers that still use the old names; both are low-level too.
+  const play = start;
   const toggle = useCallback(async () => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (audio.paused) await play();
-    else {
-      audio.pause();
-      setPlaying(false);
-    }
-  }, [play]);
+    if (audio.paused) await start();
+    else stop();
+  }, [start, stop]);
 
   const seek = useCallback((time: number) => {
     const audio = audioRef.current;
@@ -94,6 +102,8 @@ export default function useBackgroundMusic() {
     volume,
     setVolume,
     error,
+    start,
+    stop,
     play,
     toggle,
     currentTime,

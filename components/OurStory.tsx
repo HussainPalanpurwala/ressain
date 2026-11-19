@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useRef, useState } from "react";
+import { useCoordinatedVideo } from "@/components/MediaCoordinator";
 import type {
   StoryPhoto,
   StorySong,
@@ -91,24 +92,10 @@ function PhotoPlaceholder({
 }
 
 function VideoPlaceholder({ video }: { video: StoryVideo }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
+  // Every video shares the central controller: one at a time, music paused
+  // while any video plays, and the user's music choice restored afterwards.
+  const { ref, playing, toggle, videoEvents } = useCoordinatedVideo();
   const { label, featured, src } = video;
-
-  // Drive the button from the real media element: one implementation for every
-  // placeholder, so a future `src` automatically gets working playback too.
-  const togglePlayback = () => {
-    const node = videoRef.current;
-    if (!node) return; // no media yet (empty src) — nothing to control
-
-    if (node.paused) {
-      // play() returns a promise that rejects when playback is blocked or the
-      // media isn't available. Keep the label truthful instead of crashing.
-      void node.play().catch(() => setPlaying(false));
-    } else {
-      node.pause();
-    }
-  };
 
   return (
     <div
@@ -118,14 +105,12 @@ function VideoPlaceholder({ video }: { video: StoryVideo }) {
       <div className={styles.videoThumb}>
         {src ? (
           <video
-            ref={videoRef}
+            ref={ref}
             src={src}
             controls
             playsInline
             preload="metadata"
-            onPlay={() => setPlaying(true)}
-            onPause={() => setPlaying(false)}
-            onEnded={() => setPlaying(false)}
+            {...videoEvents}
           />
         ) : (
           <span className={styles.phLabel}>
@@ -136,7 +121,8 @@ function VideoPlaceholder({ video }: { video: StoryVideo }) {
       <button
         type="button"
         className={styles.playButton}
-        onClick={togglePlayback}
+        onClick={toggle}
+        aria-label={playing ? `Pause ${label}` : `Play ${label}`}
       >
         {playing ? "❚❚ PAUSE" : "▶ PLAY"}
       </button>

@@ -4,18 +4,18 @@ import { useCallback, useEffect, useState } from "react";
 import BootSequence from "./BootSequence";
 import CuriousCorner from "./CuriousCorner";
 import Landing from "./Landing";
+import { MediaProvider, useMedia } from "./MediaCoordinator";
 import MusicPlayer from "./MusicPlayer";
 import OpenWhen from "./OpenWhen";
 import OurStory from "./OurStory";
+import RevleenArcade from "./RevleenArcade";
 import Soundtrack from "./Soundtrack";
 import TimeTogether from "./TimeTogether";
-import RevleenArcade from "./RevleenArcade";
 import WrittenInStars from "./WrittenInStars";
-import useBackgroundMusic from "./useBackgroundMusic";
 
-export default function Experience() {
+function ExperienceContent() {
   const [entered, setEntered] = useState(false);
-  const music = useBackgroundMusic();
+  const { music, startMusic } = useMedia();
 
   useEffect(() => {
     // A refresh should always begin at the top (header + boot), never from a
@@ -29,9 +29,9 @@ export default function Experience() {
   // The button click is a real user gesture, so start the song here — inside
   // the click handler — which is the only reliable way to allow autoplay.
   const handleEnter = useCallback(() => {
-    void music.play();
+    startMusic();
     setEntered(true);
-  }, [music.play]);
+  }, [startMusic]);
 
   return (
     <main className={entered ? "app-main--player" : undefined}>
@@ -60,5 +60,13 @@ export default function Experience() {
       )}
       {!entered && <BootSequence onEnter={handleEnter} />}
     </main>
+  );
+}
+
+export default function Experience() {
+  return (
+    <MediaProvider>
+      <ExperienceContent />
+    </MediaProvider>
   );
 }
