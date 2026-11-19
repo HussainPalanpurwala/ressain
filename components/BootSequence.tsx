@@ -7,16 +7,16 @@ import usePrefersReducedMotion from "./usePrefersReducedMotion";
 import useRetroSound from "./useRetroSound";
 
 const HEART_COUNT = 10;
-const BOOT_DURATION = 16000;
+const BOOT_DURATION = 10000;
 
 const MESSAGES = [
   { at: 0, text: "INITIALISING OUR LITTLE UNIVERSE..." },
   { at: 13, text: "SEARCHING THE STARS..." },
-  { at: 26, text: "LOCATING TWO SOULS..." },
-  { at: 39, text: "ESTABLISHING A CONNECTION..." },
-  { at: 52, text: "CONNECTING TWO SOULS ACROSS THE UNIVERSE..." },
-  { at: 65, text: "SYNCHRONISING MEMORIES..." },
-  { at: 78, text: "CONNECTION ESTABLISHED." },
+  { at: 25, text: "LOCATING TWO SOULS..." },
+  { at: 38, text: "ESTABLISHING A CONNECTION..." },
+  { at: 50, text: "CONNECTING TWO SOULS ACROSS THE UNIVERSE..." },
+  { at: 63, text: "SYNCHRONISING MEMORIES..." },
+  { at: 75, text: "CONNECTION ESTABLISHED." },
   { at: 88, text: "WELCOME TO OUR LITTLE UNIVERSE." },
 ];
 
