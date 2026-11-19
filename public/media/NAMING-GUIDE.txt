@@ -1,27 +1,121 @@
-DROP YOUR FILES IN THIS FOLDER (public/media) USING THESE EXACT NAMES.
-Paths in content/story.ts are written as /media/<filename>.
+================================================================================
+ PHOTO & VIDEO NAMING GUIDE  —  public/media/
+================================================================================
 
-CONVERSATIONS (chat screenshots)
-  chat-1.jpg  -> first chat image
-  chat-2.jpg  -> second chat image
+Hello! This folder is where your REAL photos and videos go.
 
-JAMMU SURPRISE
-  surprise-reaction.mp4 -> surprise reaction video (the centrepiece)
-  jammu-1.jpg
-  jammu-2.jpg
-  jammu-3.jpg
-  jammu-4.jpg
+Drop your files in here with the EXACT filenames listed below (lowercase, no
+spaces), then send me a message saying the files are in, and I will wire each
+one into content/story.ts for you. You do NOT need to touch any code yourself.
 
-HARI NIWAS PALACE
-  blue-painting.jpg   -> the blue painting in the museum
-  blue-sky.jpg        -> the blue sky photo
-  hiding-video.mp4    -> the video of hiding from the drunk uncle
+--------------------------------------------------------------------------------
+ HOW THE PATHS WORK
+--------------------------------------------------------------------------------
+In content/story.ts, every media slot has a `src` field. Right now they are all
+empty (`src: ""`), which is why you see the dashed placeholders on the page.
 
-TEMPLE
-  temple.jpg
+When you drop a file in this folder, the exact path I will put into its slot is:
 
-TIPS
-- Use .jpg/.png/.webp for images; .mp4 (H.264) for video.
-- Keep filenames lowercase, no spaces.
-- Compress large videos before dropping them here — long high-res clips slow the page down on mobile.
-- After dropping files, tell me and I will wire the src paths in content/story.ts.
+        /media/<exact-filename-with-extension>
+
+Example: drop `jammu-1.jpg` in this folder -> I set that slot to `/media/jammu-1.jpg`.
+
+--------------------------------------------------------------------------------
+ THE COMPLETE LIST — ALL 11 MEDIA SLOTS
+--------------------------------------------------------------------------------
+
+--- MEMORY 02: THE CONVERSATIONS (chat screenshots) ---------------------------
+  chat-1.jpg ................ firstChatImage — first chat screenshot (tall photo)
+                              src -> /media/chat-1.jpg
+
+  chat-2.jpg ................ secondChatImage — second chat screenshot (tall photo)
+                              src -> /media/chat-2.jpg
+
+--- MEMORY 03: THE JAMMU SURPRISE ---------------------------------------------
+  surprise-reaction.mp4 ..... reactionVideo — the surprise reaction video.
+                              This is the FEATURED centrepiece video.
+                              src -> /media/surprise-reaction.mp4
+
+  jammu-1.jpg ............... gallery photo 1 — "Jammu photo 1" (square)
+                              src -> /media/jammu-1.jpg
+
+  jammu-2.jpg ............... gallery photo 2 — "Jammu photo 2" (square)
+                              src -> /media/jammu-2.jpg
+
+  jammu-3.jpg ............... gallery photo 3 — "Jammu photo 3" (square)
+                              src -> /media/jammu-3.jpg
+
+  jammu-4.jpg ............... gallery photo 4 — "Jammu photo 4" (square)
+                              src -> /media/jammu-4.jpg
+
+--- MEMORY 04: HARI NIWAS PALACE ----------------------------------------------
+  blue-painting.jpg ......... bluePainting — the blue painting in the museum
+                              that reminded her of her dad (tall photo)
+                              src -> /media/blue-painting.jpg
+
+  blue-sky.jpg .............. blueSkyPhoto — the blue sky photo (square)
+                              src -> /media/blue-sky.jpg
+
+  hiding-video.mp4 .......... hidingVideo — the video of the two of you hiding
+                              from the drunk uncle (regular, NOT featured)
+                              src -> /media/hiding-video.mp4
+
+--- MEMORY 05: THE TEMPLE -----------------------------------------------------
+  temple.jpg ................ photo — the temple photo (Bawe Maa Ka Mandir /
+                              Har Ki Pauri) (wide photo)
+                              src -> /media/temple.jpg
+
+--------------------------------------------------------------------------------
+ SUPPORTED FORMATS
+--------------------------------------------------------------------------------
+  Photos : .jpg / .jpeg, .png, .webp, .gif are all fine. .jpg is preferred
+           (best balance of quality and small file size for photos).
+  Video  : .mp4 (H.264) is strongly recommended — it plays in every browser.
+           .webm also works.
+
+  • Keep filenames LOWERCASE with NO SPACES. Use hyphens (-) to separate words.
+  • Filenames are case-sensitive on most web servers, so match the list exactly.
+
+  Note: If your photo is a .png / .webp / .jpeg and you would rather keep that
+  extension, that's totally fine — keep the SAME base name (e.g. `jammu-1.png`)
+  and just TELL ME the exact filename so I wire the matching path. If in doubt,
+  simply rename it to .jpg to match this list exactly.
+
+--------------------------------------------------------------------------------
+ PLEASE COMPRESS YOUR VIDEOS
+--------------------------------------------------------------------------------
+Long or high-resolution videos make the page slow to load, especially on mobile.
+Before dropping the two .mp4 files in here, compress them. A good target:
+  • 720p–1080p resolution
+  • H.264 codec
+  • short clips, only a few MB each
+
+--------------------------------------------------------------------------------
+ SIMPLE STEPS
+--------------------------------------------------------------------------------
+  1. Drag your real photos and videos into THIS folder (public/media).
+  2. Rename each file to exactly one of the filenames in the list above.
+  3. (Recommended) compress the two videos before adding them.
+  4. Send me a short message, e.g.:
+        "The files are in public/media — wire them into content/story.ts."
+  5. I will replace every empty `src: ""` with the matching `/media/<filename>`
+     path shown above. Nothing else needs to change.
+
+No fake images or videos are needed — just your real ones with these names.
+
+================================================================================
+ QUICK CHECKLIST (print / copy)
+================================================================================
+  [ ] chat-1.jpg
+  [ ] chat-2.jpg
+  [ ] surprise-reaction.mp4  (featured — compress!)
+  [ ] jammu-1.jpg
+  [ ] jammu-2.jpg
+  [ ] jammu-3.jpg
+  [ ] jammu-4.jpg
+  [ ] blue-painting.jpg
+  [ ] blue-sky.jpg
+  [ ] hiding-video.mp4       (compress!)
+  [ ] temple.jpg
+  -> Then tell me to wire them into content/story.ts.
+================================================================================
