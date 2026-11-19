@@ -29,7 +29,7 @@ export default function Experience() {
   }, [music.play]);
 
   return (
-    <main style={entered ? { paddingBottom: 90 } : undefined}>
+    <main className={entered ? "app-main--player" : undefined}>
       {music.audio}
       <Landing />
       <TimeTogether />

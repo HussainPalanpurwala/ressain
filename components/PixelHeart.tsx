@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 type PixelHeartProps = {
   className?: string;
 };
@@ -17,7 +19,7 @@ const HEART_MATRIX = [
   "00000100000",
 ];
 
-export default function PixelHeart({ className = "" }: PixelHeartProps) {
+function PixelHeart({ className = "" }: PixelHeartProps) {
   return (
     <svg
       className={className}
@@ -37,3 +39,5 @@ export default function PixelHeart({ className = "" }: PixelHeartProps) {
     </svg>
   );
 }
+
+export default memo(PixelHeart);

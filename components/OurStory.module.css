@@ -10,6 +10,7 @@
   position: relative;
   margin-top: -140px;
   padding: clamp(3rem, 7vh, 5rem) clamp(1rem, 5vw, 4rem);
+  overflow-x: clip;
   font-family: "Press Start 2P", monospace;
   color: var(--ink);
   background-color: var(--paper);
@@ -562,6 +563,7 @@
 
 .playButton {
   align-self: flex-start;
+  min-height: 44px;
   padding: 9px 14px;
   font-family: "Press Start 2P", monospace;
   font-size: 0.55rem;
@@ -724,24 +726,15 @@
   color: var(--cherry);
 }
 
-/* Presentation-style reveals: each piece pops in from its own direction. */
+/* Presentation-style reveals, driven by scroll position in both directions. */
 .reveal {
-  opacity: 0.45;
-  translate: var(--from-x, 0px) var(--from-y, 24px);
-  rotate: var(--from-rot, 0deg);
-  scale: 0.93;
-  transition:
-    opacity 0.6s ease,
-    translate 0.8s cubic-bezier(0.16, 1.28, 0.3, 1) var(--pop-delay, 0s),
-    rotate 0.8s cubic-bezier(0.16, 1.28, 0.3, 1) var(--pop-delay, 0s),
-    scale 0.8s cubic-bezier(0.16, 1.28, 0.3, 1) var(--pop-delay, 0s);
-}
-
-.reveal.inView {
-  opacity: 1;
-  translate: 0 0;
-  rotate: 0deg;
-  scale: 1;
+  --seen: 0;
+  opacity: calc(0.4 + var(--seen) * 0.6);
+  translate:
+    calc((1 - var(--seen)) * var(--from-x, 0px))
+    calc((1 - var(--seen)) * var(--from-y, 24px));
+  rotate: calc((1 - var(--seen)) * var(--from-rot, 0deg));
+  scale: calc(0.94 + var(--seen) * 0.06);
 }
 
 .memory:nth-of-type(1) {
@@ -862,14 +855,26 @@
 
 .closeButton {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 34px;
-  height: 34px;
+  top: 8px;
+  right: 8px;
+  width: 44px;
+  height: 44px;
   border: 2px solid var(--burgundy);
   background: transparent;
   color: var(--burgundy);
   cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .memory:nth-of-type(n) {
+    --from-x: 12px;
+  }
+
+  .photo,
+  .video,
+  .letterCard {
+    --from-x: 10px;
+  }
 }
 
 @media (max-width: 760px) {

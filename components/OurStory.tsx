@@ -77,45 +77,32 @@ function VideoPlaceholder({
 
 export default function OurStory() {
   const sectionRef = useRef<HTMLElement>(null);
-  const timelineRef = useRef<HTMLDivElement>(null);
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [letterOpen, setLetterOpen] = useState(false);
 
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
-    const items = Array.from(section.querySelectorAll<HTMLElement>("[data-reveal]"));
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add(styles.inView);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    const items = Array.from(
+      section.querySelectorAll<HTMLElement>("[data-reveal]")
     );
-    items.forEach((item) => {
-      item.classList.add(styles.reveal);
-      observer.observe(item);
-    });
-    return () => observer.disconnect();
-  }, []);
+    items.forEach((item) => item.classList.add(styles.reveal));
 
-  useEffect(() => {
+    // Scroll-driven so the pop-in builds as you enter each piece and reverses
+    // when you scroll back up — not a one-time reveal.
     let frame = 0;
     const update = () => {
       frame = 0;
-      const timeline = timelineRef.current;
-      if (!timeline) return;
-      const rect = timeline.getBoundingClientRect();
-      const start = window.innerHeight * 0.75;
-      const progress = Math.max(
-        0,
-        Math.min(1, (start - rect.top) / Math.max(1, rect.height))
-      );
-      timeline.style.setProperty("--line-progress", progress.toFixed(3));
+      const viewport = window.innerHeight;
+      items.forEach((item) => {
+        const rect = item.getBoundingClientRect();
+        const raw = Math.max(
+          0,
+          Math.min(1, (viewport * 0.92 - rect.top) / (viewport * 0.55))
+        );
+        const eased = raw * raw * (3 - 2 * raw);
+        item.style.setProperty("--seen", eased.toFixed(3));
+      });
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -142,7 +129,7 @@ export default function OurStory() {
         </p>
       </div>
 
-      <div ref={timelineRef} className={styles.timeline}>
+      <div className={styles.timeline}>
         <div className={styles.stitching} aria-hidden="true" />
 
         {/* 01 — The Beginning */}

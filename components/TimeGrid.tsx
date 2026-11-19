@@ -28,16 +28,27 @@ export default function TimeGrid() {
     const mouse = { x: -9999, y: -9999 };
     const target = { x: -9999, y: -9999 };
     let frame = 0;
+    let visible = false;
 
     const resize = () => {
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
-      width = canvas.clientWidth;
-      height = canvas.clientHeight;
-      canvas.width = Math.floor(width * ratio);
-      canvas.height = Math.floor(height * ratio);
+      // Clear inline sizing first so the canvas can follow parent/viewport
+      // changes instead of staying locked to its previous measured size.
+      canvas.style.width = "";
+      canvas.style.height = "";
+      const nextWidth = canvas.clientWidth;
+      const nextHeight = canvas.clientHeight;
+      const nextW = Math.floor(nextWidth * ratio);
+      const nextH = Math.floor(nextHeight * ratio);
+      if (canvas.width === nextW && canvas.height === nextH) return;
+      width = nextWidth;
+      height = nextHeight;
+      canvas.width = nextW;
+      canvas.height = nextH;
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      start();
     };
 
     const onMove = (event: PointerEvent) => {
@@ -83,10 +94,20 @@ export default function TimeGrid() {
     };
 
     const render = () => {
+      frame = 0;
       alpha += (targetAlpha - alpha) * 0.035;
       if (!reduced) {
         mouse.x += (target.x - mouse.x) * 0.12;
         mouse.y += (target.y - mouse.y) * 0.12;
+      }
+      const settled =
+        Math.abs(targetAlpha - alpha) < 0.001 &&
+        Math.abs(target.x - mouse.x) < 0.1 &&
+        Math.abs(target.y - mouse.y) < 0.1;
+      if (settled) {
+        alpha = targetAlpha;
+        mouse.x = target.x;
+        mouse.y = target.y;
       }
 
       ctx.clearRect(0, 0, width, height);
@@ -101,19 +122,33 @@ export default function TimeGrid() {
       }
       ctx.globalAlpha = 1;
 
-      frame = requestAnimationFrame(render);
+      if (!settled && visible) frame = requestAnimationFrame(render);
+    };
+
+    const start = () => {
+      if (!frame && visible) frame = requestAnimationFrame(render);
     };
 
     resize();
     const observer = new ResizeObserver(resize);
     observer.observe(parent);
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) start();
+      else if (frame) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
+    });
+    visibilityObserver.observe(parent);
     parent.addEventListener("pointermove", onMove);
     parent.addEventListener("pointerleave", onLeave);
-    render();
+    start();
 
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
+      visibilityObserver.disconnect();
       parent.removeEventListener("pointermove", onMove);
       parent.removeEventListener("pointerleave", onLeave);
     };

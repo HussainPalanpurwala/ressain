@@ -153,6 +153,8 @@
   color: #fff0f7;
   text-shadow: 2px 2px 0 #000;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .artist {
@@ -160,6 +162,8 @@
   line-height: 1.5;
   color: #f0b8d8;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .details {
@@ -186,9 +190,37 @@
 .seek {
   flex: 1;
   min-width: 0;
-  height: 4px;
-  accent-color: #e453a3;
+  height: 24px;
+  appearance: none;
+  background: transparent;
   cursor: pointer;
+}
+
+.seek::-webkit-slider-runnable-track {
+  height: 4px;
+  background: #e453a3;
+}
+
+.seek::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: #ff9ed2;
+}
+
+.seek::-moz-range-track {
+  height: 4px;
+  background: #e453a3;
+}
+
+.seek::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  background: #ff9ed2;
 }
 
 .volumeRow {
@@ -202,11 +234,41 @@
 .volumeRow input {
   flex: 1;
   min-width: 0;
-  accent-color: #e453a3;
+  height: 24px;
+  appearance: none;
+  background: transparent;
+}
+
+.volumeRow input::-webkit-slider-runnable-track {
+  height: 4px;
+  background: #e453a3;
+}
+
+.volumeRow input::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: #ff9ed2;
+}
+
+.volumeRow input::-moz-range-track {
+  height: 4px;
+  background: #e453a3;
+}
+
+.volumeRow input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  background: #ff9ed2;
 }
 
 .control {
   flex: 0 0 auto;
+  min-height: 44px;
   padding: 9px 12px;
   font-family: inherit;
   font-size: 0.46rem;
@@ -237,7 +299,7 @@
   }
 
   .meta {
-    flex: 1 1 calc(100% - 90px);
+    flex: 0 1 calc(100% - 90px);
   }
 
   .track {

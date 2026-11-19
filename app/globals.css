@@ -24,6 +24,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+.app-main--player {
+  padding-bottom: 90px;
+}
+
+@media (max-width: 600px) {
+  .app-main--player {
+    padding-bottom: 215px;
+  }
+}
+
 /* ============================================================
    SECTION 01 — BOOT-UP EXPERIENCE
    ============================================================ */
@@ -66,8 +76,8 @@ body {
   position: absolute;
   left: 50%;
   top: 42%;
-  width: 540px;
-  height: 440px;
+  width: min(540px, 100vw);
+  height: min(440px, 100svh);
   transform: translate(-50%, -50%);
   background: radial-gradient(
     ellipse at center,
@@ -105,9 +115,13 @@ body {
 
 .boot__sound {
   position: absolute;
-  top: 8px;
-  right: 10px;
+  top: 0;
+  right: 0;
   z-index: 2;
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
   padding: 4px;
   font-family: "Press Start 2P", monospace;
   font-size: clamp(0.4rem, 1.1vw, 0.52rem);
@@ -257,6 +271,7 @@ body {
   z-index: 1;
   margin-top: clamp(16px, 3.4vh, 26px);
   padding: 0.85rem 1rem;
+  min-height: 44px;
   width: 100%;
   font-family: "Press Start 2P", monospace;
   font-size: clamp(0.56rem, 1.8vw, 0.7rem);

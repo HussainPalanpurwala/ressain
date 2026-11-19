@@ -81,6 +81,7 @@ export default function TimeTogether() {
   // instead of switching on at a single threshold.
   useEffect(() => {
     let frame = 0;
+    const last = { in: "", out: "", enter: "" };
     const update = () => {
       frame = 0;
       const node = sectionRef.current;
@@ -90,19 +91,24 @@ export default function TimeTogether() {
       const span = viewport * 0.9;
       const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
 
-      // Rises as the section enters from below, then falls as it leaves past
-      // the top — so the parts assemble and then disassemble again while
-      // scrolling in one direction.
       const shape = (value: number) => value * value * (3 - 2 * value);
-      const enterRaw = clamp01((viewport - rect.top) / span);
-      // Leaving increases once the section's bottom has passed the viewport.
-      const exitRaw = clamp01((viewport - rect.bottom) / span);
-      const enter = shape(enterRaw);
-      const exit = shape(exitRaw);
-      node.style.setProperty("--in", enter.toFixed(3));
-      node.style.setProperty("--out", exit.toFixed(3));
-      node.style.setProperty("--enter", Math.min(enter, 1 - exit).toFixed(3));
-      node.style.setProperty("--enter-close", Math.min(enter, 1 - exit).toFixed(3));
+      const enter = shape(clamp01((viewport - rect.top) / span));
+      const exit = shape(clamp01((viewport - rect.bottom) / span));
+      const inValue = enter.toFixed(3);
+      const outValue = exit.toFixed(3);
+      const enterValue = Math.min(enter, 1 - exit).toFixed(3);
+      if (inValue !== last.in) {
+        node.style.setProperty("--in", inValue);
+        last.in = inValue;
+      }
+      if (outValue !== last.out) {
+        node.style.setProperty("--out", outValue);
+        last.out = outValue;
+      }
+      if (enterValue !== last.enter) {
+        node.style.setProperty("--enter", enterValue);
+        last.enter = enterValue;
+      }
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
