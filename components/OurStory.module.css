@@ -253,58 +253,67 @@
   transform: rotate(-16deg);
 }
 
-/* Paper clips in place of pins */
+/* Paper clips hook over a TOP corner of each polaroid, straddling the corner
+   edge exactly like a real clip. Two deliberate variants: a left-corner clip
+   angled negative (runs down-right across the corner) and a right-corner clip
+   angled positive (runs down-left across the corner). They stay BIG and LONG. */
 .paperClip {
   display: block;
   position: absolute;
-  top: -12px;
-  left: 24px;
-  width: clamp(18px, 4vw, 22px);
-  height: clamp(38px, 8vw, 48px);
+  /* Base = left corner; per-photo rules below flip selected clips right. */
+  top: -14px;
+  left: -6px;
+  width: clamp(20px, 4.4vw, 26px);
+  height: clamp(44px, 9vw, 54px);
   border: 3px solid #8d8792;
-  border-radius: 10px;
-  transform: rotate(-12deg);
-  box-shadow: 1px 2px 2px rgba(74, 16, 36, 0.25);
+  border-radius: 12px;
+  transform: rotate(-42deg);
+  box-shadow:
+    1px 2px 3px rgba(74, 16, 36, 0.32),
+    0 0 7px rgba(255, 255, 255, 0.35);
   pointer-events: none;
 }
 
+/* Inner, longer loop of the wire: offset toward the outer edge so both prongs
+   read as one continuous clip crossing the corner. */
 .paperClip::after {
   content: "";
   position: absolute;
   top: 6px;
   left: 5px;
-  width: clamp(6px, 1.2vw, 8px);
-  height: clamp(24px, 5vw, 32px);
+  width: clamp(7px, 1.4vw, 9px);
+  height: clamp(28px, 5.6vw, 36px);
   border: 3px solid #b3adb6;
   border-radius: 5px;
 }
 
-/* Each clip sits somewhere different — no repeated placement. Positions are
-   spread a little wider and nudged up so the larger clips still straddle the
-   polaroid's top edge without sliding off its sides. */
+/* Deliberate corner per photo: left-corner clips rotate negative (~-37 to
+   -46deg), right-corner clips rotate positive (~+40 to +47deg), so every
+   polaroid reads as a real clip gripping its own corner. */
 .miniGallery .photo:nth-child(1) .paperClip {
-  left: 12%;
-  top: -13px;
-  transform: rotate(-19deg);
+  left: -6px;
+  top: -14px;
+  transform: rotate(-44deg);
 }
 
 .miniGallery .photo:nth-child(2) .paperClip {
   left: auto;
-  right: 14%;
-  top: -15px;
-  transform: rotate(13deg);
+  right: -6px;
+  top: -14px;
+  transform: rotate(40deg);
 }
 
 .miniGallery .photo:nth-child(3) .paperClip {
-  left: 60%;
-  top: -11px;
-  transform: rotate(-5deg);
+  left: -4px;
+  top: -12px;
+  transform: rotate(-37deg);
 }
 
 .miniGallery .photo:nth-child(4) .paperClip {
-  left: 32%;
-  top: -14px;
-  transform: rotate(11deg);
+  left: auto;
+  right: -4px;
+  top: -12px;
+  transform: rotate(47deg);
 }
 
 .miniGallery .photo:nth-child(1) {
@@ -329,15 +338,36 @@
 }
 
 .memoryTrain .paperClip {
+  left: auto;
+  right: -6px;
   top: -14px;
-  left: 42%;
-  transform: rotate(-4deg);
+  transform: rotate(46deg);
 }
 
 .memoryPalace .paperClip {
-  top: -13px;
-  left: 30%;
-  transform: rotate(9deg);
+  left: -6px;
+  top: -14px;
+  transform: rotate(-41deg);
+}
+
+/* Chat images: the two corners differ so the pair isn't mirrored-identical. */
+.memoryLetter .videoStack .photo:nth-child(1) .paperClip {
+  left: -6px;
+  top: -14px;
+  transform: rotate(-46deg);
+}
+
+.memoryLetter .videoStack .photo:nth-child(2) .paperClip {
+  left: auto;
+  right: -6px;
+  top: -14px;
+  transform: rotate(43deg);
+}
+
+.memoryTemple .paperClip {
+  left: -6px;
+  top: -14px;
+  transform: rotate(-39deg);
 }
 
 .memoryMinimal .textPlaceholder::before {
@@ -646,31 +676,36 @@
   box-shadow: 5px 6px 0 rgba(74, 16, 36, 0.18);
 }
 
+/* Pinned-wall clip: no longer a centred horizontal tab. It grips the
+   top-left corner at a diagonal, like a real clip holding the paper up. */
 .memorySurprise .clip,
 .memoryTrain .clip {
   display: block;
   position: absolute;
-  top: -10px;
-  left: 50%;
-  width: clamp(28px, 6vw, 34px);
-  height: clamp(14px, 3vw, 18px);
-  transform: translateX(-50%) rotate(2deg);
-  background: linear-gradient(#c8c8d0, #8a8a94);
+  top: -12px;
+  left: -6px;
+  width: clamp(26px, 5.5vw, 32px);
+  height: clamp(34px, 7vw, 42px);
+  transform: rotate(-44deg);
+  background: linear-gradient(135deg, #e2e2e8, #8a8a94 55%, #b9b9c2);
   border: 2px solid #5a5a62;
-  border-radius: 3px;
+  border-radius: 6px;
+  box-shadow:
+    1px 2px 3px rgba(74, 16, 36, 0.3),
+    0 0 6px rgba(255, 255, 255, 0.35);
 }
 
-/* Longer inner loop of the pinned-wall clip. */
+/* Longer inner loop of the pinned-wall clip, running with the diagonal. */
 .memorySurprise .clip::after,
 .memoryTrain .clip::after {
   content: "";
   position: absolute;
-  top: 2px;
-  left: 3px;
-  right: 3px;
-  height: clamp(6px, 1.4vw, 9px);
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  height: clamp(16px, 3.5vw, 22px);
   border: 2px solid #5a5a62;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 /* 2x2 square grid on every screen so all four slots fit evenly. */
