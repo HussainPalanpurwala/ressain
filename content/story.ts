@@ -208,8 +208,8 @@ And yet…
 I would keep trying until my very last breath`,
         },
       },
-      firstChatImage: { label: "First chat image", shape: "tall", src: "", caption: "" },
-      secondChatImage: { label: "Second chat image", shape: "tall", src: "", caption: "" },
+      firstChatImage: { label: "First chat image", shape: "tall", src: "/media/chat-1.jpg", caption: "" },
+      secondChatImage: { label: "Second chat image", shape: "tall", src: "/media/chat-2.jpg", caption: "" },
     },
     surprise: {
       marker: "03",
