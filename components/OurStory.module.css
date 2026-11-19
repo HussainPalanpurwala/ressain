@@ -661,9 +661,14 @@
 /* 2x2 square grid on every screen so all four slots fit evenly. */
 .miniGallery {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin: clamp(1.5rem, 3vh, 2rem) 0;
+}
+
+.miniGallery > * {
+  min-width: 0;
+  min-height: 0;
 }
 
 /* Fourth Jammu slot: a video tile that mirrors .photo.square exactly.
@@ -690,6 +695,7 @@
    edge. Its height is definite (flex-filled square), so the video's 100%
    height resolves cleanly. */
 .miniGallery .videoThumb {
+  position: relative;
   flex: 1 1 auto;
   width: 100%;
   min-width: 0;
@@ -701,10 +707,12 @@
   border: 0;
 }
 
-/* Fill the window and let object-fit: contain letterbox the video — never
-   stretched or cropped. Overrides the shared height:auto / max-height:72vh
-   that otherwise makes a small square tile overflow. */
+/* Absolute positioning removes the video's intrinsic dimensions from the
+   grid track so it cannot stretch this tile. object-fit: contain letterboxes
+   it inside the polaroid square — never stretched or cropped. */
 .miniGallery .videoThumb video {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
@@ -717,7 +725,7 @@
    square. Top placement keeps it clear of the browser's native control bar. */
 .miniGallery .playButton {
   position: absolute;
-  top: 10px;
+  bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
