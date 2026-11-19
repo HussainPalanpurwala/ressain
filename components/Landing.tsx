@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import AmbientHearts from "./AmbientHearts";
-import PixelHeart from "./PixelHeart";
+import SolidPixelHeart from "./SolidPixelHeart";
 
 export default function Landing() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -36,22 +36,22 @@ export default function Landing() {
           </h1>
 
           <span className="landing__heart landing__heart--tl" aria-hidden="true">
-            <PixelHeart />
+            <SolidPixelHeart />
           </span>
           <span className="landing__heart landing__heart--tr" aria-hidden="true">
-            <PixelHeart />
+            <SolidPixelHeart />
           </span>
           <span className="landing__heart landing__heart--bl" aria-hidden="true">
-            <PixelHeart />
+            <SolidPixelHeart />
           </span>
           <span className="landing__heart landing__heart--br" aria-hidden="true">
-            <PixelHeart />
+            <SolidPixelHeart />
           </span>
           <span className="landing__heart landing__heart--ml" aria-hidden="true">
-            <PixelHeart />
+            <SolidPixelHeart />
           </span>
           <span className="landing__heart landing__heart--mr" aria-hidden="true">
-            <PixelHeart />
+            <SolidPixelHeart />
           </span>
         </div>
 
