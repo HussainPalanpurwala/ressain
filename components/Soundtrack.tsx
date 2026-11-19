@@ -17,7 +17,7 @@ export default function Soundtrack() {
       <div className={styles.panel}>
         <div className={styles.panelTop} aria-hidden="true">
           <span className={styles.led} />
-          <span className={styles.brandTag}>R♥H · TAPE DECK</span>
+          <span className={styles.brandTag}>TAPE DECK</span>
           <span className={styles.panelDots}>···</span>
         </div>
 
