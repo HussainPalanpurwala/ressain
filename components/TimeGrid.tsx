@@ -7,6 +7,9 @@ const SPACING = 42;
 const SAMPLE = 16;
 const RADIUS = 270;
 const STRENGTH = 9;
+// Idle lines must read clearly on their own; hover makes them slightly stronger.
+const IDLE_ALPHA = 0.5;
+const HOVER_ALPHA = 0.75;
 
 export default function TimeGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,8 +26,8 @@ export default function TimeGrid() {
 
     let width = 0;
     let height = 0;
-    let alpha = 0.3;
-    let targetAlpha = 0.3;
+    let alpha = IDLE_ALPHA;
+    let targetAlpha = IDLE_ALPHA;
     const mouse = { x: -9999, y: -9999 };
     const target = { x: -9999, y: -9999 };
     let frame = 0;
@@ -44,14 +47,18 @@ export default function TimeGrid() {
       const nextHeight = canvas.clientHeight;
       const nextW = Math.floor(nextWidth * ratio);
       const nextH = Math.floor(nextHeight * ratio);
-      if (canvas.width === nextW && canvas.height === nextH) return;
+      if (!nextW || !nextH) return;
+      // Track the CSS size every time, even when the backing-store size has
+      // not changed, so a first-frame draw always has real dimensions.
       width = nextWidth;
       height = nextHeight;
-      canvas.width = nextW;
-      canvas.height = nextH;
+      if (canvas.width !== nextW || canvas.height !== nextH) {
+        canvas.width = nextW;
+        canvas.height = nextH;
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      }
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
-      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       start();
     };
 
@@ -62,7 +69,7 @@ export default function TimeGrid() {
         target.x = event.clientX - rect.left;
         target.y = event.clientY - rect.top;
       }
-      targetAlpha = 0.55;
+      targetAlpha = HOVER_ALPHA;
       hovering = true;
       // The loop may have already settled since the last move. Wake it up so
       // the new target is actually eased toward and redrawn.
@@ -70,7 +77,7 @@ export default function TimeGrid() {
     };
 
     const onLeave = () => {
-      targetAlpha = 0.3;
+      targetAlpha = IDLE_ALPHA;
       target.x = -9999;
       target.y = -9999;
       hovering = false;
@@ -165,6 +172,10 @@ export default function TimeGrid() {
     visibilityObserver.observe(parent);
     parent.addEventListener("pointermove", onMove);
     parent.addEventListener("pointerleave", onLeave);
+    // Paint one full frame immediately on mount, regardless of intersection:
+    // if the observer never fires (unsupported, hidden parent, section already
+    // scrolled into view, etc.) the idle grid is still visible.
+    render();
     start();
 
     return () => {
