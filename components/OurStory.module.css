@@ -239,20 +239,53 @@
   border-radius: 5px;
 }
 
-.memorySurprise .paperClip {
+/* Each clip sits somewhere different — no repeated placement. */
+.miniGallery .photo:nth-child(1) .paperClip {
+  left: 16%;
+  top: -9px;
+  transform: rotate(-19deg);
+}
+
+.miniGallery .photo:nth-child(2) .paperClip {
   left: auto;
-  right: 26px;
-  transform: rotate(14deg);
+  right: 18%;
+  top: -11px;
+  transform: rotate(13deg);
+}
+
+.miniGallery .photo:nth-child(3) .paperClip {
+  left: 58%;
+  top: -8px;
+  transform: rotate(-5deg);
+}
+
+.miniGallery .photo:nth-child(1) {
+  transform: rotate(-2.5deg);
+}
+
+.miniGallery .photo:nth-child(2) {
+  transform: rotate(1.8deg);
+}
+
+.miniGallery .photo:nth-child(3) {
+  transform: rotate(-1deg);
+}
+
+.memorySurprise .video .paperClip,
+.memoryLetter .video .paperClip {
+  display: none;
 }
 
 .memoryTrain .paperClip {
   top: -12px;
-  left: 46%;
+  left: 42%;
   transform: rotate(-4deg);
 }
 
 .memoryPalace .paperClip {
-  transform: rotate(8deg);
+  top: -11px;
+  left: 30%;
+  transform: rotate(9deg);
 }
 
 .memoryMinimal .textPlaceholder::before {
@@ -292,62 +325,14 @@
   transform: translateX(-50%) rotate(-4deg);
 }
 
-/* Tape also runs down sides and across upper corners. */
-.textPlaceholder::after,
-.letterCard::after,
-.video::before {
-  content: "";
-  position: absolute;
-  right: -12px;
-  top: 38%;
-  width: 18px;
-  height: 64px;
-  transform: rotate(9deg);
-  background: rgba(228, 83, 163, 0.24);
-  border: 1px solid rgba(74, 16, 36, 0.12);
-  pointer-events: none;
+/* Keep tape sparse: no tape where a clip already holds the paper. */
+.photo:has(.paperClip)::before {
+  display: none;
 }
 
-.memoryMinimal .textPlaceholder::after {
-  right: auto;
-  left: -12px;
-  top: 30%;
-  transform: rotate(-8deg);
-}
-
-.memoryPalace .textPlaceholder::after {
-  top: -14px;
-  right: 16px;
-  width: 62px;
-  height: 18px;
-  transform: rotate(7deg);
-}
-
-.memoryTemple .textPlaceholder::after {
-  right: -10px;
-  top: 55%;
-  transform: rotate(-6deg);
-}
-
-.letterCard::after {
-  right: 14px;
-  top: -14px;
-  width: 66px;
-  height: 18px;
-  transform: rotate(-8deg);
-}
-
-.video {
-  position: relative;
-}
-
-.video::before {
-  left: -11px;
-  right: auto;
-  top: 26%;
-  height: 56px;
-  transform: rotate(-7deg);
-  background: rgba(74, 16, 36, 0.16);
+.memoryTemple .textPlaceholder::before,
+.memoryTrain .textPlaceholder::before {
+  display: none;
 }
 
 .memorySurprise .photo::before {
@@ -419,6 +404,25 @@
 
 .clip {
   display: none;
+}
+
+/* Real media keeps its own proportions — nothing is stretched or cropped. */
+.photo img,
+.photo video,
+.videoThumb img,
+.videoThumb video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 72vh;
+  object-fit: contain;
+}
+
+.photo:has(img),
+.photo:has(video),
+.videoThumb:has(img),
+.videoThumb:has(video) {
+  aspect-ratio: auto;
 }
 
 .wide {
