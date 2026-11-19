@@ -125,6 +125,7 @@ export default function TimeTogether() {
 
   return (
     <section ref={sectionRef} className={styles.section} id="our-time-together">
+      <div className={styles.blendTop} aria-hidden="true" />
       <TimeGrid />
 
       <div className={styles.stretchedHearts} aria-hidden="true">

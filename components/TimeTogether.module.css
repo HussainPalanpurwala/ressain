@@ -14,7 +14,6 @@
   justify-content: center;
   gap: clamp(2rem, 5vh, 3.5rem);
   padding: clamp(3rem, 8vh, 6rem) 1rem;
-  overflow: hidden;
   font-family: "Press Start 2P", monospace;
   background:
     linear-gradient(to bottom, #000000 0%, rgba(0, 0, 0, 0) 26%),
@@ -37,6 +36,8 @@
     rgba(0, 0, 0, 0) 3px,
     rgba(0, 0, 0, 0.16) 4px
   );
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000000 12%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000000 12%);
   z-index: 0;
 }
 
@@ -54,6 +55,18 @@
   opacity: 1;
   transform: translateY(calc((1 - var(--enter, 0)) * 18px))
     scale(calc(0.985 + var(--enter, 0) * 0.015));
+}
+
+/* Bridges the landing's dark burgundy bottom into this section's black. */
+.blendTop {
+  position: absolute;
+  top: -20%;
+  left: 0;
+  right: 0;
+  height: 20%;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 0%, #000000 100%);
 }
 
 /* Each part assembles one after another as the section scrolls in. */
@@ -237,8 +250,7 @@
   justify-content: space-between;
   margin-top: clamp(16px, 3vh, 24px);
   font-size: clamp(0.38rem, 1vw, 0.52rem);
-  color: var(--blush);
-  opacity: 0.85;
+  color: #d94a90;
 }
 
 .dots {
