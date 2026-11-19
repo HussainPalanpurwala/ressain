@@ -90,10 +90,13 @@ export default function WrittenInStars() {
       ref={sectionRef}
       className={styles.section}
       id="written-in-the-stars"
+      aria-labelledby="written-in-stars-heading"
       data-visible={visible}
     >
       <div className={styles.content}>
-        <h2 className={styles.title}>Written in the Stars</h2>
+        <h2 id="written-in-stars-heading" className={styles.title}>
+          Written in the Stars
+        </h2>
 
         <div className={styles.frame} data-active={active !== null}>
           {/* The only image on the page — plain, never redrawn or replaced. */}

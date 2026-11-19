@@ -52,6 +52,8 @@ export interface StoryLetter {
   readLabel: string;
   /** The full letter, shown when the card is opened. */
   fullText: StoryTextBlock;
+  /** Path to the scanned original letter image in /public. */
+  src: string;
 }
 
 export interface StorySong {
@@ -168,6 +170,7 @@ And somehow, that was enough to make me want to know more.`,
         heading: "The original letter",
         cardPreview: "[ letter text to be provided ]",
         readLabel: "Read the letter →",
+        src: "/media/original-letter.png",
         fullText: {
           label: "Full original letter — preserve exactly as supplied",
           lines: 12,

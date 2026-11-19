@@ -1,5 +1,10 @@
 .section {
+  /* The same palette tokens the neighbouring sections use — no new colours. */
+  --burgundy: #2b0a18;
+  --wine: #4a1024;
   --cherry: #c0284b;
+  --blush: #e453a3;
+  --cream: #fff0dc;
   --night: #0b0509;
 
   position: relative;
@@ -8,10 +13,18 @@
   justify-content: center;
   min-height: 100vh;
   min-height: 100svh;
-  padding: clamp(1rem, 3vh, 2.5rem) clamp(0.5rem, 2vw, 2rem);
+  /* Match the breathing room of the surrounding sections while still letting
+     the star map take up as much of the screen as its aspect ratio allows. */
+  padding: clamp(1.5rem, 4vh, 3rem) clamp(1rem, 5vw, 3rem);
   overflow: hidden;
   isolation: isolate;
-  background: linear-gradient(to bottom, #1a0812 0%, var(--night) 55%, #000000 100%);
+  font-family: "Press Start 2P", monospace;
+  color: var(--cream);
+  /* Faint warm depth at the top, as in the adjacent dark sections. This sits
+     behind the image only — the star map itself is never given a glow. */
+  background:
+    radial-gradient(ellipse 62% 42% at 50% 18%, rgba(74, 16, 36, 0.4) 0%, rgba(43, 10, 24, 0.18) 45%, transparent 75%),
+    linear-gradient(to bottom, #1a0812 0%, var(--night) 55%, #000000 100%);
 }
 
 /* Heading + image stacked in one centred column. */
@@ -52,8 +65,8 @@
 .frame {
   position: relative;
   width: 100%;
-  width: min(100%, calc((100vh - 10.5rem) * 1.39993));
-  width: min(100%, calc((100svh - 10.5rem) * 1.39993));
+  width: min(100%, calc((100vh - 11.5rem) * 1.39993));
+  width: min(100%, calc((100svh - 11.5rem) * 1.39993));
   max-width: 2400px;
   aspect-ratio: 4134 / 2953;
   isolation: isolate;
@@ -65,7 +78,8 @@
   height: 100%;
   object-fit: contain;
   opacity: 0.04;
-  transition: opacity 1.7s ease, filter 0.25s ease;
+  /* Heading first, then the map — a gentle, restrained stagger. */
+  transition: opacity 1.7s ease 0.2s, filter 0.25s ease;
 }
 
 .section[data-visible="true"] .map {
@@ -100,7 +114,7 @@
 }
 
 .hit:focus-visible {
-  outline: 1px dashed rgba(192, 40, 75, 0.8);
+  outline: 2px dashed var(--blush);
   outline-offset: 1px;
 }
 
