@@ -374,7 +374,10 @@
   --exit-at: 0.68;
   --dir: 0;
   position: relative;
-  z-index: 1;
+  /* Our Story's dark→paper blend strip (z-index:2) overlaps the timer's
+     bottom padding, which is exactly where this badge sits. Raise above it
+     so the badge stays fully visible; design and position are unchanged. */
+  z-index: 3;
   display: inline-flex;
   flex-direction: column;
   align-items: center;

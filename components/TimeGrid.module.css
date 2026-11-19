@@ -3,9 +3,11 @@
   top: -18%;
   left: 0;
   width: 100%;
-  /* Extends just past the timer bottom so the grid fades toward Our Story;
-     the section's horizontal clip keeps the bent edge lines from scrolling. */
-  height: 126%;
+  /* Stop inside the timer's bottom edge instead of running past it: this
+     section only clips horizontally (overflow-x: clip), so anything drawn
+     below the edge bleeds into Our Story. The mask fades the grid out fully
+     before the canvas ends, keeping all visible grid inside the timer. */
+  height: 116%;
   /* Above the section's z-index:0 decorative layers (scanlines, blend strip,
      stretched hearts, pixel deco) but below the z-index:1 console content. */
   z-index: 1;
@@ -16,7 +18,7 @@
     transparent 0%,
     rgba(0, 0, 0, 0.5) 6%,
     #000000 16%,
-    #000000 86%,
+    #000000 80%,
     transparent 100%
   );
   mask-image: linear-gradient(
@@ -24,7 +26,32 @@
     transparent 0%,
     rgba(0, 0, 0, 0.5) 6%,
     #000000 16%,
-    #000000 86%,
+    #000000 80%,
     transparent 100%
   );
+}
+
+/* On small screens the timer grows taller as its content wraps, so pull the
+   canvas and its fade further inside to guarantee the grid never paints past
+   the timer's bottom edge into Our Story. The desktop cursor warp is untouched. */
+@media (max-width: 600px) {
+  .grid {
+    height: 112%;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.5) 6%,
+      #000000 16%,
+      #000000 76%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.5) 6%,
+      #000000 16%,
+      #000000 76%,
+      transparent 100%
+    );
+  }
 }
