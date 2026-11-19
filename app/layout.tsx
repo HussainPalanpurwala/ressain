@@ -20,6 +20,11 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+        <link
+          rel="preload"
+          as="style"
+          href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+        />
       </head>
       <body>{children}</body>
     </html>
