@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import PixelHeart from "./PixelHeart";
 
-const HEART_COUNT = 18;
+const HEART_COUNT = 20;
 const COLS = 6;
 const ROWS = 5;
 const COLORS = ["#E453A3", "#F0254B", "#FF8FC7"];
