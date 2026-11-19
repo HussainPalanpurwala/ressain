@@ -56,10 +56,10 @@ function makeHeart(cell: number, rand: () => number, fresh: boolean): Heart {
     cell,
     ...cellPosition(cell, rand),
     size: 8 + rand() * 40,
-    duration: 11 + rand() * 11,
+    duration: 7 + rand() * 7,
     // Only the first render is staggered. Re-rolls start at 0, otherwise a
     // heart restarts mid-cycle and vanishes right after appearing.
-    delay: fresh ? -(rand() * 22) : 0,
+    delay: fresh ? -(rand() * 14) : 0,
     rot: (rand() * 2 - 1) * 20,
     opacity: 0.35 + rand() * 0.45,
     color: COLORS[Math.floor(rand() * COLORS.length)],
