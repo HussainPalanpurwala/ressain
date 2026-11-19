@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import BootSequence from "./BootSequence";
+import CuriousCorner from "./CuriousCorner";
 import Landing from "./Landing";
 import MusicPlayer from "./MusicPlayer";
 import OpenWhen from "./OpenWhen";
@@ -38,6 +39,7 @@ export default function Experience() {
       <Landing />
       <TimeTogether />
       <OurStory />
+      <CuriousCorner />
       <Soundtrack />
       <OpenWhen />
       <WrittenInStars />
