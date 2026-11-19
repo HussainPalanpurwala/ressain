@@ -30,7 +30,7 @@ body {
 
 @media (max-width: 600px) {
   .app-main--player {
-    padding-bottom: 215px;
+    padding-bottom: 115px;
   }
 }
 
@@ -446,7 +446,7 @@ body {
     10px 10px 0 #000,
     11px 11px 0 #000,
     12px 12px 0 #000,
-    0 0 30px rgba(255, 85, 158, 0.55);
+    0 0 26px rgba(228, 83, 163, 0.28);
 }
 
 /* Permanent hearts around the title — outlined in black, never animated */
@@ -611,6 +611,11 @@ body {
     font-size: clamp(1.3rem, 5.8vw, 2.2rem);
     -webkit-text-stroke: 0;
     transform: skewX(-6deg);
+    text-shadow:
+      2px 2px 0 #000,
+      3px 3px 0 #000,
+      4px 4px 0 #000,
+      0 0 10px rgba(228, 83, 163, 0.14);
   }
 
   .landing__heart--tl {

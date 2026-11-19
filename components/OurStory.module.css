@@ -19,7 +19,8 @@
     repeating-linear-gradient(45deg, rgba(74, 16, 36, 0.02) 0 2px, transparent 2px 4px);
 }
 
-/* Smoothens the timer's dark tail into the paper of this section. */
+/* Single smooth blend: the timer's dark tail into this section's paper.
+   No light→dark→light band — it only ever gets lighter going down. */
 .blendFromTimer {
   position: absolute;
   top: -140px;
@@ -30,10 +31,10 @@
   z-index: 0;
   background: linear-gradient(
     to bottom,
-    rgba(11, 5, 9, 0) 0%,
-    #1a0710 18%,
-    #2b0a18 45%,
-    #d9c7a8 78%,
+    #0a0509 0%,
+    #2b0a18 26%,
+    #8c5a63 58%,
+    var(--paper-dark) 82%,
     var(--paper) 100%
   );
 }
@@ -68,8 +69,8 @@
   max-width: 560px;
   font-size: clamp(0.55rem, 1.5vw, 0.78rem);
   line-height: 2.2;
-  color: #fff0f7;
-  text-shadow: 1px 1px 0 #1a0710;
+  color: var(--burgundy);
+  text-shadow: 1px 1px 0 rgba(255, 246, 230, 0.75);
 }
 
 /* Diary binding: subtle stitching instead of a timeline line */
@@ -260,6 +261,12 @@
   transform: rotate(-5deg);
 }
 
+.miniGallery .photo:nth-child(4) .paperClip {
+  left: 34%;
+  top: -10px;
+  transform: rotate(11deg);
+}
+
 .miniGallery .photo:nth-child(1) {
   transform: rotate(-2.5deg);
 }
@@ -270,6 +277,10 @@
 
 .miniGallery .photo:nth-child(3) {
   transform: rotate(-1deg);
+}
+
+.miniGallery .photo:nth-child(4) {
+  transform: rotate(2.4deg);
 }
 
 .memorySurprise .video .paperClip,
@@ -606,7 +617,7 @@
 
 .miniGallery {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   margin: clamp(1.5rem, 3vh, 2rem) 0;
 }
@@ -916,4 +927,31 @@
   line-height: 2.2;
   color: var(--ink);
   white-space: pre-wrap;
+}
+
+/* One <p> per paragraph — breathing room between them, none at the edges. */
+.storyText + .storyText {
+  margin-top: 1.4em;
+}
+
+.narrowReading .textPlaceholder + .textPlaceholder {
+  margin-top: clamp(1.5rem, 4vh, 2.5rem);
+}
+
+/* Personal note salutation: struck-through name, then the real one. */
+.noteNameStruck,
+.noteNameBold {
+  margin: 0;
+  font-size: clamp(0.7rem, 1.9vw, 1rem);
+  line-height: 1.9;
+}
+
+.noteNameStruck {
+  color: #8a3c58;
+  text-decoration: line-through;
+}
+
+.noteNameBold {
+  color: var(--burgundy);
+  font-weight: 700;
 }

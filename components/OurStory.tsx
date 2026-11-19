@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import type {
   StoryPhoto,
   StorySong,
@@ -10,12 +10,31 @@ import type {
 import { story } from "@/content/story";
 import styles from "./OurStory.module.css";
 
+/* One paragraph per blank line in the copy; *word* becomes <em>word</em>. */
+function Prose({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/\n\s*\n/).map((paragraph, index) => (
+        <p className={styles.storyText} key={index}>
+          {paragraph.split(/(\*[^*]+\*)/g).map((part, partIndex) =>
+            part.length > 2 && part.startsWith("*") && part.endsWith("*") ? (
+              <em key={partIndex}>{part.slice(1, -1)}</em>
+            ) : (
+              <Fragment key={partIndex}>{part}</Fragment>
+            )
+          )}
+        </p>
+      ))}
+    </>
+  );
+}
+
 function TextPlaceholder({ block }: { block: StoryTextBlock }) {
   const hasText = block.text.trim().length > 0;
   return (
     <div className={styles.textPlaceholder} data-reveal>
       {hasText ? (
-        <p className={styles.storyText}>{block.text}</p>
+        <Prose text={block.text} />
       ) : (
         <>
           <span className={styles.phLabel}>[ {block.label} — text to be provided ]</span>
@@ -102,7 +121,7 @@ function SongDetail({ song }: { song: StorySong }) {
     <div>
       {song.title && <span className={styles.letterHeading}>{song.title}</span>}
       {song.artist && <span className={styles.phLabel}>{song.artist}</span>}
-      {song.lyrics && <p className={styles.storyText}>{song.lyrics}</p>}
+      {song.lyrics && <Prose text={song.lyrics} />}
     </div>
   );
 }
@@ -126,13 +145,21 @@ export default function OurStory() {
     const update = () => {
       frame = 0;
       const viewport = window.innerHeight;
+      const isMobile = window.matchMedia("(max-width: 760px)").matches;
+      // Start the reveal a little later — when the item is ~75% down the
+      // viewport (was ~92%) — and use a wider, gentler window on mobile so the
+      // pop-in feels less abrupt. The value is recomputed from scroll position
+      // every frame, so the effect still reverses when scrolling back up.
+      const start = viewport * 0.75;
+      const span = viewport * (isMobile ? 0.7 : 0.55);
       items.forEach((item) => {
         const rect = item.getBoundingClientRect();
-        const raw = Math.max(
-          0,
-          Math.min(1, (viewport * 0.92 - rect.top) / (viewport * 0.55))
-        );
-        const eased = raw * raw * (3 - 2 * raw);
+        const raw = Math.max(0, Math.min(1, (start - rect.top) / span));
+        // Smootherstep on mobile (continuous first and second derivatives),
+        // smoothstep elsewhere — both ease in and out instead of popping.
+        const eased = isMobile
+          ? raw * raw * raw * (raw * (raw * 6 - 15) + 10)
+          : raw * raw * (3 - 2 * raw);
         item.style.setProperty("--seen", eased.toFixed(3));
       });
     };
@@ -264,6 +291,7 @@ export default function OurStory() {
         <h2 className={styles.transitionTitle}>{momentToRemember.title}</h2>
         <div className={styles.narrowReading}>
           <TextPlaceholder block={momentToRemember.text} />
+          <TextPlaceholder block={momentToRemember.reflection} />
         </div>
       </div>
 
@@ -271,6 +299,8 @@ export default function OurStory() {
       <div className={styles.note} data-reveal>
         <h2 className={styles.noteTitle}>{personalNote.title}</h2>
         <div className={styles.notePaper}>
+          <p className={styles.noteNameStruck}>{personalNote.crossedName}</p>
+          <p className={styles.noteNameBold}>{personalNote.boldName}</p>
           <TextPlaceholder block={personalNote.opening} />
           <TextPlaceholder block={personalNote.middle} />
           <TextPlaceholder block={personalNote.ending} />

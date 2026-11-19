@@ -24,12 +24,13 @@
       #000000 0%,
       rgba(0, 0, 0, 0) 26%
     ),
+    /* Keep the timer dark all the way to its bottom edge so the story can do
+       one smooth dark→paper blend instead of a light→dark→light band. */
     linear-gradient(
       to bottom,
-      rgba(238, 225, 200, 0) 62%,
-      rgba(238, 225, 200, 0.18) 80%,
-      rgba(238, 225, 200, 0.55) 92%,
-      #eee1c8 100%
+      rgba(10, 5, 9, 0) 62%,
+      rgba(10, 5, 9, 0.4) 84%,
+      var(--near-black) 100%
     ),
     radial-gradient(
       ellipse at 50% 40%,
