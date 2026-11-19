@@ -1,0 +1,528 @@
+.section {
+  --burgundy: #2b0a18;
+  --cherry: #f0254b;
+  --blush: #e453a3;
+  --cream: #f7efe2;
+  --muted: #cbbbaa;
+  --silver: #c8c8d0;
+  --near-black: #0b0509;
+
+  position: relative;
+  padding: clamp(5rem, 12vh, 9rem) clamp(1rem, 5vw, 4rem);
+  background: linear-gradient(to bottom, #000000 0%, var(--near-black) 8%, var(--burgundy) 42%, var(--near-black) 88%, #000000 100%);
+  color: var(--cream);
+  font-family: "Inter", sans-serif;
+}
+
+.intro {
+  max-width: 760px;
+  margin: 0 auto clamp(5rem, 12vh, 9rem);
+  text-align: center;
+}
+
+.sectionTitle,
+.memoryTitle,
+.transitionTitle,
+.noteTitle {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 500;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--cream);
+  text-shadow: 0 0 36px rgba(228, 83, 163, 0.2);
+}
+
+.introLine {
+  margin: clamp(1.5rem, 4vh, 2.5rem) auto 0;
+  max-width: 560px;
+  font-size: clamp(0.95rem, 1.8vw, 1.2rem);
+  line-height: 1.9;
+  font-weight: 300;
+  color: var(--muted);
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  max-width: 1080px;
+  margin: 0 auto;
+  --line-progress: 0;
+}
+
+.timelineLine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 15px;
+  width: 1px;
+  background: rgba(247, 239, 226, 0.16);
+}
+
+.timelineFill {
+  display: block;
+  width: 100%;
+  height: calc(var(--line-progress) * 100%);
+  background: linear-gradient(to bottom, var(--blush), var(--cherry));
+  box-shadow: 0 0 10px rgba(228, 83, 163, 0.5);
+}
+
+.memory {
+  position: relative;
+  padding-left: clamp(48px, 6vw, 80px);
+  margin-bottom: clamp(6rem, 14vh, 11rem);
+}
+
+.marker {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  border-radius: 50%;
+  border: 1px solid var(--blush);
+  background: var(--near-black);
+  color: var(--blush);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+}
+
+.memoryTitle {
+  margin: 0 0 clamp(1.5rem, 3vh, 2.2rem);
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  line-height: 1.1;
+  color: var(--cream);
+}
+
+.memoryBody {
+  max-width: 820px;
+}
+
+/* Placeholders — deliberately obvious and easy to swap out */
+.phLabel {
+  display: block;
+  font-size: 0.7rem;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blush);
+}
+
+.textPlaceholder {
+  padding: clamp(1.2rem, 3vw, 2rem);
+  background: rgba(247, 239, 226, 0.04);
+  border: 1px dashed rgba(247, 239, 226, 0.28);
+  border-radius: 2px;
+}
+
+.phLines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.phLines span {
+  display: block;
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(247, 239, 226, 0.12);
+}
+
+.photo,
+.videoThumb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: 0;
+  border: 1px solid rgba(200, 200, 208, 0.45);
+  background: linear-gradient(145deg, #1c0c16, #0c050a);
+  color: var(--cream);
+  overflow: hidden;
+}
+
+.photo {
+  cursor: zoom-in;
+}
+
+.photoInner {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  padding: 1rem;
+}
+
+.photoIcon {
+  font-size: 2.4rem;
+  color: var(--silver);
+  opacity: 0.7;
+}
+
+.wide {
+  aspect-ratio: 16 / 10;
+}
+
+.tall {
+  aspect-ratio: 3 / 4;
+}
+
+.square {
+  aspect-ratio: 1 / 1;
+}
+
+.photo:hover {
+  border-color: var(--blush);
+  box-shadow: 0 0 22px rgba(228, 83, 163, 0.25);
+}
+
+.instagramDetail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: clamp(1.5rem, 3vh, 2rem);
+  padding: 12px 16px;
+  border-left: 2px solid var(--blush);
+  background: rgba(228, 83, 163, 0.06);
+}
+
+.igDot {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--blush);
+  border-radius: 4px;
+  flex: 0 0 auto;
+}
+
+/* 02 — letter + videos */
+.letterLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+}
+
+.letterCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  text-align: left;
+  background: #f3e7d3;
+  color: var(--burgundy);
+  border: 1px solid #c9b49c;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+.letterCard .phLabel {
+  color: #8a5a70;
+}
+
+.letterSeal {
+  font-size: 1.4rem;
+  color: var(--cherry);
+}
+
+.letterHeading {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(1.3rem, 2.5vw, 1.9rem);
+}
+
+.letterOpen {
+  margin-top: auto;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cherry);
+}
+
+.videoStack {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vh, 1.8rem);
+}
+
+.video {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.videoThumb {
+  aspect-ratio: 16 / 9;
+}
+
+.videoFeatured .videoThumb {
+  aspect-ratio: 16 / 9;
+  border-color: var(--blush);
+  box-shadow: 0 0 24px rgba(228, 83, 163, 0.2);
+}
+
+.playButton {
+  align-self: flex-start;
+  padding: 9px 14px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--cream);
+  background: transparent;
+  border: 1px solid var(--blush);
+  cursor: pointer;
+}
+
+.playButton:hover {
+  color: var(--blush);
+  background: rgba(228, 83, 163, 0.1);
+}
+
+/* 03 — Jammu */
+.miniGallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: clamp(1.5rem, 3vh, 2rem) 0;
+}
+
+/* 04 — Palace */
+.palaceTop,
+.palaceBottom {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+}
+
+.palaceBottom {
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+  padding-top: clamp(2rem, 4vh, 3rem);
+  border-top: 1px solid rgba(247, 239, 226, 0.16);
+}
+
+/* 05 — Temple */
+.memoryTemple .memoryBody {
+  max-width: 700px;
+}
+
+.memoryTemple .photo {
+  margin-top: clamp(2rem, 5vh, 3rem);
+}
+
+/* 06 — Train */
+.memoryTrain .memoryBody {
+  max-width: 720px;
+}
+
+.trainMotif {
+  display: flex;
+  gap: 8px;
+  margin-top: clamp(2rem, 5vh, 3rem);
+}
+
+.trainMotif span {
+  width: 44px;
+  height: 2px;
+  background: linear-gradient(to right, var(--blush), transparent);
+  opacity: 0.6;
+}
+
+.trainMotif span:nth-child(2) {
+  width: 28px;
+  opacity: 0.4;
+}
+
+.trainMotif span:nth-child(3) {
+  width: 16px;
+  opacity: 0.25;
+}
+
+/* Transition */
+.transition {
+  max-width: 640px;
+  margin: clamp(4rem, 10vh, 8rem) auto;
+  text-align: center;
+}
+
+.transitionTitle {
+  margin: 0 0 clamp(1.5rem, 4vh, 2.5rem);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-style: italic;
+  color: var(--cream);
+}
+
+.narrowReading {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Personal note */
+.note {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: clamp(2rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem);
+  background: #f7efe2;
+  color: var(--burgundy);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.noteTitle {
+  margin: 0 0 clamp(2rem, 5vh, 3rem);
+  font-size: clamp(2.4rem, 5.5vw, 4rem);
+  color: var(--burgundy);
+}
+
+.notePaper {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.8rem, 4vh, 2.8rem);
+}
+
+.notePaper .textPlaceholder {
+  background: rgba(43, 10, 24, 0.03);
+  border-color: rgba(43, 10, 24, 0.22);
+}
+
+.notePaper .phLabel {
+  color: #a04263;
+}
+
+.notePaper .phLines span {
+  background: rgba(43, 10, 24, 0.14);
+}
+
+.songDetail {
+  margin-top: clamp(1rem, 3vh, 2rem);
+  padding-top: clamp(1.5rem, 3vh, 2rem);
+  border-top: 1px solid rgba(43, 10, 24, 0.2);
+}
+
+.songDetail .phLabel {
+  color: var(--cherry);
+}
+
+/* Reveal */
+.memory,
+.intro,
+.transition,
+.note {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+
+.inView {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Lightbox / reading view */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(6, 3, 6, 0.92);
+  cursor: zoom-out;
+}
+
+.lightboxInner {
+  position: relative;
+  width: min(900px, 92vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  display: grid;
+  place-items: center;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid var(--blush);
+  background: #140810;
+  text-align: center;
+  cursor: default;
+}
+
+.letterReading {
+  display: block;
+  text-align: left;
+  background: #f3e7d3;
+  color: var(--burgundy);
+}
+
+.letterReading .phLabel {
+  color: #8a5a70;
+}
+
+.letterReading .memoryTitle {
+  color: var(--burgundy);
+}
+
+.letterReading .textPlaceholder {
+  margin-top: 1.5rem;
+  background: rgba(43, 10, 24, 0.03);
+  border-color: rgba(43, 10, 24, 0.25);
+}
+
+.letterReading .phLines span {
+  background: rgba(43, 10, 24, 0.14);
+}
+
+.closeButton {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--blush);
+  background: transparent;
+  color: var(--blush);
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .letterLayout,
+  .palaceTop,
+  .palaceBottom {
+    grid-template-columns: 1fr;
+  }
+
+  .miniGallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .memory {
+    padding-left: 44px;
+  }
+
+  .marker {
+    width: 27px;
+    height: 27px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memory,
+  .intro,
+  .transition,
+  .note {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .timelineFill {
+    height: 100%;
+  }
+}

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import BootSequence from "./BootSequence";
 import Landing from "./Landing";
 import MusicPlayer from "./MusicPlayer";
+import OurStory from "./OurStory";
 import TimeTogether from "./TimeTogether";
 import useBackgroundMusic from "./useBackgroundMusic";
 
@@ -32,6 +33,7 @@ export default function Experience() {
       {music.audio}
       <Landing />
       <TimeTogether />
+      <OurStory />
       {entered && (
         <MusicPlayer
           playing={music.playing}
