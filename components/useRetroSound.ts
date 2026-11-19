@@ -11,59 +11,71 @@ type Tone = {
   slideTo?: number;
 };
 
+// A 20 ms silent WAV. Playing it *inside* the first real user gesture is the
+// classic mobile Safari trick that unlocks Web Audio for the whole document;
+// resume() on its own is frequently ignored while the page is still locked.
+const SILENT_WAV =
+  "data:audio/wav;base64,UklGRmQBAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
+
 export default function useRetroSound() {
   const ctxRef = useRef<AudioContext | null>(null);
-  const pendingRef = useRef<Tone[][]>([]);
-  const scheduleRef = useRef<(tones: Tone[]) => void>(() => {});
+  const unlockedRef = useRef(false);
+  const pendingRef = useRef<Tone[] | null>(null);
+  // The power-on fanfare is kept apart from ordinary blips so the unlock can
+  // replay it once without ever stacking the whole locked boot into one burst.
+  const startupRef = useRef<Tone[] | null>(null);
+  const scheduleRef = useRef<(tones: Tone[], offset?: number) => void>(
+    () => {}
+  );
   const [enabled, setEnabled] = useState(true);
-  // Mirrors `enabled` so the unlock/play callbacks (which are created once)
-  // always see the current mute state instead of a stale captured value.
+  // Mirrors `enabled` so the one-shot unlock callback (created once) always
+  // sees the current mute state instead of a stale captured value.
   const enabledRef = useRef(enabled);
   enabledRef.current = enabled;
 
+  // Nothing queued before a mute should ever sound if sound is re-enabled.
   useEffect(() => {
-    // Nothing queued before a mute should ever sound if sound is re-enabled.
-    if (!enabled) pendingRef.current = [];
+    if (!enabled) {
+      pendingRef.current = null;
+      startupRef.current = null;
+    }
   }, [enabled]);
 
-  const schedule = useCallback(
-    (tones: Tone[]) => {
-      const ctx = ctxRef.current;
-      if (!ctx || ctx.state !== "running") return;
-      const now = ctx.currentTime + 0.01;
-      tones.forEach(
-        ({
-          freq,
-          duration,
-          type = "square",
-          delay = 0,
-          volume = 0.14,
-          slideTo,
-        }) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          const start = now + delay;
+  const schedule = useCallback((tones: Tone[], offset = 0) => {
+    const ctx = ctxRef.current;
+    if (!ctx || ctx.state !== "running") return;
+    const now = ctx.currentTime + 0.01 + offset;
+    tones.forEach(
+      ({
+        freq,
+        duration,
+        type = "square",
+        delay = 0,
+        volume = 0.14,
+        slideTo,
+      }) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const start = now + delay;
 
-          osc.type = type;
-          osc.frequency.setValueAtTime(freq, start);
-          if (slideTo) {
-            osc.frequency.exponentialRampToValueAtTime(slideTo, start + duration);
-          }
-
-          gain.gain.setValueAtTime(0.0001, start);
-          gain.gain.exponentialRampToValueAtTime(volume, start + 0.008);
-          gain.gain.setValueAtTime(volume, start + duration * 0.55);
-          gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(start);
-          osc.stop(start + duration + 0.03);
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, start);
+        if (slideTo) {
+          osc.frequency.exponentialRampToValueAtTime(slideTo, start + duration);
         }
-      );
-    },
-    []
-  );
+
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(volume, start + 0.008);
+        gain.gain.setValueAtTime(volume, start + duration * 0.55);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(start);
+        osc.stop(start + duration + 0.03);
+      }
+    );
+  }, []);
 
   useEffect(() => {
     scheduleRef.current = schedule;
@@ -76,41 +88,102 @@ export default function useRetroSound() {
         .webkitAudioContext;
     if (!AudioCtx) return;
 
+    // Create the context as soon as the client mounts so it is ready for the
+    // very first gesture instead of being built part-way through the boot.
     const ctx = new AudioCtx();
     ctxRef.current = ctx;
 
-    const unlock = () => {
-      void ctx.resume().then(() => {
-        const queued = pendingRef.current;
-        pendingRef.current = [];
-        if (!enabledRef.current) return;
-        // Only the newest sound is still relevant. Replaying every blip that
-        // queued while the context was locked would stack them into one burst.
-        const latest = queued[queued.length - 1];
-        if (latest) scheduleRef.current(latest);
-      });
+    let unlockAudio: HTMLAudioElement | null = null;
+
+    const flush = () => {
+      if (!enabledRef.current) return;
+      const startup = startupRef.current;
+      const pending = pendingRef.current;
+      startupRef.current = null;
+      pendingRef.current = null;
+      if (!startup && !pending) return;
+
+      if (startup) scheduleRef.current(startup);
+      if (pending) {
+        // Stagger the blip after the fanfare so the two never collapse into a
+        // single burst of overlapping notes.
+        const fanfareLength = startup
+          ? startup.reduce(
+              (end, tone) => Math.max(end, (tone.delay ?? 0) + tone.duration),
+              0
+            )
+          : 0;
+        scheduleRef.current(pending, startup ? fanfareLength + 0.08 : 0);
+      }
     };
+
+    const unlock = () => {
+      // Mobile browsers only grant audio access to media played *inside* a user
+      // gesture. The silent WAV satisfies that rule inaudibly, after which the
+      // Web Audio context is free to resume.
+      try {
+        if (!unlockAudio) {
+          unlockAudio = new Audio(SILENT_WAV);
+          unlockAudio.preload = "auto";
+        }
+        unlockAudio.currentTime = 0;
+        const played = unlockAudio.play();
+        if (played && typeof played.catch === "function") {
+          played.catch(() => {});
+        }
+      } catch {
+        // Ignore browsers that refuse programmatic playback; resume() below is
+        // still attempted.
+      }
+
+      const active = ctxRef.current ?? ctx;
+      if (active.state === "running") {
+        if (!unlockedRef.current) {
+          unlockedRef.current = true;
+          flush();
+        }
+        return;
+      }
+      void active
+        .resume()
+        .then(() => {
+          if (active.state === "running") {
+            unlockedRef.current = true;
+            flush();
+          }
+        })
+        .catch(() => {});
+    };
+
     const events = ["pointerdown", "touchstart", "keydown", "click"];
     events.forEach((event) => window.addEventListener(event, unlock, true));
 
     return () => {
-      events.forEach((event) => window.removeEventListener(event, unlock, true));
+      events.forEach((event) =>
+        window.removeEventListener(event, unlock, true)
+      );
+      if (unlockAudio) {
+        unlockAudio.pause();
+        unlockAudio.src = "";
+      }
       void ctx.close();
       ctxRef.current = null;
+      unlockedRef.current = false;
     };
   }, []);
 
   const play = useCallback(
-    (tones: Tone[]) => {
+    (tones: Tone[], startup = false) => {
       if (!enabledRef.current) return;
       const ctx = ctxRef.current;
       if (!ctx) return;
       if (ctx.state !== "running") {
-        // Queue it — it will sound as soon as a gesture unlocks audio.
-        // Keep only the newest request so a long locked boot (startup fanfare
-        // plus every stage blip) cannot all fire at once on the first gesture.
+        // Queue it — it will sound as soon as a gesture unlocks audio. Keep the
+        // fanfare and only the newest live sound so a long locked boot cannot
+        // dump every missed blip at once.
         void ctx.resume();
-        pendingRef.current = [tones];
+        if (startup) startupRef.current = tones;
+        else pendingRef.current = tones;
         return;
       }
       schedule(tones);
@@ -121,12 +194,15 @@ export default function useRetroSound() {
   // Console-style power-on fanfare.
   const playStartup = useCallback(
     () =>
-      play([
-        { freq: 523, duration: 0.14, volume: 0.15 },
-        { freq: 659, duration: 0.14, delay: 0.12, volume: 0.15 },
-        { freq: 784, duration: 0.14, delay: 0.24, volume: 0.15 },
-        { freq: 1047, duration: 0.3, delay: 0.36, volume: 0.16 },
-      ]),
+      play(
+        [
+          { freq: 523, duration: 0.14, volume: 0.15 },
+          { freq: 659, duration: 0.14, delay: 0.12, volume: 0.15 },
+          { freq: 784, duration: 0.14, delay: 0.24, volume: 0.15 },
+          { freq: 1047, duration: 0.3, delay: 0.36, volume: 0.16 },
+        ],
+        true
+      ),
     [play]
   );
 
