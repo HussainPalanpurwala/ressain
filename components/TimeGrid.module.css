@@ -10,14 +10,16 @@
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    #000000 22%,
+    rgba(0, 0, 0, 0.35) 14%,
+    #000000 38%,
     #000000 86%,
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    #000000 22%,
+    rgba(0, 0, 0, 0.35) 14%,
+    #000000 38%,
     #000000 86%,
     transparent 100%
   );

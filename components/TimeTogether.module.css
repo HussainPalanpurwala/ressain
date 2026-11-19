@@ -16,12 +16,14 @@
   padding: clamp(3rem, 8vh, 6rem) 1rem;
   overflow: hidden;
   font-family: "Press Start 2P", monospace;
-  background: radial-gradient(
-    ellipse at 50% 40%,
-    var(--burgundy) 0%,
-    #12050d 55%,
-    var(--near-black) 100%
-  );
+  background:
+    linear-gradient(to bottom, #000000 0%, rgba(0, 0, 0, 0) 26%),
+    radial-gradient(
+      ellipse at 50% 40%,
+      var(--burgundy) 0%,
+      #12050d 55%,
+      var(--near-black) 100%
+    );
 }
 
 .section::before {
@@ -54,6 +56,21 @@
     scale(calc(0.985 + var(--enter, 0) * 0.015));
 }
 
+/* Each part assembles one after another as the section scrolls in. */
+.consoleTop,
+.screenHeader,
+.daysBlock,
+.units,
+.unit,
+.screenFooter,
+.consoleBottom,
+.closing,
+.timestamp {
+  --p: clamp(0, (var(--enter, 0) - var(--at, 0)) * 3.6, 1);
+  opacity: var(--p);
+  transform: translateY(calc((1 - var(--p)) * var(--slide, 16px)));
+}
+
 .consoleTop,
 .consoleBottom {
   display: flex;
@@ -66,6 +83,7 @@
 }
 
 .consoleTop {
+  --at: 0.02;
   padding: 2px 2px clamp(10px, 2vw, 14px);
 }
 
@@ -108,6 +126,7 @@
 }
 
 .screenHeader {
+  --at: 0.08;
   position: relative;
   z-index: 1;
 }
@@ -130,6 +149,8 @@
 }
 
 .daysBlock {
+  --at: 0.16;
+  --slide: 22px;
   position: relative;
   z-index: 1;
   display: flex;
@@ -168,6 +189,7 @@
 }
 
 .units {
+  --at: 0.26;
   position: relative;
   z-index: 1;
   display: grid;
@@ -175,6 +197,18 @@
   border-top: 3px dashed rgba(228, 83, 163, 0.45);
   border-bottom: 3px dashed rgba(228, 83, 163, 0.45);
   padding: clamp(14px, 3vh, 22px) 0;
+}
+
+.unit {
+  --at: 0.3;
+}
+
+.unit:nth-child(2) {
+  --at: 0.37;
+}
+
+.unit:nth-child(3) {
+  --at: 0.44;
 }
 
 .unit + .unit {
@@ -195,6 +229,7 @@
 }
 
 .screenFooter {
+  --at: 0.5;
   position: relative;
   z-index: 1;
   display: flex;
@@ -212,6 +247,7 @@
 }
 
 .consoleBottom {
+  --at: 0.56;
   padding: clamp(10px, 2vw, 14px) 2px 0;
 }
 
@@ -240,6 +276,7 @@
 }
 
 .closing {
+  --at: 0.62;
   position: relative;
   z-index: 1;
   max-width: min(92vw, 760px);
@@ -250,8 +287,6 @@
   color: var(--cream);
   text-shadow: 2px 2px 0 #1c0710;
   min-height: 6em;
-  opacity: 1;
-  transform: translateY(calc((1 - var(--enter-close, 0)) * 12px));
 }
 
 .cursor {
@@ -260,6 +295,7 @@
 }
 
 .timestamp {
+  --at: 0.7;
   position: relative;
   z-index: 1;
   display: inline-flex;
@@ -272,8 +308,6 @@
   box-shadow:
     5px 5px 0 #1c0710,
     inset 0 0 20px rgba(228, 83, 163, 0.12);
-  opacity: 1;
-  transform: translateY(calc((1 - var(--enter-close, 0)) * 12px));
 }
 
 .timestampLabel {
