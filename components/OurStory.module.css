@@ -14,7 +14,7 @@
   color: var(--ink);
   background-color: var(--paper);
   background-image:
-    linear-gradient(to bottom, #000000 0%, #2b0a18 2%, #d9c7a8 5%, var(--paper) 9%, var(--paper) 95%, #d9c7a8 98%, #2b0a18 99%, #000000 100%),
+    linear-gradient(to bottom, var(--paper) 0%, var(--paper) 94%, #d9c7a8 97%, #2b0a18 99%, #000000 100%),
     repeating-linear-gradient(45deg, rgba(74, 16, 36, 0.02) 0 2px, transparent 2px 4px);
 }
 
@@ -30,8 +30,9 @@
   background: linear-gradient(
     to bottom,
     rgba(11, 5, 9, 0) 0%,
-    #2b0a18 38%,
-    #d9c7a8 75%,
+    #1a0710 18%,
+    #2b0a18 45%,
+    #d9c7a8 78%,
     var(--paper) 100%
   );
 }
