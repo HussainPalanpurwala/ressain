@@ -23,6 +23,17 @@
   font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
   background-color: #0a0409;
   background-image:
+    /* Seam blend: the star map's black at the top edge and the page's
+       near-black at the bottom edge. Both pseudo-elements are already used
+       here (scanlines + pixel grid), so the blend is the topmost background
+       layer instead — behind content, no pointer capture, mobile-safe. */
+    linear-gradient(
+      to bottom,
+      #000000 0%,
+      rgba(0, 0, 0, 0) 9%,
+      rgba(11, 5, 9, 0) 91%,
+      #0b0509 100%
+    ),
     radial-gradient(
       ellipse 58% 40% at 50% 22%,
       rgba(233, 166, 187, 0.12) 0%,

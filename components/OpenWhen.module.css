@@ -13,6 +13,16 @@
   font-family: "Press Start 2P", monospace;
   color: var(--cream);
   background:
+    /* Seam blend: the soundtrack's near-black at the top edge and written in
+       the stars' night tone at the bottom edge. Topmost background layer —
+       no pointer capture, always behind the notes. */
+    linear-gradient(
+      to bottom,
+      #0b0509 0%,
+      rgba(11, 5, 9, 0) 9%,
+      rgba(26, 8, 18, 0) 91%,
+      #1a0812 100%
+    ),
     radial-gradient(ellipse at 50% 30%, #3a1023 0%, #170710 60%, var(--near-black) 100%);
 }
 

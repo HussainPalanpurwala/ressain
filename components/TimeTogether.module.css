@@ -19,6 +19,16 @@
   overflow-x: clip;
   font-family: "Press Start 2P", monospace;
   background:
+    /* Seam blend: the landing's black at the top edge and the dark tone the
+       story's blend strip picks up at the bottom edge. Topmost background
+       layer, so it never catches pointers or covers the console content. */
+    linear-gradient(
+      to bottom,
+      #000000 0%,
+      rgba(0, 0, 0, 0) 9%,
+      rgba(10, 5, 9, 0) 91%,
+      #0a0509 100%
+    ),
     linear-gradient(
       to bottom,
       #000000 0%,

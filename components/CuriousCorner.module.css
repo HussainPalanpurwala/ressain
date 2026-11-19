@@ -18,6 +18,17 @@
      little texture; the cream text stays easy to read. */
   background-color: #050207;
   background-image:
+    /* Seam blend: the story's black at the top edge and the shared near-black
+       seam with the soundtrack at the bottom edge. A background layer rather
+       than a pseudo-element (::before is the scanlines), so it stays behind
+       content and catches no pointers on desktop or mobile. */
+    linear-gradient(
+      to bottom,
+      #000000 0%,
+      rgba(0, 0, 0, 0) 9%,
+      rgba(11, 5, 9, 0) 91%,
+      #0b0509 100%
+    ),
     radial-gradient(ellipse 60% 44% at 50% 22%, rgba(238, 225, 200, 0.09) 0%, rgba(160, 70, 80, 0.05) 46%, transparent 78%),
     radial-gradient(ellipse at 50% 34%, #1c0712 0%, #10040c 46%, #08030a 78%, #050207 100%),
     repeating-linear-gradient(45deg, rgba(238, 225, 200, 0.015) 0 1px, transparent 1px 4px);

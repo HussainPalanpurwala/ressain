@@ -15,6 +15,16 @@
   font-family: "Press Start 2P", monospace;
   color: var(--cream);
   background:
+    /* Seam blend: shared near-black seams with curious corner above and open
+       when below, so neither boundary shows a hard horizontal line. Topmost
+       background layer — no pointer capture, always behind the panel. */
+    linear-gradient(
+      to bottom,
+      #0b0509 0%,
+      rgba(11, 5, 9, 0) 9%,
+      rgba(11, 5, 9, 0) 91%,
+      #0b0509 100%
+    ),
     radial-gradient(ellipse at 50% 38%, #3d1026 0%, #1a0710 58%, var(--near-black) 100%);
 }
 

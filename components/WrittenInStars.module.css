@@ -27,6 +27,47 @@
     linear-gradient(to bottom, #1a0812 0%, var(--night) 55%, #000000 100%);
 }
 
+/* Seamless joins with the neighbouring sections. Open When (above) ends on
+   its near-black #0b0509; the Revleen Arcade (below) begins on #0a0409. These
+   two low, fixed strips fade exactly those tones into this section's own
+   background so no hard horizontal line appears at either edge. They sit at
+   z-index 0 — behind .content (z-index 1) — and ignore pointers, so they never
+   cover the heading or the star map and never affect the full-screen layout. */
+.section::before,
+.section::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: clamp(64px, 11vh, 120px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Top: Open When's near-black, easing into this section's warm burgundy. */
+.section::before {
+  top: 0;
+  background: linear-gradient(
+    to bottom,
+    #0b0509 0%,
+    rgba(11, 5, 9, 0.72) 30%,
+    rgba(11, 5, 9, 0.32) 62%,
+    rgba(11, 5, 9, 0) 100%
+  );
+}
+
+/* Bottom: the Arcade's near-black, rising out of this section's black tail. */
+.section::after {
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    #0a0409 0%,
+    rgba(10, 4, 9, 0.72) 30%,
+    rgba(10, 4, 9, 0.32) 62%,
+    rgba(10, 4, 9, 0) 100%
+  );
+}
+
 /* Heading + image stacked in one centred column. */
 .content {
   position: relative;
