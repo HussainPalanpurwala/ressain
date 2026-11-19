@@ -10,35 +10,120 @@
   font-family: "Press Start 2P", monospace;
 }
 
-.vinyl {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: 2px solid #ff6bb5;
-  background:
-    radial-gradient(circle at center, transparent 0 5px, #ff4fa3 5px 11px, transparent 11px 13px, #0a0509 13px 100%),
-    repeating-radial-gradient(circle at center, #1a0a14 0 2px, #0a0509 2px 4px);
-  box-shadow: 0 0 16px rgba(228, 83, 163, 0.5), 3px 3px 0 #000;
+/* A tiny turntable: dark plinth, spinning record, resting tonearm. */
+.turntable {
+  width: 62px;
+  height: 62px;
+  padding: 0;
+  border: 2px solid #b84786;
+  border-radius: 6px;
+  background: linear-gradient(145deg, #34202e 0%, #1a0d16 55%, #0a0509 100%);
+  box-shadow: 0 0 14px rgba(228, 83, 163, 0.35), 3px 3px 0 #000;
+  cursor: pointer;
   display: grid;
   place-items: center;
-  cursor: pointer;
-  padding: 0;
 }
 
-.vinylLabel {
-  font-size: 0.42rem;
+.deck {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Platter beneath the record */
+.deck::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #0a0509;
+  border: 1px solid #4a2a3a;
+  box-shadow: inset 0 0 6px rgba(228, 83, 163, 0.18);
+}
+
+.record {
+  position: absolute;
+  left: 7px;
+  top: 7px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, transparent 0 6px, #ff4fa3 6px 11px, transparent 11px 13px, #0a0509 13px 100%),
+    repeating-radial-gradient(circle at center, #20101a 0 1.5px, #080408 1.5px 3px);
+  box-shadow: 0 0 0 1px #2a1520, 0 1px 4px rgba(0, 0, 0, 0.8);
+  display: grid;
+  place-items: center;
+}
+
+.recordLabel {
+  font-size: 0.3rem;
   color: #0a0509;
   pointer-events: none;
 }
 
 .spinning {
-  animation: spin 3.2s linear infinite;
+  animation: spin 2.6s linear infinite;
 }
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
+}
+
+.tonearm {
+  position: absolute;
+  right: 4px;
+  top: 9px;
+  width: 3px;
+  height: 25px;
+  border-radius: 2px;
+  background: linear-gradient(#e9e2e8, #8d8792);
+  transform: rotate(24deg);
+  transform-origin: top center;
+  box-shadow: 1px 1px 2px #000;
+}
+
+/* Headshell at the tip of the arm */
+.tonearm::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: -2px;
+  width: 7px;
+  height: 4px;
+  border-radius: 1px;
+  background: #d8d2dc;
+}
+
+.tonearmPivot {
+  position: absolute;
+  right: 3px;
+  top: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d8d2dc;
+  box-shadow: 0 0 0 2px #1a0a14;
+}
+
+.status {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #5a2a44;
+}
+
+.statusOn {
+  background: #ff4fa3;
+  box-shadow: 0 0 8px #ff4fa3;
 }
 
 .panel {
