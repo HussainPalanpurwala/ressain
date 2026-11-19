@@ -37,6 +37,7 @@ function PhotoPlaceholder({
           ▧
         </span>
         <span className={styles.phLabel}>[ {label} — photo to be provided ]</span>
+        <span className={styles.photoCaption}>[ handwritten caption to be provided ]</span>
       </span>
     </button>
   );
@@ -141,6 +142,9 @@ export default function OurStory() {
           <div className={styles.memoryBody}>
             <h3 className={styles.memoryTitle}>The Beginning</h3>
             <TextPlaceholder label="The Beginning story" lines={4} />
+            <span className={styles.diaryAnnotation}>
+              [ handwritten note in the margin — to be provided ]
+            </span>
             <div className={styles.instagramDetail}>
               <span className={styles.igDot} aria-hidden="true" />
               <span className={styles.phLabel}>

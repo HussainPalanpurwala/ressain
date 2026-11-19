@@ -93,12 +93,16 @@ export default function TimeTogether() {
       // Rises as the section enters from below, then falls as it leaves past
       // the top — so the parts assemble and then disassemble again while
       // scrolling in one direction.
-      const entering = clamp01((viewport - rect.top) / span);
-      const leaving = clamp01(rect.bottom / (viewport * 1.4));
-      const raw = Math.min(entering, leaving);
-      const progress = raw * raw * (3 - 2 * raw);
-      node.style.setProperty("--enter", progress.toFixed(3));
-      node.style.setProperty("--enter-close", progress.toFixed(3));
+      const shape = (value: number) => value * value * (3 - 2 * value);
+      const enterRaw = clamp01((viewport - rect.top) / span);
+      // Leaving increases once the section's bottom has passed the viewport.
+      const exitRaw = clamp01((viewport - rect.bottom) / span);
+      const enter = shape(enterRaw);
+      const exit = shape(exitRaw);
+      node.style.setProperty("--in", enter.toFixed(3));
+      node.style.setProperty("--out", exit.toFixed(3));
+      node.style.setProperty("--enter", Math.min(enter, 1 - exit).toFixed(3));
+      node.style.setProperty("--enter-close", Math.min(enter, 1 - exit).toFixed(3));
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -148,6 +152,8 @@ export default function TimeTogether() {
       <span className={`${styles.pixelDeco} ${styles.decoThree}`} aria-hidden="true" />
 
       <div className={styles.console}>
+        <div className={styles.consoleFrame} aria-hidden="true" />
+
         <div className={styles.consoleTop}>
           <span className={styles.brand}>
             <span className={styles.led} aria-hidden="true" />

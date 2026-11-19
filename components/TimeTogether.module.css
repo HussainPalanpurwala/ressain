@@ -49,15 +49,28 @@
   z-index: 1;
   width: min(94vw, 720px);
   padding: clamp(10px, 2.4vw, 18px);
+}
+
+.console > *:not(.consoleFrame) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Frame is separate so it can leave before the numbers and the text. */
+.consoleFrame {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   background: linear-gradient(145deg, #e4e4ea 0%, var(--silver) 45%, #8a8a94 100%);
   border: 4px solid #1c0710;
   box-shadow:
     0 0 0 4px var(--blush),
     0 0 0 8px var(--burgundy),
     10px 10px 0 rgba(0, 0, 0, 0.6);
-  opacity: 1;
-  transform: translateY(calc((1 - var(--enter, 0)) * 18px))
-    scale(calc(0.985 + var(--enter, 0) * 0.015));
+  --pin: clamp(0, (var(--in, 0)) * 3.6, 1);
+  --pout: clamp(0, (var(--out, 0)) * 4.2, 1);
+  opacity: min(var(--pin), calc(1 - var(--pout)));
+  transform: scale(calc(0.96 + var(--pin) * 0.04));
 }
 
 /* Bridges the landing's dark burgundy bottom into this section's black. */
@@ -72,7 +85,8 @@
   background: linear-gradient(to bottom, transparent 0%, #000000 100%);
 }
 
-/* Each part assembles one after another as the section scrolls in. */
+/* Parts slide in from alternating sides; a few simply fade into place.
+   On the way out they leave in reverse: frame, buttons, numbers, text last. */
 .consoleTop,
 .screenHeader,
 .daysBlock,
@@ -82,9 +96,13 @@
 .consoleBottom,
 .closing,
 .timestamp {
-  --p: clamp(0, (var(--enter, 0) - var(--at, 0)) * 3.6, 1);
-  opacity: var(--p);
-  transform: translateY(calc((1 - var(--p)) * var(--slide, 16px)));
+  --pin: clamp(0, (var(--in, 0) - var(--at, 0)) * 3.6, 1);
+  --pout: clamp(0, (var(--out, 0) - var(--exit-at, 0)) * 4.2, 1);
+  opacity: min(var(--pin), calc(1 - var(--pout)));
+  transform:
+    translateX(calc(var(--dir, 0) * (1 - var(--pin)) * 28px))
+    translateY(calc((1 - var(--pin)) * var(--slide, 12px)))
+    scale(calc(0.94 + var(--pin) * 0.06));
 }
 
 .consoleTop,
@@ -100,6 +118,8 @@
 
 .consoleTop {
   --at: 0.02;
+  --exit-at: 0.52;
+  --dir: 1;
   padding: 2px 2px clamp(10px, 2vw, 14px);
 }
 
@@ -143,6 +163,8 @@
 
 .screenHeader {
   --at: 0.08;
+  --exit-at: 0.46;
+  --dir: -1;
   position: relative;
   z-index: 1;
 }
@@ -166,6 +188,8 @@
 
 .daysBlock {
   --at: 0.16;
+  --exit-at: 0.38;
+  --dir: 0;
   --slide: 22px;
   position: relative;
   z-index: 1;
@@ -206,6 +230,8 @@
 
 .units {
   --at: 0.26;
+  --exit-at: 0.22;
+  --dir: 1;
   position: relative;
   z-index: 1;
   display: grid;
@@ -217,14 +243,20 @@
 
 .unit {
   --at: 0.3;
+  --exit-at: 0.26;
+  --dir: -1;
 }
 
 .unit:nth-child(2) {
   --at: 0.37;
+  --exit-at: 0.3;
+  --dir: 1;
 }
 
 .unit:nth-child(3) {
   --at: 0.44;
+  --exit-at: 0.34;
+  --dir: -1;
 }
 
 .unit + .unit {
@@ -246,6 +278,8 @@
 
 .screenFooter {
   --at: 0.5;
+  --exit-at: 0.14;
+  --dir: 1;
   position: relative;
   z-index: 1;
   display: flex;
@@ -263,6 +297,8 @@
 
 .consoleBottom {
   --at: 0.56;
+  --exit-at: 0.08;
+  --dir: -1;
   padding: clamp(10px, 2vw, 14px) 2px 0;
 }
 
@@ -292,6 +328,8 @@
 
 .closing {
   --at: 0.62;
+  --exit-at: 0.6;
+  --dir: -1;
   position: relative;
   z-index: 1;
   max-width: min(92vw, 760px);
@@ -311,6 +349,8 @@
 
 .timestamp {
   --at: 0.7;
+  --exit-at: 0.68;
+  --dir: 0;
   position: relative;
   z-index: 1;
   display: inline-flex;
