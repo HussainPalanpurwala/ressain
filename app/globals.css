@@ -1,0 +1,675 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background: #0b0509;
+  color: #fff5fa;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   SECTION 01 — BOOT-UP EXPERIENCE
+   ============================================================ */
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background-color: #0b0410;
+  background-image:
+    radial-gradient(
+      ellipse at 50% 45%,
+      rgba(92, 20, 74, 0.38) 0%,
+      rgba(20, 5, 18, 0.12) 48%,
+      transparent 78%
+    ),
+    radial-gradient(rgba(228, 83, 163, 0.18) 1px, transparent 1px);
+  background-size: 100% 100%, 18px 18px;
+  background-position: center, 0 0;
+  opacity: 1;
+  transition: opacity 0.9s ease;
+}
+
+.boot--exiting {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot__inner {
+  position: relative;
+  width: min(92vw, 560px);
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.boot__glow {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 540px;
+  height: 440px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(228, 83, 163, 0.18) 0%,
+    rgba(228, 83, 163, 0.06) 42%,
+    transparent 72%
+  );
+  filter: blur(18px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.boot__box {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: clamp(18px, 4.6vw, 34px);
+  border: 1px solid rgba(255, 61, 158, 0.85);
+  background: rgba(18, 4, 16, 0.66);
+  box-shadow:
+    0 0 20px rgba(228, 83, 163, 0.28),
+    inset 0 0 26px rgba(228, 83, 163, 0.08);
+  text-align: center;
+}
+
+.boot__label {
+  margin: 0 0 clamp(12px, 2.6vh, 20px);
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.72rem, 2.2vw, 0.95rem);
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+  color: #fff0f7;
+  text-align: center;
+}
+
+.boot__caret {
+  display: inline-block;
+  width: 0.62em;
+  height: 0.95em;
+  margin-left: 0.25em;
+  vertical-align: -0.12em;
+  background: #ff4fa8;
+  box-shadow: 0 0 8px rgba(255, 79, 168, 0.85);
+  animation: caretBlink 1s steps(1) infinite;
+}
+
+.boot__hearts {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3px;
+  padding: clamp(5px, 1.2vw, 7px);
+  border: 1px solid rgba(255, 210, 235, 0.5);
+  background: rgba(8, 2, 8, 0.5);
+  box-shadow: 0 0 14px rgba(228, 83, 163, 0.15);
+}
+
+.boot-heart {
+  width: clamp(13px, 4.4vw, 24px);
+  color: rgba(228, 83, 163, 0.18);
+  transition: color 0.25s ease, filter 0.25s ease;
+}
+
+.boot-heart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.boot-heart--filled {
+  color: #e453a3;
+  filter: drop-shadow(0 0 6px rgba(228, 83, 163, 0.85));
+  animation: heartPulse 1.5s ease-in-out infinite;
+}
+
+.boot--complete .boot-heart {
+  animation: heartFlash 0.9s ease-out both;
+}
+
+@keyframes heartPulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(228, 83, 163, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 0 11px rgba(228, 83, 163, 1));
+  }
+}
+
+@keyframes heartFlash {
+  0% {
+    color: #e453a3;
+    filter: drop-shadow(0 0 6px rgba(228, 83, 163, 0.8));
+    transform: scale(1);
+  }
+  40% {
+    color: #fff0f7;
+    filter: drop-shadow(0 0 16px #ff6bb5) drop-shadow(0 0 30px #e453a3);
+    transform: scale(1.28);
+  }
+  100% {
+    color: #ff6bb5;
+    filter: drop-shadow(0 0 10px rgba(255, 107, 181, 0.9));
+    transform: scale(1.08);
+  }
+}
+
+.boot__percent {
+  margin-top: clamp(10px, 2.4vh, 16px);
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.78rem, 2.4vw, 1rem);
+  line-height: 1.6;
+  text-align: center;
+  color: #ff69b4;
+  text-shadow: 0 0 12px rgba(228, 83, 163, 0.55);
+}
+
+.boot__message {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 clamp(16px, 3.2vh, 24px);
+  min-height: 4.6em;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.64rem, 2vw, 0.84rem);
+  line-height: 2.3;
+  text-align: center;
+  color: #ffc2e0;
+  animation: msgFlicker 0.5s ease-out both;
+}
+
+.boot__message .boot__caret {
+  width: 0.55em;
+  height: 0.9em;
+  background: #ff69b4;
+  box-shadow: 0 0 8px rgba(255, 105, 180, 0.8);
+}
+
+@keyframes msgFlicker {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.35;
+  }
+  35% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 0.5;
+  }
+  60%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes caretBlink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.boot__enter {
+  position: relative;
+  z-index: 1;
+  margin-top: clamp(16px, 3.4vh, 26px);
+  padding: 0.85rem 1rem;
+  width: 100%;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.56rem, 1.8vw, 0.7rem);
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: #ff9ed2;
+  background: rgba(228, 83, 163, 0.04);
+  border: 1px solid rgba(228, 83, 163, 0.55);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease,
+    visibility 0.8s ease,
+    background 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.boot__enter--visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.boot__enter:hover,
+.boot__enter:focus-visible {
+  color: #fff0f7;
+  background: rgba(228, 83, 163, 0.16);
+  box-shadow: 0 0 26px rgba(228, 83, 163, 0.45);
+  outline: none;
+}
+
+/* ============================================================
+   SECTION 02 — MAIN LANDING
+   ============================================================ */
+
+.landing {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  background: #000000;
+}
+
+/* Ambient hearts fade in and out around the edges only — the centre stays
+   clear so nothing ever sits behind the title or the permanent hearts. */
+.ambient-hearts {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: var(--scroll-fade, 1);
+  -webkit-mask-image: radial-gradient(
+    ellipse 46% 42% at 50% 50%,
+    transparent 0%,
+    transparent 62%,
+    #000000 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 46% 42% at 50% 50%,
+    transparent 0%,
+    transparent 62%,
+    #000000 100%
+  );
+}
+
+.ambient-heart {
+  position: absolute;
+  left: var(--left);
+  top: var(--top);
+  width: var(--size);
+  color: var(--heart-color);
+  filter: drop-shadow(0 0 8px currentColor);
+  opacity: 0;
+  animation: ambientGlow var(--duration) ease-in-out var(--delay) infinite;
+  will-change: opacity, transform;
+}
+
+.ambient-heart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@keyframes ambientGlow {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) rotate(var(--rot));
+    filter: drop-shadow(0 0 2px currentColor);
+  }
+  18% {
+    opacity: var(--heart-opacity);
+  }
+  60% {
+    opacity: var(--heart-opacity);
+    filter: drop-shadow(0 0 12px currentColor);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.05) rotate(var(--rot));
+    filter: drop-shadow(0 0 4px currentColor);
+  }
+}
+
+/* Faint CRT scanlines for the arcade-screen feel */
+.landing__crt {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.16) 3px,
+    rgba(0, 0, 0, 0.16) 4px
+  );
+}
+
+.landing__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 1.5rem;
+  opacity: var(--scroll-fade, 1);
+  transform: translateY(calc((1 - var(--scroll-fade, 1)) * -34px));
+  will-change: opacity, transform;
+}
+
+.landing__title-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.landing__title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.08em;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(1.35rem, 5.4vw, 4.4rem);
+  line-height: 1.2;
+  color: #ff559e;
+  text-transform: uppercase;
+  transform: skewX(-8deg) rotate(-2deg);
+  -webkit-text-stroke: 0;
+  text-shadow:
+    0 0 0 #ff559e,
+    1px 0 0 #ff559e,
+    -1px 0 0 #ff559e,
+    0 1px 0 #ff559e,
+    0 -1px 0 #ff559e,
+    1px 1px 0 #ff559e,
+    -1px -1px 0 #ff559e,
+    2px 2px 0 #000,
+    3px 3px 0 #000,
+    4px 4px 0 #000,
+    5px 5px 0 #000,
+    6px 6px 0 #000,
+    7px 7px 0 #000,
+    8px 8px 0 #000,
+    9px 9px 0 #000,
+    10px 10px 0 #000,
+    11px 11px 0 #000,
+    12px 12px 0 #000,
+    0 0 30px rgba(255, 85, 158, 0.55);
+}
+
+/* Permanent hearts around the title — outlined in black, never animated */
+.landing__heart {
+  position: absolute;
+  width: clamp(32px, 4.4vw, 58px);
+  color: #f0254b;
+  filter:
+    drop-shadow(2px 0 0 #000000)
+    drop-shadow(-2px 0 0 #000000)
+    drop-shadow(0 2px 0 #000000)
+    drop-shadow(0 -2px 0 #000000)
+    drop-shadow(0 0 10px currentColor);
+}
+
+.landing__heart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.landing__heart--tl {
+  top: -18%;
+  left: -7%;
+  transform: rotate(-16deg);
+}
+
+.landing__heart--tr {
+  top: -20%;
+  right: -8%;
+  color: #e453a3;
+  transform: rotate(14deg);
+}
+
+.landing__heart--bl {
+  bottom: -10%;
+  left: -9%;
+  color: #ffb3d1;
+  transform: rotate(10deg);
+}
+
+.landing__heart--br {
+  bottom: -14%;
+  right: -7%;
+  transform: rotate(-12deg);
+}
+
+.landing__heart--ml {
+  top: 38%;
+  left: -15%;
+  width: clamp(20px, 2.8vw, 34px);
+  color: #e453a3;
+  transform: rotate(-24deg);
+}
+
+.landing__heart--mr {
+  top: 44%;
+  right: -15%;
+  width: clamp(20px, 2.8vw, 34px);
+  color: #ffb3d1;
+  transform: rotate(22deg);
+}
+
+.landing__subtitle {
+  margin: clamp(2rem, 5vh, 3rem) 0 0;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.52rem, 1.4vw, 0.76rem);
+  line-height: 1.9;
+  color: #fff0f7;
+  text-shadow:
+    2px 2px 0 #000,
+    0 0 10px rgba(255, 85, 158, 0.5);
+}
+
+.landing__scroll {
+  margin: clamp(1.4rem, 3.5vh, 2.2rem) 0 0;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.5rem, 1.3vw, 0.72rem);
+  line-height: 1.9;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ff9ed2;
+  text-shadow:
+    2px 2px 0 #000,
+    0 0 12px rgba(255, 85, 158, 0.6);
+}
+
+/* Subtle independent floating for the text and the permanent hearts */
+@keyframes gentleFloat {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 2px -4px;
+  }
+}
+
+@keyframes gentleFloatAlt {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: -3px 3px;
+  }
+}
+
+@keyframes heartBob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 3px -4px;
+  }
+}
+
+.landing__title-wrap {
+  animation: gentleFloat 7s ease-in-out infinite;
+}
+
+.landing__subtitle {
+  animation: gentleFloatAlt 6s ease-in-out infinite;
+}
+
+.landing__scroll {
+  animation: gentleFloat 8s ease-in-out 1s infinite;
+}
+
+.landing__heart--tl {
+  animation: heartBob 6.5s ease-in-out infinite;
+}
+
+.landing__heart--tr {
+  animation: heartBob 7.5s ease-in-out 0.8s infinite;
+}
+
+.landing__heart--bl {
+  animation: heartBob 8s ease-in-out 1.6s infinite;
+}
+
+.landing__heart--br {
+  animation: heartBob 6.8s ease-in-out 0.4s infinite;
+}
+
+.landing__heart--ml {
+  animation: heartBob 7.2s ease-in-out 2s infinite;
+}
+
+.landing__heart--mr {
+  animation: heartBob 8.4s ease-in-out 1.2s infinite;
+}
+
+/* Phones — keep the permanent hearts clear of the title */
+@media (max-width: 600px) {
+  .ambient-heart {
+    max-width: 30px;
+  }
+
+  .landing__title {
+    font-size: clamp(1.3rem, 5.8vw, 2.2rem);
+    -webkit-text-stroke: 0;
+    transform: skewX(-6deg);
+  }
+
+  .landing__heart--tl {
+    top: -28px;
+    left: -22px;
+    width: 26px;
+  }
+
+  .landing__heart--tr {
+    top: -30px;
+    right: -22px;
+    width: 26px;
+  }
+
+  .landing__heart--bl {
+    bottom: -22px;
+    left: -24px;
+    width: 26px;
+  }
+
+  .landing__heart--br {
+    bottom: -26px;
+    right: -22px;
+    width: 26px;
+  }
+
+  .landing__heart--ml {
+    top: 40%;
+    left: -30px;
+    width: 18px;
+  }
+
+  .landing__heart--mr {
+    top: 46%;
+    right: -30px;
+    width: 18px;
+  }
+}
+
+/* Short viewports (e.g. landscape phones) */
+@media (max-height: 560px) {
+  .boot__box {
+    padding: 14px;
+  }
+
+  .boot__label {
+    margin-bottom: 8px;
+  }
+
+  .boot__message {
+    min-height: 3.8em;
+    margin-bottom: 10px;
+  }
+
+  .boot__enter {
+    margin-top: 12px;
+    padding: 0.6rem;
+  }
+}
+
+/* ============================================================
+   ACCESSIBILITY — REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .boot {
+    transition-duration: 0.01ms;
+  }
+
+  .boot-heart,
+  .boot__message,
+  .boot__caret,
+  .ambient-heart,
+  .landing__title-wrap,
+  .landing__subtitle,
+  .landing__scroll,
+  .landing__heart {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .boot-heart--filled,
+  .boot--complete .boot-heart {
+    color: #ff6bb5;
+    filter: drop-shadow(0 0 8px rgba(255, 107, 181, 0.8));
+  }
+
+  .boot__caret {
+    display: none;
+  }
+
+  .ambient-heart {
+    opacity: 0.2;
+  }
+}
