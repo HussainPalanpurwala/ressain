@@ -525,12 +525,30 @@
   align-items: start;
 }
 
-/* Blue painting above, the extra blue-sky photo below it. */
+/* Blue painting above, the extra blue-sky video below it. */
 .palacePhotoPair {
   display: grid;
   grid-template-columns: 1fr;
   gap: 18px;
   align-items: start;
+}
+
+/* The blue-sky video shares the polaroid stack with the painting. Keep it
+   inside its column on both the desktop two-up layout and the single-column
+   mobile layout: the thumb holds the fixed 16 / 9 window and the video fills
+   that window letterboxed (object-fit: contain), so any source ratio fits
+   without stretching, cropping or overflowing. */
+.memoryPalace .palacePhotoPair .video {
+  width: 100%;
+}
+
+.memoryPalace .palacePhotoPair .videoThumb video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: none;
+  object-fit: contain;
 }
 
 .letterCard {

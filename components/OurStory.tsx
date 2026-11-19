@@ -294,7 +294,7 @@ export default function OurStory() {
             <div className={styles.palaceTop}>
               <div className={styles.palacePhotoPair}>
                 <PhotoPlaceholder photo={palace.bluePainting} onClick={setLightbox} />
-                <PhotoPlaceholder photo={palace.blueSkyPhoto} onClick={setLightbox} />
+                <VideoPlaceholder video={palace.blueSkyVideo} />
               </div>
               <TextPlaceholder block={palace.blueSky} />
             </div>
