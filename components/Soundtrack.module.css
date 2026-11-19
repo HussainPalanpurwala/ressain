@@ -42,6 +42,163 @@
   );
 }
 
+/* Decorative background layer. Sits at z-index 0, underneath the panel
+   (z-index 1), so it only shows in the space around the cassette deck.
+   The edge mask keeps the top/bottom seam-blend gradient completely clear. */
+.decor {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 12%,
+    #000 88%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 12%,
+    #000 88%,
+    transparent 100%
+  );
+}
+
+/* Spectral / waveform lines drifting slowly behind the deck. */
+.wave {
+  position: absolute;
+  left: -2%;
+  right: -2%;
+  top: 50%;
+  height: clamp(140px, 32vh, 280px);
+  transform: translateY(-50%);
+  opacity: 0.18;
+}
+
+.wave svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: waveDrift 16s ease-in-out infinite alternate;
+}
+
+.waveBlush,
+.waveCherry {
+  fill: none;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.waveBlush {
+  stroke: var(--blush);
+}
+
+.waveCherry {
+  stroke: var(--cherry);
+  opacity: 0.7;
+}
+
+/* Pixel stars: a 3px square plus its four neighbours via box-shadow. */
+.pixelStar {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: currentColor;
+  box-shadow:
+    -3px 0 0 currentColor,
+    3px 0 0 currentColor,
+    0 -3px 0 currentColor,
+    0 3px 0 currentColor;
+  animation: twinkle 3.2s ease-in-out infinite;
+}
+
+.starBlush {
+  color: var(--blush);
+}
+
+.starCherry {
+  color: var(--cherry);
+}
+
+.starCream {
+  color: var(--cream);
+}
+
+/* Small heart made with a clip-path polygon. */
+.heart {
+  position: absolute;
+  width: 12px;
+  height: 11px;
+  background: var(--cherry);
+  clip-path: polygon(
+    50% 100%,
+    6% 46%,
+    6% 26%,
+    20% 12%,
+    38% 14%,
+    50% 28%,
+    62% 14%,
+    80% 12%,
+    94% 26%,
+    94% 46%
+  );
+}
+
+.heartOne {
+  opacity: 0.3;
+  transform: rotate(-12deg);
+}
+
+.heartTwo {
+  opacity: 0.22;
+  transform: rotate(14deg) scale(0.8);
+}
+
+/* Tiny pixel flower: cream centre with four blush petals. */
+.flower {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--cream);
+  box-shadow:
+    0 -5px 0 -1px var(--blush),
+    0 5px 0 -1px var(--blush),
+    -5px 0 0 -1px var(--blush),
+    5px 0 0 -1px var(--blush);
+}
+
+.flowerOne {
+  opacity: 0.38;
+}
+
+.flowerTwo {
+  opacity: 0.26;
+  transform: scale(0.8) rotate(20deg);
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes waveDrift {
+  from {
+    transform: translateX(-1.5%);
+  }
+  to {
+    transform: translateX(1.5%);
+  }
+}
+
 .panel {
   position: relative;
   z-index: 1;
@@ -294,13 +451,25 @@
   .cassette {
     transform: none;
   }
+
+  /* Keep the background quieter on narrow screens; the section itself
+     already clips overflow, so decorations can never cause sideways scroll. */
+  .decor {
+    opacity: 0.7;
+  }
+
+  .wave {
+    height: clamp(110px, 24vh, 180px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .reelLeft,
   .reelRight,
   .led,
-  .panelDots {
+  .panelDots,
+  .pixelStar,
+  .wave svg {
     animation: none !important;
   }
 }
