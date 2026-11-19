@@ -86,16 +86,19 @@ export default function TimeTogether() {
       const node = sectionRef.current;
       if (!node) return;
       const rect = node.getBoundingClientRect();
-      const distance = window.innerHeight * 1.35;
-      const progress = Math.max(
-        0,
-        Math.min(1, (window.innerHeight - rect.top) / distance)
-      );
+      const viewport = window.innerHeight;
+      const span = viewport * 0.9;
+      const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
+
+      // Rises as the section enters from below, then falls as it leaves past
+      // the top — so the parts assemble and then disassemble again while
+      // scrolling in one direction.
+      const entering = clamp01((viewport - rect.top) / span);
+      const leaving = clamp01(rect.bottom / (viewport * 1.4));
+      const raw = Math.min(entering, leaving);
+      const progress = raw * raw * (3 - 2 * raw);
       node.style.setProperty("--enter", progress.toFixed(3));
-      node.style.setProperty(
-        "--enter-close",
-        Math.max(0, Math.min(1, (progress - 0.28) / 0.72)).toFixed(3)
-      );
+      node.style.setProperty("--enter-close", progress.toFixed(3));
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
