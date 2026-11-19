@@ -673,19 +673,20 @@
 
 /* Fourth Jammu slot: a video tile that mirrors .photo.square exactly.
    box-sizing is border-box globally, so width:100% + aspect-ratio:1/1 gives
-   the same square outer footprint as the three polaroids, and the 26px bottom
-   lip matches their polaroid caption strip. */
+   the same square outer footprint as the three polaroids. The tile is a flex
+   column: a flex-filled video window on top and its play button as the bottom
+   row, so the button sits inside the square instead of hanging off it. */
 .miniGallery .video {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
   height: auto;
   margin: 0;
-  padding: 0;
-  gap: 0;
+  /* Small bottom padding forms the polaroid "lip" that seats the button. */
+  padding: 0 4px 6px;
+  gap: 6px;
   background: var(--cream);
   border: 2px solid rgba(74, 16, 36, 0.25);
-  border-bottom-width: 26px;
   box-shadow: 4px 5px 0 rgba(74, 16, 36, 0.15);
   transform: rotate(2.4deg); /* same tilt as .miniGallery .photo:nth-child(4) */
 }
@@ -721,17 +722,16 @@
   object-fit: contain;
 }
 
-/* Float the control over the video so it can never push the media out of the
-   square. Top placement keeps it clear of the browser's native control bar. */
+/* The Jammu tile's play button keeps the exact base look of every other play
+   button (burgundy background, cream text, Press Start 2P, 9px 14px padding,
+   44px tap target). It is a normal flex child now — centered in the tile's
+   bottom lip rather than absolutely positioned off the edge — so it fits
+   neatly inside the square, never overflows, and never covers the video's
+   native controls. */
 .miniGallery .playButton {
-  position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  min-height: 44px;
+  align-self: center;
+  width: fit-content;
   max-width: 100%;
-  padding: 6px 8px;
   white-space: nowrap;
 }
 

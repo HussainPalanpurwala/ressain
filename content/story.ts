@@ -247,7 +247,7 @@ I'm especially glad we have that video. Some reactions are just too precious to 
     palace: {
       marker: "04",
       title: "Hari Niwas Palace",
-      bluePainting: { label: "Blue painting", shape: "tall", src: "", caption: "" },
+      bluePainting: { label: "Blue painting", shape: "tall", src: "/media/blue-painting.jpg", caption: "" },
       blueSkyVideo: { label: "Blue sky video", featured: false, src: "/media/blue-sky-video.mp4" },
       blueSky: {
         label: "Blue sky and her dad",
@@ -273,7 +273,7 @@ I still laugh when I think about that video of us hiding from him.
 
 I suppose that's what I like about remembering that day. It has a little bit of everything. A conversation I'll always remember, and an incident that will probably never stop being funny.`,
       },
-      hidingVideo: { label: "Hiding video", featured: false, src: "" },
+      hidingVideo: { label: "Hiding video", featured: false, src: "/media/hiding-video.mp4" },
     },
     temple: {
       marker: "05",
@@ -297,7 +297,7 @@ And sometimes, I think that's all a person really needs. A moment where nothing 
 
 I hope you remember that day, too.`,
       },
-      photo: { label: "Temple photo", shape: "wide", src: "", caption: "" },
+      photo: { label: "Temple photo", shape: "wide", src: "/media/temple.jpg", caption: "" },
     },
     train: {
       marker: "06",
