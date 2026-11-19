@@ -8,6 +8,7 @@ import {
   type QuestionDepth,
 } from "@/content/questions";
 import styles from "./CuriousCorner.module.css";
+import usePrefersReducedMotion from "./usePrefersReducedMotion";
 
 const STORAGE_KEY = "curious-corner:saved-questions";
 
@@ -33,6 +34,41 @@ const DEPTHS: QuestionDepth[] = [
   ...DEPTH_ORDER.filter((d) => presentDepths.has(d)),
   ...Array.from(presentDepths).filter((d) => !DEPTH_ORDER.includes(d)),
 ];
+
+/* Tiny Web Audio blips — synthesised on the fly, no files or dependencies.
+   Kept deliberately quiet (low gain) and short so they never upstage the card. */
+type Tone = {
+  freq: number;
+  duration: number;
+  type?: OscillatorType;
+  delay?: number;
+  volume?: number;
+  slideTo?: number;
+};
+
+const SOUNDS: Record<
+  "surprise" | "another" | "save" | "tick" | "open" | "close",
+  Tone[]
+> = {
+  // Short rising blip.
+  surprise: [{ freq: 520, slideTo: 780, duration: 0.09, type: "square", volume: 0.06 }],
+  // Higher two-step chirp — clearly distinct from "surprise".
+  another: [
+    { freq: 880, duration: 0.07, type: "square", volume: 0.05 },
+    { freq: 1180, duration: 0.1, delay: 0.06, type: "square", volume: 0.045 },
+  ],
+  // Pleasant two-note confirm (E5 -> B5).
+  save: [
+    { freq: 659, duration: 0.12, type: "triangle", volume: 0.07 },
+    { freq: 988, duration: 0.18, delay: 0.1, type: "triangle", volume: 0.065 },
+  ],
+  // Soft, quick tick for filter chips / clear.
+  tick: [{ freq: 1300, duration: 0.035, type: "square", volume: 0.03 }],
+  // Page-opening sweep (distinct from the blips and the confirm).
+  open: [{ freq: 440, slideTo: 680, duration: 0.13, type: "triangle", volume: 0.05 }],
+  // Page-closing sweep — the mirror of "open".
+  close: [{ freq: 680, slideTo: 330, duration: 0.13, type: "triangle", volume: 0.05 }],
+};
 
 type DrawResult = { question: Question; remaining: number[] };
 
@@ -109,8 +145,57 @@ export default function CuriousCorner() {
   const [saved, setSaved] = useState<Question[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
+  const [muted, setMuted] = useState(false);
 
   const currentIdRef = useRef<number | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const reduceMotion = usePrefersReducedMotion();
+
+  // Close the audio context when the section unmounts.
+  useEffect(() => () => {
+    void audioCtxRef.current?.close();
+    audioCtxRef.current = null;
+  }, []);
+
+  /* Synthesise a short sound. The context is created lazily *inside* a click
+     handler (a real user gesture), which is what mobile browsers require before
+     they grant audio access. No sound is ever queued ahead of a gesture. */
+  const playSound = (name: keyof typeof SOUNDS) => {
+    if (muted || reduceMotion || typeof window === "undefined") return;
+    const AudioCtor =
+      window.AudioContext ||
+      (window as typeof window & { webkitAudioContext?: typeof AudioContext })
+        .webkitAudioContext;
+    if (!AudioCtor) return;
+
+    const ctx = audioCtxRef.current ?? new AudioCtor();
+    audioCtxRef.current = ctx;
+    if (ctx.state === "suspended") void ctx.resume();
+
+    const start = ctx.currentTime + 0.01;
+    SOUNDS[name].forEach(
+      ({ freq, duration, type = "triangle", delay = 0, volume = 0.05, slideTo }) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const at = start + delay;
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, at);
+        if (slideTo) {
+          osc.frequency.exponentialRampToValueAtTime(slideTo, at + duration);
+        }
+
+        gain.gain.setValueAtTime(0.0001, at);
+        gain.gain.exponentialRampToValueAtTime(volume, at + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(at);
+        osc.stop(at + duration + 0.02);
+      }
+    );
+  };
 
   const eligible = useMemo(
     () => filterQuestions(selectedCategories, selectedDepths),
@@ -179,6 +264,7 @@ export default function CuriousCorner() {
   }, [eligible, remaining]);
 
   const toggleCategory = (category: QuestionCategory) => {
+    playSound("tick");
     const next = selectedCategories.includes(category)
       ? selectedCategories.filter((c) => c !== category)
       : [...selectedCategories, category];
@@ -187,6 +273,7 @@ export default function CuriousCorner() {
   };
 
   const toggleDepth = (depth: QuestionDepth) => {
+    playSound("tick");
     const next = selectedDepths.includes(depth)
       ? selectedDepths.filter((d) => d !== depth)
       : [...selectedDepths, depth];
@@ -195,6 +282,7 @@ export default function CuriousCorner() {
   };
 
   const clearFilters = () => {
+    playSound("tick");
     setSelectedCategories([]);
     setSelectedDepths([]);
     applyPool(questions);
@@ -202,7 +290,13 @@ export default function CuriousCorner() {
 
   const saveCurrent = () => {
     if (!current || isSaved) return;
+    playSound("save");
     setSaved((prev) => (prev.some((q) => q.id === current.id) ? prev : [...prev, current]));
+  };
+
+  const toggleSavedPanel = () => {
+    playSound(showSaved ? "close" : "open");
+    setShowSaved((open) => !open);
   };
 
   const removeSaved = (id: number) => {
@@ -223,11 +317,6 @@ export default function CuriousCorner() {
     >
       <div className={styles.inner}>
         <header className={styles.intro}>
-          <p className={styles.divider} aria-hidden="true">
-            <span>✦</span>
-            <span>♥</span>
-            <span>✦</span>
-          </p>
           <h2 id="curious-corner-heading" className={styles.heading}>
             The Curious Corner
           </h2>
@@ -240,21 +329,33 @@ export default function CuriousCorner() {
           <span className={styles.cardTag} aria-hidden="true">
             {current ? `NO. ${String(current.id).padStart(3, "0")}` : "···"}
           </span>
-          <button
-            type="button"
-            className={styles.savedToggle}
-            onClick={() => setShowSaved((open) => !open)}
-            aria-expanded={showSaved}
-            aria-controls="curious-corner-panel"
-          >
-            <span aria-hidden="true">♥</span>
-            <span>My Saved Questions</span>
-            {saved.length > 0 && (
-              <span className={styles.count} aria-label={`${saved.length} saved`}>
-                {saved.length}
-              </span>
-            )}
-          </button>
+          <div className={styles.topbarActions}>
+            <button
+              type="button"
+              className={`${styles.soundToggle} ${muted ? styles.soundToggleOff : ""}`}
+              onClick={() => setMuted((on) => !on)}
+              aria-pressed={muted}
+              aria-label={muted ? "Turn sounds on" : "Turn sounds off"}
+              title={muted ? "Sounds off" : "Sounds on"}
+            >
+              <span aria-hidden="true">{muted ? "♪" : "♫"}</span>
+            </button>
+            <button
+              type="button"
+              className={styles.savedToggle}
+              onClick={toggleSavedPanel}
+              aria-expanded={showSaved}
+              aria-controls="curious-corner-panel"
+            >
+              <span aria-hidden="true">♥</span>
+              <span>My Saved Questions</span>
+              {saved.length > 0 && (
+                <span className={styles.count} aria-label={`${saved.length} saved`}>
+                  {saved.length}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
         <div
@@ -301,7 +402,14 @@ export default function CuriousCorner() {
               )}
 
               <div className={styles.journalActions}>
-                <button type="button" className={styles.secondary} onClick={() => setShowSaved(false)}>
+                <button
+                  type="button"
+                  className={styles.secondary}
+                  onClick={() => {
+                    playSound("close");
+                    setShowSaved(false);
+                  }}
+                >
                   Back to generator
                 </button>
                 <button
@@ -403,7 +511,10 @@ export default function CuriousCorner() {
                 <button
                   type="button"
                   className={styles.primary}
-                  onClick={drawNext}
+                  onClick={() => {
+                    playSound("surprise");
+                    drawNext();
+                  }}
                   disabled={!current}
                 >
                   Surprise Me
@@ -411,7 +522,10 @@ export default function CuriousCorner() {
                 <button
                   type="button"
                   className={styles.secondary}
-                  onClick={drawNext}
+                  onClick={() => {
+                    playSound("another");
+                    drawNext();
+                  }}
                   disabled={!current || eligible.length < 2}
                 >
                   Another Question

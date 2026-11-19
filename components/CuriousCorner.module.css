@@ -13,8 +13,14 @@
   overflow: hidden;
   font-family: "Press Start 2P", monospace;
   color: var(--cream);
-  background:
-    radial-gradient(ellipse at 50% 34%, #3c1024 0%, #190711 62%, var(--near-black) 100%);
+  /* Warm vintage parchment glow sinking into dark burgundy, with a faint
+     diagonal paper-fibre grain so the field is never flat. Kept dark enough
+     behind the content that the cream text stays easy to read. */
+  background-color: var(--near-black);
+  background-image:
+    radial-gradient(ellipse 72% 56% at 50% 28%, rgba(238, 225, 200, 0.16) 0%, rgba(160, 70, 80, 0.1) 46%, transparent 78%),
+    radial-gradient(ellipse at 50% 40%, #4a1428 0%, #2b0a18 48%, #140610 80%, var(--near-black) 100%),
+    repeating-linear-gradient(45deg, rgba(238, 225, 200, 0.02) 0 1px, transparent 1px 4px);
 }
 
 /* Faint CRT scanlines, consistent with the rest of the arcade-styled sections. */
@@ -45,28 +51,14 @@
   text-align: center;
 }
 
-.divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  margin: 0 0 clamp(1rem, 2.5vh, 1.5rem);
-  font-size: clamp(0.55rem, 1.6vw, 0.8rem);
-  color: var(--blush);
-}
-
-.divider span:nth-child(2) {
-  color: var(--cherry);
-  text-shadow: 0 0 12px rgba(240, 37, 75, 0.7);
-}
-
 .heading {
   margin: 0;
   font-size: clamp(1.2rem, 4.2vw, 2.4rem);
   line-height: 1.5;
   font-weight: 400;
-  color: var(--blush);
-  text-shadow: 3px 3px 0 #000000, 0 0 20px rgba(228, 83, 163, 0.4);
+  /* Matches the "Our Story" title exactly, including its dark offset shadow. */
+  color: #c0284b;
+  text-shadow: 3px 3px 0 #000000, 0 0 22px rgba(192, 40, 75, 0.35);
 }
 
 .subtitle {
@@ -85,6 +77,47 @@
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: clamp(0.9rem, 2.5vh, 1.4rem);
+}
+
+.topbarActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.soundToggle {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  line-height: 1;
+  color: var(--blush);
+  background: rgba(228, 83, 163, 0.08);
+  border: 2px solid rgba(228, 83, 163, 0.45);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.soundToggle:hover,
+.soundToggle:focus-visible {
+  color: var(--cream);
+  background: rgba(228, 83, 163, 0.2);
+  border-color: var(--blush);
+  outline: none;
+}
+
+.soundToggle:focus-visible {
+  outline: 3px solid var(--cream);
+  outline-offset: 3px;
+}
+
+.soundToggleOff {
+  color: #7a4a5e;
+  border-color: rgba(228, 83, 163, 0.25);
+  opacity: 0.7;
 }
 
 .cardTag {
@@ -148,18 +181,42 @@
 
 /* ---------- Mood filters ---------- */
 .moods {
+  position: relative;
   padding: clamp(1rem, 3vw, 1.6rem);
   margin-bottom: clamp(1.1rem, 3vh, 1.6rem);
-  background: rgba(18, 6, 14, 0.72);
-  border: 2px solid rgba(228, 83, 163, 0.35);
-  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.45);
+  color: var(--cream);
+  background-color: rgba(18, 6, 14, 0.86);
+  background-image:
+    repeating-linear-gradient(to right, rgba(228, 83, 163, 0.05) 0 1px, transparent 1px 14px),
+    repeating-linear-gradient(to bottom, rgba(228, 83, 163, 0.05) 0 1px, transparent 1px 14px),
+    repeating-linear-gradient(to bottom, transparent 0 3px, rgba(0, 0, 0, 0.18) 3px 4px);
+  /* Layered, hard-edged frame reads as a chunky pixel border. */
+  border: 3px solid #120510;
+  box-shadow:
+    0 0 0 2px rgba(228, 83, 163, 0.6),
+    0 0 0 4px #120510,
+    6px 6px 0 rgba(0, 0, 0, 0.55);
 }
 
 .moodsTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   margin: 0 0 clamp(0.9rem, 2.4vh, 1.3rem);
   font-size: clamp(0.5rem, 1.4vw, 0.66rem);
   letter-spacing: 0.08em;
   color: var(--blush);
+}
+
+/* Live "power" LED on the board header. */
+.moodsTitle::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  background: #7dffb0;
+  box-shadow: 0 0 7px rgba(125, 255, 176, 0.85), 0 0 0 1px #0a3d22;
+  animation: ledPulse 2.4s steps(2, end) infinite;
 }
 
 .filterGroups {
@@ -173,12 +230,24 @@
 }
 
 .groupLabel {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   margin-bottom: 0.7rem;
   font-size: clamp(0.36rem, 1vw, 0.46rem);
   letter-spacing: 0.16em;
   color: #ff9ed2;
-  opacity: 0.75;
+  opacity: 0.85;
+}
+
+/* Small status light per filter group. */
+.groupLabel::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  background: var(--cherry);
+  box-shadow: 0 0 5px rgba(240, 37, 75, 0.7), 0 0 0 1px rgba(0, 0, 0, 0.6);
 }
 
 .chips {
@@ -188,20 +257,36 @@
 }
 
 .chip {
+  position: relative;
   min-height: 44px;
-  padding: 0.5rem 0.7rem;
+  padding: 0.5rem 0.7rem 0.5rem 1.55rem;
   font-family: inherit;
-  font-size: clamp(0.38rem, 1.05vw, 0.5rem);
+  font-size: clamp(0.36rem, 1vw, 0.48rem);
   line-height: 1.6;
   color: var(--cream);
-  background: transparent;
-  border: 1px solid rgba(228, 83, 163, 0.45);
+  background: #1c0710;
+  border: 2px solid rgba(228, 83, 163, 0.5);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.6);
   cursor: pointer;
   transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
 }
 
+/* Toggle indicator LED — dark when off, lit green when on. */
+.chip::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  transform: translateY(-50%);
+  background: #4a2233;
+  border: 1px solid rgba(228, 83, 163, 0.5);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+
 .chip:hover {
-  background: rgba(228, 83, 163, 0.16);
+  background: #33101f;
   border-color: var(--blush);
   transform: translateY(-2px);
 }
@@ -209,8 +294,14 @@
 .chipOn {
   color: #1c0710;
   background: var(--blush);
-  border-color: var(--cherry);
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+  border-color: #fff0dc;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(28, 7, 16, 0.35);
+}
+
+.chipOn::before {
+  background: #0b3d1f;
+  border-color: #7dffb0;
+  box-shadow: 0 0 7px rgba(125, 255, 176, 0.9), 0 0 0 1px rgba(0, 0, 0, 0.6);
 }
 
 .chipOn:hover {
@@ -313,6 +404,16 @@
   to {
     opacity: 1;
     transform: translateY(0) rotateX(0);
+  }
+}
+
+/* Stepped LED flicker for the retro filter board. */
+@keyframes ledPulse {
+  0%, 70% {
+    opacity: 1;
+  }
+  71%, 100% {
+    opacity: 0.45;
   }
 }
 
