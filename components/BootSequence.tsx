@@ -71,8 +71,9 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   useEffect(() => {
     if (phase !== "loading") return;
     play([
-      { freq: 740, duration: 0.04 },
-      { freq: 1100, duration: 0.035, delay: 0.05 },
+      { freq: 660, duration: 0.07, volume: 0.14 },
+      { freq: 990, duration: 0.06, delay: 0.07, volume: 0.12 },
+      { freq: 1320, duration: 0.05, delay: 0.14, type: "triangle", volume: 0.1 },
     ]);
   }, [messageIndex, phase, play]);
 
@@ -80,10 +81,11 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   useEffect(() => {
     if (phase !== "ready") return;
     play([
-      { freq: 523, duration: 0.09 },
-      { freq: 659, duration: 0.09, delay: 0.1 },
-      { freq: 784, duration: 0.09, delay: 0.2 },
-      { freq: 1046, duration: 0.18, delay: 0.3 },
+      { freq: 523, duration: 0.1, volume: 0.14 },
+      { freq: 659, duration: 0.1, delay: 0.1, volume: 0.14 },
+      { freq: 784, duration: 0.1, delay: 0.2, volume: 0.14 },
+      { freq: 1047, duration: 0.12, delay: 0.3, volume: 0.14 },
+      { freq: 1319, duration: 0.28, delay: 0.42, type: "triangle", volume: 0.12 },
     ]);
   }, [phase, play]);
 
@@ -91,8 +93,9 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
     if (finishedRef.current) return;
     finishedRef.current = true;
     play([
-      { freq: 660, duration: 0.08 },
-      { freq: 990, duration: 0.14, delay: 0.08 },
+      { freq: 880, duration: 0.08, volume: 0.16 },
+      { freq: 660, duration: 0.08, delay: 0.08, volume: 0.14 },
+      { freq: 440, duration: 0.22, delay: 0.16, type: "triangle", volume: 0.14 },
     ]);
     setPhase("exiting");
   };

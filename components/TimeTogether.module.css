@@ -49,9 +49,9 @@
     0 0 0 4px var(--blush),
     0 0 0 8px var(--burgundy),
     10px 10px 0 rgba(0, 0, 0, 0.6);
-  opacity: calc(0.05 + var(--enter, 0) * 0.95);
-  transform: translateY(calc((1 - var(--enter, 0)) * 42px))
-    scale(calc(0.96 + var(--enter, 0) * 0.04));
+  opacity: 1;
+  transform: translateY(calc((1 - var(--enter, 0)) * 18px))
+    scale(calc(0.985 + var(--enter, 0) * 0.015));
 }
 
 .consoleTop,
@@ -250,8 +250,8 @@
   color: var(--cream);
   text-shadow: 2px 2px 0 #1c0710;
   min-height: 6em;
-  opacity: var(--enter-close, 0);
-  transform: translateY(calc((1 - var(--enter-close, 0)) * 20px));
+  opacity: 1;
+  transform: translateY(calc((1 - var(--enter-close, 0)) * 12px));
 }
 
 .cursor {
@@ -272,8 +272,8 @@
   box-shadow:
     5px 5px 0 #1c0710,
     inset 0 0 20px rgba(228, 83, 163, 0.12);
-  opacity: var(--enter-close, 0);
-  transform: translateY(calc((1 - var(--enter-close, 0)) * 18px));
+  opacity: 1;
+  transform: translateY(calc((1 - var(--enter-close, 0)) * 12px));
 }
 
 .timestampLabel {
