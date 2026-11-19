@@ -1,28 +1,89 @@
+/* Fixed to the bottom-right corner. Collapsed = just the little turntable;
+   expanded = a compact panel stacked above it. */
 .wrapper {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  right: 18px;
+  bottom: 18px;
   z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   font-family: "Press Start 2P", monospace;
 }
 
-/* One full-width control bar across the bottom of the page. */
-.bar {
+.panel {
+  box-sizing: border-box;
+  width: min(320px, calc(100vw - 24px));
+  margin-bottom: 10px;
+  padding: 12px;
   display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 9px 16px;
-  background: rgba(12, 5, 11, 0.96);
-  border-top: 2px solid #e453a3;
-  box-shadow: 0 -6px 24px rgba(228, 83, 163, 0.25);
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(12, 5, 11, 0.97);
+  border: 2px solid #e453a3;
+  box-shadow: 4px 4px 0 #000, 0 -6px 24px rgba(228, 83, 163, 0.25);
+  animation: panelIn 160ms ease-out both;
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panelTitle {
+  font-size: 0.36rem;
+  letter-spacing: 0.1em;
+  color: #ff9ed2;
+}
+
+.toggleArea {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+}
+
+/* The hover/focus tooltip sits to the left of the corner button. */
+.hoverLabel {
+  position: absolute;
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  padding: 6px 8px;
+  white-space: nowrap;
+  font-size: 0.34rem;
+  letter-spacing: 0.1em;
+  color: #ff9ed2;
+  background: rgba(12, 5, 11, 0.95);
+  border: 1px solid rgba(228, 83, 163, 0.7);
+  box-shadow: 2px 2px 0 #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.toggleArea:hover .hoverLabel,
+.toggleArea:focus-within .hoverLabel {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
 }
 
 .turntable {
+  position: relative;
   flex: 0 0 auto;
-  width: 62px;
-  height: 62px;
+  width: 56px;
+  height: 56px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 0;
   border: 2px solid #b84786;
   border-radius: 6px;
@@ -33,6 +94,21 @@
   place-items: center;
 }
 
+.turntable:hover {
+  border-color: #ff9ed2;
+  box-shadow: 0 0 18px rgba(228, 83, 163, 0.55), 3px 3px 0 #000;
+}
+
+.turntable:focus-visible,
+.control:focus-visible,
+.seek:focus-visible,
+.volumeRow input:focus-visible {
+  outline: 2px solid #ff9ed2;
+  outline-offset: 3px;
+}
+
+/* All artwork is sized in percentages of this 100% deck, so the record can
+   never escape the turntable at any button size (including mobile). */
 .deck {
   position: relative;
   width: 100%;
@@ -42,10 +118,10 @@
 .deck::before {
   content: "";
   position: absolute;
-  left: 5px;
-  top: 5px;
-  width: 48px;
-  height: 48px;
+  left: 8%;
+  top: 8%;
+  width: 78%;
+  height: 78%;
   border-radius: 50%;
   background: #0a0509;
   border: 1px solid #4a2a3a;
@@ -54,14 +130,24 @@
 
 .record {
   position: absolute;
-  left: 7px;
-  top: 7px;
-  width: 44px;
-  height: 44px;
+  left: 11%;
+  top: 11%;
+  width: 72%;
+  height: 72%;
   border-radius: 50%;
   background:
-    radial-gradient(circle at center, transparent 0 6px, #ff4fa3 6px 11px, transparent 11px 13px, #0a0509 13px 100%),
-    repeating-radial-gradient(circle at center, #20101a 0 1.5px, #080408 1.5px 3px);
+    radial-gradient(
+      circle at center,
+      transparent 0 14%,
+      #ff4fa3 14% 25%,
+      transparent 25% 30%,
+      #0a0509 30% 100%
+    ),
+    repeating-radial-gradient(
+      circle at center,
+      #20101a 0 3.4%,
+      #080408 3.4% 6.8%
+    );
   box-shadow: 0 0 0 1px #2a1520, 0 1px 4px rgba(0, 0, 0, 0.8);
   display: grid;
   place-items: center;
@@ -85,10 +171,10 @@
 
 .tonearm {
   position: absolute;
-  right: 4px;
-  top: 9px;
-  width: 3px;
-  height: 25px;
+  right: 6%;
+  top: 14%;
+  width: 6%;
+  height: 42%;
   border-radius: 2px;
   background: linear-gradient(#e9e2e8, #8d8792);
   transform: rotate(24deg);
@@ -99,20 +185,20 @@
 .tonearm::after {
   content: "";
   position: absolute;
-  bottom: -2px;
-  left: -2px;
-  width: 7px;
-  height: 4px;
+  bottom: -8%;
+  left: -50%;
+  width: 200%;
+  height: 12%;
   border-radius: 1px;
   background: #d8d2dc;
 }
 
 .tonearmPivot {
   position: absolute;
-  right: 3px;
-  top: 6px;
-  width: 7px;
-  height: 7px;
+  right: 5%;
+  top: 10%;
+  width: 13%;
+  height: 13%;
   border-radius: 50%;
   background: #d8d2dc;
   box-shadow: 0 0 0 2px #1a0a14;
@@ -120,10 +206,10 @@
 
 .status {
   position: absolute;
-  right: 6px;
-  bottom: 6px;
-  width: 4px;
-  height: 4px;
+  right: 10%;
+  bottom: 10%;
+  width: 7%;
+  height: 7%;
   border-radius: 50%;
   background: #5a2a44;
 }
@@ -133,11 +219,33 @@
   box-shadow: 0 0 8px #ff4fa3;
 }
 
+/* Small blush music-note badge on the record: the visual cue that this
+   little turntable opens the music control. */
+.musicIcon {
+  position: absolute;
+  left: 4%;
+  bottom: 4%;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: #ff9ed2;
+  border: 1px solid #6d244c;
+  box-shadow: 1px 1px 0 #000;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.musicIcon svg {
+  width: 70%;
+  height: 70%;
+  fill: #2a0b1c;
+}
+
 .meta {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  flex: 0 0 auto;
   min-width: 0;
 }
 
@@ -167,7 +275,6 @@
 }
 
 .details {
-  flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -273,6 +380,7 @@
 
 .control {
   flex: 0 0 auto;
+  align-self: stretch;
   min-height: 44px;
   padding: 9px 12px;
   font-family: inherit;
@@ -283,11 +391,9 @@
   cursor: pointer;
 }
 
-.control:hover,
-.control:focus-visible {
+.control:hover {
   color: #fff0f7;
   background: rgba(228, 83, 163, 0.2);
-  outline: none;
 }
 
 .hint {
@@ -297,80 +403,46 @@
 }
 
 @media (max-width: 600px) {
-  /* Compact two-row bar:
-     row 1 = turntable + track info + play/pause
-     row 2 = seek and volume side by side
-     All controls stay visible; only the layout and sizes change. */
-  .bar {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-rows: auto auto;
-    align-items: center;
-    gap: 6px 10px;
-    padding: 6px 10px;
+  .wrapper {
+    right: 12px;
+    bottom: 12px;
   }
 
   .turntable {
-    grid-column: 1;
-    grid-row: 1;
-    width: 44px;
-    height: 44px;
+    width: 52px;
+    height: 52px;
   }
 
-  /* Scale the original 62px artwork down as one unit so it stays visually
-     identical, just smaller, inside the 44px minimum tap target. */
-  .deck {
-    width: 62px;
-    height: 62px;
-    transform: scale(0.64);
-  }
-
-  .meta {
-    grid-column: 2;
-    grid-row: 1;
-    gap: 2px;
-  }
-
-  .control {
-    grid-column: 3;
-    grid-row: 1;
-  }
-
-  .details {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+  .panel {
+    width: min(300px, calc(100vw - 24px));
+    padding: 10px;
     gap: 8px;
-  }
-
-  .seekRow {
-    flex: 1 1 55%;
-    min-width: 0;
-  }
-
-  .volumeRow {
-    flex: 0 1 34%;
-    min-width: 0;
-  }
-
-  .hint {
-    flex: 1 1 100%;
-    text-align: center;
+    margin-bottom: 8px;
   }
 
   .track {
-    font-size: 0.45rem;
+    font-size: 0.46rem;
   }
 
   .artist {
     font-size: 0.32rem;
+  }
+
+  .hint {
+    text-align: center;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .spinning {
     animation: none;
+  }
+
+  .panel {
+    animation: none;
+  }
+
+  .hoverLabel {
+    transition: none;
   }
 }
