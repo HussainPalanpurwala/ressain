@@ -685,14 +685,8 @@
   padding: clamp(2rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem);
   background: #f7efe2;
   /* Ruled old-school notebook paper: faint horizontal lines across the cream
-     panel plus a soft red margin rule. Content/type/scroll are untouched. */
+     panel. Content/type/scroll are untouched. */
   background-image:
-    linear-gradient(
-      to right,
-      transparent 0 56px,
-      rgba(192, 40, 75, 0.16) 56px 57px,
-      transparent 57px
-    ),
     repeating-linear-gradient(
       to bottom,
       transparent 0 31px,

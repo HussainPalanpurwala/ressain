@@ -46,8 +46,9 @@ export default function WrittenInStars() {
   const [visible, setVisible] = useState(false);
   const [active, setActive] = useState<number | null>(null);
 
-  // Opening reveal: start almost completely dark, then fade the image in once
-  // the section scrolls into view. Reduced-motion users see it immediately.
+  // Opening reveal: start almost completely dark, then fade the heading and
+  // image in once the section scrolls into view. Reduced-motion users see it
+  // immediately.
   useEffect(() => {
     const node = sectionRef.current;
     if (!node) return;
@@ -84,14 +85,6 @@ export default function WrittenInStars() {
     return () => document.removeEventListener("pointerdown", onPointerDown, true);
   }, [active]);
 
-  const lit = active !== null ? CONSTELLATIONS[active] : null;
-  const frameStyle = {
-    "--gx": lit ? `${lit.x}%` : "50%",
-    "--gy": lit ? `${lit.y}%` : "50%",
-    // A glow just wider than the label itself, so only that name lights up.
-    "--grx": lit ? `calc(${lit.w}% / 2 + 2%)` : "6%",
-  } as React.CSSProperties;
-
   return (
     <section
       ref={sectionRef}
@@ -99,52 +92,47 @@ export default function WrittenInStars() {
       id="written-in-the-stars"
       data-visible={visible}
     >
-      <div className={styles.frame} style={frameStyle}>
-        {/* The only image on the page — never redrawn or replaced. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className={styles.map}
-          src="/star-map.jpg"
-          alt="A star map titled The Day We Met, showing the night sky on 19th November 2025 in India, with the constellation names labelled."
-        />
+      <div className={styles.content}>
+        <h2 className={styles.title}>Written in the Stars</h2>
 
-        {/* Atmosphere over the image only: a restrained glow and a one-off shimmer. */}
-        <div className={styles.aura} aria-hidden="true" />
-        <div className={styles.shimmer} aria-hidden="true" />
-
-        {/* A duplicate of the same image, brightened and masked to a soft pool
-            around the active label, so the existing label lights up in place. */}
-        <div className={styles.illumination} data-on={lit !== null} aria-hidden="true" />
-        <div className={styles.halo} data-on={lit !== null} aria-hidden="true" />
-
-        {/* Transparent hit regions over each printed constellation name. */}
-        {CONSTELLATIONS.map((constellation, index) => (
-          <button
-            key={`${constellation.name}-${index}`}
-            type="button"
-            data-hit
-            className={styles.hit}
-            style={
-              {
-                "--hx": `${constellation.x}%`,
-                "--hy": `${constellation.y}%`,
-                "--hw": `${constellation.w}%`,
-              } as React.CSSProperties
-            }
-            aria-label={`Illuminate the ${constellation.name} label`}
-            onPointerEnter={(event) => {
-              if (event.pointerType === "mouse") setActive(index);
-            }}
-            onPointerLeave={(event) => {
-              if (event.pointerType === "mouse") {
-                setActive((current) => (current === index ? null : current));
-              }
-            }}
-            onFocus={() => setActive(index)}
-            onBlur={() => setActive((current) => (current === index ? null : current))}
-            onTouchStart={() => setActive(index)}
+        <div className={styles.frame} data-active={active !== null}>
+          {/* The only image on the page — plain, never redrawn or replaced. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className={styles.map}
+            src="/star-map.jpg"
+            alt="A star map titled The Day We Met, showing the night sky on 19th November 2025 in India, with the constellation names labelled."
           />
-        ))}
+
+          {/* Transparent hit regions over each printed constellation name. */}
+          {CONSTELLATIONS.map((constellation, index) => (
+            <button
+              key={`${constellation.name}-${index}`}
+              type="button"
+              data-hit
+              className={styles.hit}
+              style={
+                {
+                  "--hx": `${constellation.x}%`,
+                  "--hy": `${constellation.y}%`,
+                  "--hw": `${constellation.w}%`,
+                } as React.CSSProperties
+              }
+              aria-label={`Highlight the ${constellation.name} label`}
+              onPointerEnter={(event) => {
+                if (event.pointerType === "mouse") setActive(index);
+              }}
+              onPointerLeave={(event) => {
+                if (event.pointerType === "mouse") {
+                  setActive((current) => (current === index ? null : current));
+                }
+              }}
+              onFocus={() => setActive(index)}
+              onBlur={() => setActive((current) => (current === index ? null : current))}
+              onTouchStart={() => setActive(index)}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -9,7 +9,7 @@ import OpenWhen from "./OpenWhen";
 import OurStory from "./OurStory";
 import Soundtrack from "./Soundtrack";
 import TimeTogether from "./TimeTogether";
-import LastPage from "./LastPage";
+import RevleenArcade from "./RevleenArcade";
 import WrittenInStars from "./WrittenInStars";
 import useBackgroundMusic from "./useBackgroundMusic";
 
@@ -43,7 +43,7 @@ export default function Experience() {
       <Soundtrack />
       <OpenWhen />
       <WrittenInStars />
-      <LastPage />
+      <RevleenArcade />
       {entered && (
         <MusicPlayer
           playing={music.playing}

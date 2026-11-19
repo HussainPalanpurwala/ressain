@@ -150,12 +150,12 @@ export default function OurStory() {
       frame = 0;
       const viewport = window.innerHeight;
       const isMobile = window.matchMedia("(max-width: 760px)").matches;
-      // Start the reveal a little later — when the item is ~75% down the
-      // viewport (was ~92%) — and use a wider, gentler window on mobile so the
-      // pop-in feels less abrupt. The value is recomputed from scroll position
-      // every frame, so the effect still reverses when scrolling back up.
-      const start = viewport * 0.75;
-      const span = viewport * (isMobile ? 0.7 : 0.55);
+      // Start the reveal earlier — when the item is ~85% down the viewport —
+      // and use a shorter scroll window so each pop completes faster while
+      // still easing in and out smoothly. The value is recomputed from scroll
+      // position every frame, so the effect still reverses when scrolling back up.
+      const start = viewport * 0.85;
+      const span = viewport * (isMobile ? 0.4 : 0.32);
       items.forEach((item) => {
         const rect = item.getBoundingClientRect();
         const raw = Math.max(0, Math.min(1, (start - rect.top) / span));

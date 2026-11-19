@@ -1,8 +1,5 @@
 .section {
-  --burgundy: #2b0a18;
-  --wine: #4a1024;
-  --blush: #e453a3;
-  --cream: #fff0dc;
+  --cherry: #c0284b;
   --night: #0b0509;
 
   position: relative;
@@ -14,23 +11,49 @@
   padding: clamp(1rem, 3vh, 2.5rem) clamp(0.5rem, 2vw, 2rem);
   overflow: hidden;
   isolation: isolate;
-  background:
-    radial-gradient(
-      ellipse at 50% 40%,
-      rgba(74, 16, 36, 0.5) 0%,
-      rgba(43, 10, 24, 0.28) 42%,
-      transparent 74%
-    ),
-    linear-gradient(to bottom, #1a0812 0%, var(--night) 55%, #000000 100%);
+  background: linear-gradient(to bottom, #1a0812 0%, var(--night) 55%, #000000 100%);
+}
+
+/* Heading + image stacked in one centred column. */
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1rem, 3vh, 2rem);
+  width: 100%;
+}
+
+/* Matches the "A Personal Note" heading (OurStory.module.css .noteTitle):
+   "Press Start 2P", 400 weight, clamp(1.3rem, 3.6vw, 2.4rem), 1.6 line-height,
+   --cherry colour and a 3px black text shadow. */
+.title {
+  margin: 0;
+  font-family: "Press Start 2P", monospace;
+  font-weight: 400;
+  font-size: clamp(1.3rem, 3.6vw, 2.4rem);
+  line-height: 1.6;
+  text-align: center;
+  color: var(--cherry);
+  text-shadow: 3px 3px 0 #000000;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.section[data-visible="true"] .title {
+  opacity: 1;
 }
 
 /* The frame is locked to the image's exact aspect ratio (4134 x 2953) so the
-   image fills it with no letterboxing and the overlay coordinates stay put. */
+   image fills it with no letterboxing and the overlay coordinates stay put.
+   The height subtraction leaves room for the heading and the section padding
+   so the whole column still fits on screen. */
 .frame {
   position: relative;
   width: 100%;
-  width: min(100%, calc((100vh - 3rem) * 1.39993));
-  width: min(100%, calc((100svh - 3rem) * 1.39993));
+  width: min(100%, calc((100vh - 10.5rem) * 1.39993));
+  width: min(100%, calc((100svh - 10.5rem) * 1.39993));
   max-width: 2400px;
   aspect-ratio: 4134 / 2953;
   isolation: isolate;
@@ -42,110 +65,17 @@
   height: 100%;
   object-fit: contain;
   opacity: 0.04;
-  transition: opacity 1.7s ease;
+  transition: opacity 1.7s ease, filter 0.25s ease;
 }
 
 .section[data-visible="true"] .map {
   opacity: 1;
 }
 
-/* A very gentle overall glow, fading in with the reveal. */
-.aura {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0;
-  background: radial-gradient(
-    ellipse 62% 58% at 50% 45%,
-    rgba(228, 83, 163, 0.1) 0%,
-    rgba(120, 40, 90, 0.045) 46%,
-    transparent 72%
-  );
-  mix-blend-mode: screen;
-  transition: opacity 1.8s ease 0.35s;
-}
-
-.section[data-visible="true"] .aura {
-  opacity: 1;
-  animation: breathe 7s ease-in-out infinite alternate;
-}
-
-/* A single restrained sheen that sweeps once as the map is revealed. */
-.shimmer {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 36%,
-    rgba(255, 235, 248, 0.07) 47%,
-    rgba(255, 245, 252, 0.13) 50%,
-    rgba(255, 235, 248, 0.07) 53%,
-    transparent 64%
-  );
-  transform: translateX(-120%);
-}
-
-.section[data-visible="true"] .shimmer {
-  opacity: 1;
-  animation: shimmer 1.9s ease-out 0.4s 1 forwards;
-}
-
-/* Illumination: the identical image, brightened and clipped to a soft radial
-   pool over the active label, so only that printed label lights up. */
-.illumination {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-  opacity: 0;
-  background-image: url("/star-map.jpg");
-  background-size: 100% 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-  filter: brightness(1.95) saturate(1.2);
-  mix-blend-mode: screen;
-  -webkit-mask-image: radial-gradient(
-    ellipse var(--grx, 6%) 5.5% at var(--gx, 50%) var(--gy, 50%),
-    #000 0%,
-    rgba(0, 0, 0, 0.55) 42%,
-    transparent 73%
-  );
-  mask-image: radial-gradient(
-    ellipse var(--grx, 6%) 5.5% at var(--gx, 50%) var(--gy, 50%),
-    #000 0%,
-    rgba(0, 0, 0, 0.55) 42%,
-    transparent 73%
-  );
-  transition: opacity 0.35s ease;
-}
-
-.illumination[data-on="true"] {
-  opacity: 1;
-}
-
-/* A faint pink-white halo that reinforces the glow without adding any content. */
-.halo {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-  opacity: 0;
-  background: radial-gradient(
-    ellipse var(--grx, 6%) 5.5% at var(--gx, 50%) var(--gy, 50%),
-    rgba(255, 236, 247, 0.28) 0%,
-    rgba(228, 83, 163, 0.11) 42%,
-    transparent 73%
-  );
-  mix-blend-mode: screen;
-  transition: opacity 0.35s ease;
-}
-
-.halo[data-on="true"] {
-  opacity: 1;
+/* Subtle, non-glow feedback: a tiny brightness lift while a label is hovered
+   or tapped. No halo, shimmer or animated glow. */
+.frame[data-active="true"] .map {
+  filter: brightness(1.06);
 }
 
 /* Invisible, keyboard-reachable hit areas sitting over each printed label. */
@@ -170,26 +100,8 @@
 }
 
 .hit:focus-visible {
-  outline: 1px dashed rgba(228, 83, 163, 0.7);
+  outline: 1px dashed rgba(192, 40, 75, 0.8);
   outline-offset: 1px;
-}
-
-@keyframes breathe {
-  from {
-    opacity: 0.55;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes shimmer {
-  from {
-    transform: translateX(-120%);
-  }
-  to {
-    transform: translateX(120%);
-  }
 }
 
 @media (max-width: 600px) {
@@ -199,23 +111,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .title,
   .map {
     opacity: 1;
     transition: none;
   }
 
-  .aura {
-    opacity: 0.7;
-    animation: none !important;
-    transition: none;
-  }
-
-  .shimmer {
-    display: none;
-  }
-
-  .illumination,
-  .halo {
-    transition: none;
+  .frame[data-active="true"] .map {
+    filter: none;
   }
 }
