@@ -90,7 +90,14 @@ export default function useRetroSound() {
 
     // Create the context as soon as the client mounts so it is ready for the
     // very first gesture instead of being built part-way through the boot.
-    const ctx = new AudioCtx();
+    // Some browsers refuse to construct one (Web Audio disabled, too many live
+    // contexts, privacy modes); that must never take down the whole page.
+    let ctx: AudioContext;
+    try {
+      ctx = new AudioCtx();
+    } catch {
+      return;
+    }
     ctxRef.current = ctx;
 
     let unlockAudio: HTMLAudioElement | null = null;
@@ -166,7 +173,7 @@ export default function useRetroSound() {
         unlockAudio.pause();
         unlockAudio.src = "";
       }
-      void ctx.close();
+      void ctx.close().catch(() => {});
       ctxRef.current = null;
       unlockedRef.current = false;
     };
@@ -181,7 +188,7 @@ export default function useRetroSound() {
         // Queue it — it will sound as soon as a gesture unlocks audio. Keep the
         // fanfare and only the newest live sound so a long locked boot cannot
         // dump every missed blip at once.
-        void ctx.resume();
+        void ctx.resume().catch(() => {});
         if (startup) startupRef.current = tones;
         else pendingRef.current = tones;
         return;

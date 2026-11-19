@@ -35,8 +35,14 @@ const DEPTHS: QuestionDepth[] = [
   ...Array.from(presentDepths).filter((d) => !DEPTH_ORDER.includes(d)),
 ];
 
+/* Purely decorative text repeated per reel strip. The two copies in each strip
+   are identical so a -50% translate loops seamlessly. */
+const REEL_LINE =
+  "QUESTION!! QUESTION!! QUESTION!! QUESTION!! QUESTION!! QUESTION!! QUESTION!! QUESTION!! ";
+
 /* Tiny Web Audio blips — synthesised on the fly, no files or dependencies.
-   Kept deliberately quiet (low gain) and short so they never upstage the card. */
+   Kept short and punchy so they never upstage the card, with enough gain to be
+   clearly audible. They remain fully optional via the sound toggle / mute. */
 type Tone = {
   freq: number;
   duration: number;
@@ -51,23 +57,23 @@ const SOUNDS: Record<
   Tone[]
 > = {
   // Short rising blip.
-  surprise: [{ freq: 520, slideTo: 780, duration: 0.09, type: "square", volume: 0.06 }],
+  surprise: [{ freq: 520, slideTo: 780, duration: 0.09, type: "square", volume: 0.15 }],
   // Higher two-step chirp — clearly distinct from "surprise".
   another: [
-    { freq: 880, duration: 0.07, type: "square", volume: 0.05 },
-    { freq: 1180, duration: 0.1, delay: 0.06, type: "square", volume: 0.045 },
+    { freq: 880, duration: 0.07, type: "square", volume: 0.13 },
+    { freq: 1180, duration: 0.1, delay: 0.06, type: "square", volume: 0.12 },
   ],
   // Pleasant two-note confirm (E5 -> B5).
   save: [
-    { freq: 659, duration: 0.12, type: "triangle", volume: 0.07 },
-    { freq: 988, duration: 0.18, delay: 0.1, type: "triangle", volume: 0.065 },
+    { freq: 659, duration: 0.12, type: "triangle", volume: 0.18 },
+    { freq: 988, duration: 0.18, delay: 0.1, type: "triangle", volume: 0.16 },
   ],
   // Soft, quick tick for filter chips / clear.
-  tick: [{ freq: 1300, duration: 0.035, type: "square", volume: 0.03 }],
+  tick: [{ freq: 1300, duration: 0.035, type: "square", volume: 0.12 }],
   // Page-opening sweep (distinct from the blips and the confirm).
-  open: [{ freq: 440, slideTo: 680, duration: 0.13, type: "triangle", volume: 0.05 }],
+  open: [{ freq: 440, slideTo: 680, duration: 0.13, type: "triangle", volume: 0.14 }],
   // Page-closing sweep — the mirror of "open".
-  close: [{ freq: 680, slideTo: 330, duration: 0.13, type: "triangle", volume: 0.05 }],
+  close: [{ freq: 680, slideTo: 330, duration: 0.13, type: "triangle", volume: 0.14 }],
 };
 
 type DrawResult = { question: Question; remaining: number[] };
@@ -174,7 +180,7 @@ export default function CuriousCorner() {
 
     const start = ctx.currentTime + 0.01;
     SOUNDS[name].forEach(
-      ({ freq, duration, type = "triangle", delay = 0, volume = 0.05, slideTo }) => {
+      ({ freq, duration, type = "triangle", delay = 0, volume = 0.14, slideTo }) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         const at = start + delay;
@@ -315,6 +321,15 @@ export default function CuriousCorner() {
       aria-labelledby="curious-corner-heading"
       aria-describedby="curious-corner-subtitle"
     >
+      <div className={styles.reelBackground} aria-hidden="true">
+        {Array.from({ length: 7 }, (_, i) => (
+          <div className={styles.reelStrip} key={i}>
+            <span className={styles.reelText}>{REEL_LINE}</span>
+            <span className={styles.reelText}>{REEL_LINE}</span>
+          </div>
+        ))}
+      </div>
+
       <div className={styles.inner}>
         <header className={styles.intro}>
           <h2 id="curious-corner-heading" className={styles.heading}>

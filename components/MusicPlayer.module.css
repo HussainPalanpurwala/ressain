@@ -77,6 +77,14 @@
   transform: translateY(-50%) translateX(0);
 }
 
+/* First-load intro: keep the tooltip visible for 10s after mount. It shares
+   the hover/focus appearance; reduced-motion is respected via the transition
+   override in the media query below. */
+.hoverLabelIntro {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
 .turntable {
   position: relative;
   flex: 0 0 auto;

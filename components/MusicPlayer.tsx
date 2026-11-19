@@ -32,9 +32,17 @@ export default function MusicPlayer({
   onSeek,
 }: MusicPlayerProps) {
   const [expanded, setExpanded] = useState(false);
+  const [showIntroLabel, setShowIntroLabel] = useState(true);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const panelId = useId();
+
+  // On first load show the "MUSIC CONTROL" tooltip for 10s, then let it fall
+  // back to hover/focus-only behaviour. Cleanup clears the timer on unmount.
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowIntroLabel(false), 10000);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (!expanded) return;
@@ -129,7 +137,10 @@ export default function MusicPlayer({
       </div>
 
       <div className={styles.toggleArea}>
-        <span className={styles.hoverLabel} aria-hidden="true">
+        <span
+          className={`${styles.hoverLabel} ${showIntroLabel ? styles.hoverLabelIntro : ""}`}
+          aria-hidden="true"
+        >
           MUSIC CONTROL
         </span>
         <button

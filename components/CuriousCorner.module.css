@@ -13,14 +13,14 @@
   overflow: hidden;
   font-family: "Press Start 2P", monospace;
   color: var(--cream);
-  /* Warm vintage parchment glow sinking into dark burgundy, with a faint
-     diagonal paper-fibre grain so the field is never flat. Kept dark enough
-     behind the content that the cream text stays easy to read. */
-  background-color: var(--near-black);
+  /* Deep near-black burgundy base with only a faint warm glow kept at the top
+     so the field reads dark but never flat. Diagonal paper-fibre grain adds a
+     little texture; the cream text stays easy to read. */
+  background-color: #050207;
   background-image:
-    radial-gradient(ellipse 72% 56% at 50% 28%, rgba(238, 225, 200, 0.16) 0%, rgba(160, 70, 80, 0.1) 46%, transparent 78%),
-    radial-gradient(ellipse at 50% 40%, #4a1428 0%, #2b0a18 48%, #140610 80%, var(--near-black) 100%),
-    repeating-linear-gradient(45deg, rgba(238, 225, 200, 0.02) 0 1px, transparent 1px 4px);
+    radial-gradient(ellipse 60% 44% at 50% 22%, rgba(238, 225, 200, 0.09) 0%, rgba(160, 70, 80, 0.05) 46%, transparent 78%),
+    radial-gradient(ellipse at 50% 34%, #1c0712 0%, #10040c 46%, #08030a 78%, #050207 100%),
+    repeating-linear-gradient(45deg, rgba(238, 225, 200, 0.015) 0 1px, transparent 1px 4px);
 }
 
 /* Faint CRT scanlines, consistent with the rest of the arcade-styled sections. */
@@ -35,6 +35,96 @@
     transparent 0 3px,
     rgba(0, 0, 0, 0.16) 4px
   );
+}
+
+/* ---------- Animated question reel backdrop ---------- */
+/* Repeated "QUESTION!!" strips drift horizontally behind everything. Purely
+   decorative, so they are aria-hidden in markup and never catch pointers. */
+.reelBackground {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.reelStrip {
+  display: flex;
+  width: max-content;
+  white-space: nowrap;
+  font-size: clamp(1.15rem, 3.4vw, 2.4rem);
+  letter-spacing: 0.06em;
+  color: var(--blush);
+  opacity: 0.11;
+  /* Soft blush/cherry bloom; visible but low enough not to distract. */
+  text-shadow: 0 0 18px rgba(228, 83, 163, 0.55), 0 0 5px rgba(240, 37, 75, 0.35);
+  animation: reelScroll 26s linear infinite;
+  will-change: transform;
+}
+
+/* Alternate the drift direction per row for a woven, non-uniform backdrop. */
+.reelStrip:nth-child(even) {
+  animation-direction: reverse;
+}
+
+.reelStrip:nth-child(2) {
+  color: var(--cherry);
+  opacity: 0.1;
+  font-size: clamp(0.95rem, 2.8vw, 1.9rem);
+  animation-duration: 33s;
+}
+
+.reelStrip:nth-child(3) {
+  opacity: 0.12;
+  font-size: clamp(0.85rem, 2.5vw, 1.7rem);
+  animation-duration: 41s;
+}
+
+.reelStrip:nth-child(4) {
+  color: var(--cherry);
+  opacity: 0.12;
+  font-size: clamp(1.05rem, 3.1vw, 2.1rem);
+  animation-duration: 48s;
+}
+
+/* Bottom rows (n+5) get an opacity boost so the lower section reads clearly,
+   while staying low enough not to hurt text readability. */
+.reelStrip:nth-child(n+5) {
+  opacity: 0.15;
+}
+
+.reelStrip:nth-child(5) {
+  font-size: clamp(0.75rem, 2.2vw, 1.4rem);
+  animation-duration: 55s;
+}
+
+.reelStrip:nth-child(6) {
+  color: var(--cherry);
+  font-size: clamp(0.9rem, 2.6vw, 1.8rem);
+  animation-duration: 60s;
+}
+
+.reelStrip:nth-child(7) {
+  font-size: clamp(0.7rem, 2vw, 1.3rem);
+  animation-duration: 29s;
+}
+
+.reelText {
+  display: inline-block;
+  padding-right: 0.4em;
+}
+
+@keyframes reelScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 .inner {
@@ -203,6 +293,9 @@
   align-items: center;
   gap: 0.55rem;
   margin: 0 0 clamp(0.9rem, 2.4vh, 1.3rem);
+  padding-bottom: clamp(0.7rem, 2vh, 1rem);
+  /* Clear horizontal pixel-style rule directly beneath the heading. */
+  border-bottom: 2px dashed rgba(228, 83, 163, 0.45);
   font-size: clamp(0.5rem, 1.4vw, 0.66rem);
   letter-spacing: 0.08em;
   color: var(--blush);
@@ -760,6 +853,11 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* Keep the backdrop as a static faded texture rather than a moving reel. */
+  .reelStrip {
+    animation: none !important;
   }
 
   .cardInner {
