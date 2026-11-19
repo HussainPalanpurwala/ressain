@@ -1,19 +1,25 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { openWhenLetters } from "../content/openWhenLetters";
 import styles from "./OpenWhen.module.css";
 
-// These labels are navigation/UI structure only — not story copy.
-const NOTES = [
-  { id: "miss", label: "Open when you miss this", seal: "♥" },
-  { id: "smile", label: "Open when you need a smile", seal: "✦" },
-  { id: "rain", label: "Open when it's raining", seal: "☂" },
-  { id: "alone", label: "Open when you feel alone", seal: "✧" },
-  { id: "celebrate", label: "Open when you're celebrating", seal: "★" },
-  { id: "reminder", label: "Open when you need a reminder", seal: "❦" },
-] as const;
+// Reuse the original decorative seal glyphs, cycling through the existing set.
+const SEALS = ["♥", "✦", "☂", "✧", "★", "❦"] as const;
 
-type Note = (typeof NOTES)[number];
+type Note = {
+  id: string;
+  label: string;
+  body: string;
+  seal: string;
+};
+
+const NOTES: Note[] = openWhenLetters.map((letter, index) => ({
+  id: letter.id,
+  label: letter.title,
+  body: letter.body,
+  seal: SEALS[index % SEALS.length],
+}));
 
 const DIALOG_TITLE_ID = "open-when-dialog-title";
 
@@ -149,13 +155,15 @@ export default function OpenWhen() {
             >
               ✕
             </button>
-            <span className={styles.letterSeal} aria-hidden="true">
-              {active.seal}
-            </span>
-            <h3 id={DIALOG_TITLE_ID} className={styles.letterTitle}>
-              {active.label}
-            </h3>
-            <p className={styles.letterMessage}>[ message to be provided ]</p>
+            <div className={styles.letterScroll}>
+              <span className={styles.letterSeal} aria-hidden="true">
+                {active.seal}
+              </span>
+              <h3 id={DIALOG_TITLE_ID} className={styles.letterTitle}>
+                {active.label}
+              </h3>
+              <p className={styles.letterMessage}>{active.body}</p>
+            </div>
           </div>
         </div>
       )}

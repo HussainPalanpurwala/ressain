@@ -171,7 +171,7 @@
   gap: clamp(1rem, 3vh, 1.75rem);
   width: min(520px, 92vw);
   max-height: 88vh;
-  overflow-y: auto;
+  overflow: hidden;
   padding: clamp(2rem, 6vw, 3.5rem) clamp(1.5rem, 5vw, 3rem);
   text-align: center;
   background: var(--paper);
@@ -184,6 +184,17 @@
   box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.6);
   color: var(--burgundy);
   cursor: default;
+}
+
+/* Long letters scroll inside the letter, leaving the close button pinned. */
+.letterScroll {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1rem, 3vh, 1.75rem);
+  width: 100%;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .letterSeal {
@@ -214,6 +225,7 @@
   width: 100%;
   font-size: clamp(0.5rem, 1.5vw, 0.7rem);
   line-height: 2;
+  white-space: pre-wrap;
   color: #8a3c58;
   background: rgba(255, 240, 220, 0.7);
   border: 2px dashed rgba(74, 16, 36, 0.35);
@@ -223,6 +235,7 @@
   position: absolute;
   top: 8px;
   right: 8px;
+  z-index: 1;
   width: 44px;
   height: 44px;
   border: 2px solid var(--burgundy);
