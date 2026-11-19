@@ -142,8 +142,10 @@ const FLAVOUR: Record<QuizCategoryId, string> = {
 type ScatterPixel = { glyph: string; style: CSSProperties };
 
 const PIXEL_GLYPHS = [
-  "♥", "✿", "★", "✦", "♥", "✿", "★", "♥",
-  "✿", "★", "✦", "♥", "✿", "★", "✦", "♥",
+  "♥", "✿", "★", "✦", "♥", "✿", "★", "♥", "✿", "★",
+  "✦", "♥", "✿", "★", "✦", "♥", "✿", "★", "♥", "✦",
+  "♥", "✿", "★", "✦", "♥", "✿", "★", "♥", "✿", "★",
+  "✦", "♥", "✿", "★",
 ];
 
 function seededRandom(seed: number) {
@@ -163,24 +165,38 @@ const PIXELS: ScatterPixel[] = (() => {
   const round = (value: number) => Math.round(value * 10) / 10;
   const tints = ["#f0254b", "#e9a6bb", "#f6cbd6", "#fff0dc"];
 
-  return PIXEL_GLYPHS.map((glyph, index) => {
-    const side = index % 5 < 3; // roughly 3 in 5 flank the cabinet, 2 in 5 sit below it
-    const left = rand() < 0.5;
-    const x = side
-      ? left
-        ? between(1.5, 9)
-        : between(91, 98)
-      : between(4, 96);
-    const y = side ? between(28, 78) : between(84, 97);
+  // One piece per reserved slot. Slots are spaced further apart than the
+  // largest glyph plus its drift, so nothing can overlap another piece, while
+  // jitter inside each slot keeps the arrangement feeling scattered.
+  const slots: { x: number; y: number }[] = [];
 
+  // Two side gutters, seven rows each.
+  for (let row = 0; row < 7; row += 1) {
+    const y = 29 + row * 7.2 + between(-1, 1);
+    slots.push({ x: 4.5 + between(-1, 1), y });
+    slots.push({ x: 95.5 + between(-1, 1), y });
+  }
+
+  // Two rows across the bottom, ten columns each.
+  for (let row = 0; row < 2; row += 1) {
+    for (let col = 0; col < 10; col += 1) {
+      slots.push({
+        x: 6 + col * 9.8 + between(-1, 1),
+        y: 87 + row * 6 + between(-0.75, 0.75),
+      });
+    }
+  }
+
+  return PIXEL_GLYPHS.map((glyph, index) => {
+    const slot = slots[index];
     return {
       glyph,
       style: {
-        "--px": `${round(x)}%`,
-        "--py": `${round(y)}%`,
-        "--ps": round(between(0.65, 1.35)),
+        "--px": `${round(slot.x)}%`,
+        "--py": `${round(slot.y)}%`,
+        "--ps": round(between(0.65, 1.25)),
         "--pr": `${round(between(-16, 16))}deg`,
-        "--pdx": `${round(between(-8, 8))}px`,
+        "--pdx": `${round(between(-4, 4))}px`,
         "--pdur": `${round(between(4.8, 8.2))}s`,
         "--pd": `${round(between(0, 6))}s`,
         "--pc": tints[index % tints.length],
