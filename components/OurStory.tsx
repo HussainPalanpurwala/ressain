@@ -209,6 +209,7 @@ export default function OurStory() {
           <span className={styles.marker}>{conversations.marker}</span>
           <div className={styles.memoryBody}>
             <h3 className={styles.memoryTitle}>{conversations.title}</h3>
+            <TextPlaceholder block={conversations.story} />
             <div className={styles.letterLayout}>
               <button
                 type="button"

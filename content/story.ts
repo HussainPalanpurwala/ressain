@@ -76,6 +76,7 @@ export interface StoryContent {
     conversations: {
       marker: string;
       title: string;
+      story: StoryTextBlock;
       letter: StoryLetter;
       firstChatImage: StoryPhoto;
       secondChatImage: StoryPhoto;
@@ -160,6 +161,25 @@ And somehow, that was enough to make me want to know more.`,
     conversations: {
       marker: "02",
       title: "The Conversations",
+      story: {
+        label: "The Conversations story",
+        lines: 6,
+        text: `I think some people become a part of our routine so quietly that we don't even notice when it happens.
+
+That's how it felt with you.
+
+I remember those first few calls, how easily i got comfortable with you, and how i'd keep talking without realising how much time had passed and not realizing how id be a prime dengue victim with all those mosquitos biting me 
+
+There was always something else to talk about. And even when there wasn't, somehow, it felt calm and nice.
+
+I particularly remember that train journey, when I was trying to write something for you and my internet refused to cooperate. You kept roothofying because we both wanted to keep talking.
+
+I still have what I wrote that day. And I remember the two videos you sent afterwards. I accidentally closed the first one, but the second one is still so clear in my mind. Your expression, your eyes, your reaction.
+
+I sometimes wonder how many little moments we experience without realising that years later, we'll still be able to picture them so clearly.
+
+Maybe that's what makes a memory special. Not how extraordinary it was when it happened, but how much of it stays with us.`,
+      },
       letter: {
         heading: "The original letter",
         cardPreview: "There is about her a light that does not beg for attention, yet somehow guides me through the vast ocean of life.",
@@ -185,23 +205,7 @@ To describe her fully would be like trying to capture the wind within my hands
 
 And yet…
 
-I would keep trying until my very last breath
-
-I think some people become a part of our routine so quietly that we don't even notice when it happens.
-
-That's how it felt with you.
-
-I remember those first few calls, how easily i got comfortable with you, and how i'd keep talking without realising how much time had passed and not realizing how id be a prime dengue victim with all those mosquitos biting me 
-
-There was always something else to talk about. And even when there wasn't, somehow, it felt calm and nice.
-
-I particularly remember that train journey, when I was trying to write something for you and my internet refused to cooperate. You kept roothofying because we both wanted to keep talking.
-
-I still have what I wrote that day. And I remember the two videos you sent afterwards. I accidentally closed the first one, but the second one is still so clear in my mind. Your expression, your eyes, your reaction.
-
-I sometimes wonder how many little moments we experience without realising that years later, we'll still be able to picture them so clearly.
-
-Maybe that's what makes a memory special. Not how extraordinary it was when it happened, but how much of it stays with us.`,
+I would keep trying until my very last breath`,
         },
       },
       firstChatImage: { label: "First chat image", shape: "tall", src: "", caption: "" },
