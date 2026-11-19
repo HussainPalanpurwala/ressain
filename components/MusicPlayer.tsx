@@ -35,51 +35,50 @@ export default function MusicPlayer({
 
   return (
     <div className={styles.wrapper}>
-      <button
-        type="button"
-        className={styles.turntable}
-        onClick={() => setOpen((value) => !value)}
-        aria-label="Open music controls"
-      >
-        <span className={styles.deck}>
-          <span
-            className={`${styles.record} ${playing ? styles.spinning : ""}`}
-          >
-            <span className={styles.recordLabel}>R♥H</span>
-          </span>
-          <span className={styles.tonearm} />
-          <span className={styles.tonearmPivot} />
-          <span className={`${styles.status} ${playing ? styles.statusOn : ""}`} />
-        </span>
-      </button>
-
-      {open && (
-        <div className={styles.panel}>
-          <div className={styles.meta}>
-            <span className={styles.label}>NOW PLAYING</span>
-            <span className={styles.track}>{TRACK}</span>
-            <span className={styles.artist}>{ARTIST}</span>
-          </div>
-
-          <div className={styles.seekRow}>
-            <span className={styles.time}>{formattedTime}</span>
-            <input
-              type="range"
-              min="0"
-              max={duration || 100}
-              step="0.1"
-              value={Math.min(currentTime, duration || 100)}
-              onChange={(event) => onSeek(Number(event.target.value))}
-              aria-label="Seek"
-              className={styles.seek}
+      <div className={styles.bar}>
+        <button
+          type="button"
+          className={styles.turntable}
+          onClick={() => setOpen((value) => !value)}
+          aria-label="Toggle music controls"
+        >
+          <span className={styles.deck}>
+            <span
+              className={`${styles.record} ${playing ? styles.spinning : ""}`}
+            >
+              <span className={styles.recordLabel}>R♥H</span>
+            </span>
+            <span className={styles.tonearm} />
+            <span className={styles.tonearmPivot} />
+            <span
+              className={`${styles.status} ${playing ? styles.statusOn : ""}`}
             />
-            <span className={styles.time}>{formattedDuration}</span>
-          </div>
+          </span>
+        </button>
 
-          <div className={styles.bottomRow}>
-            <button type="button" className={styles.control} onClick={onToggle}>
-              {playing ? "❚❚ PAUSE" : "▶ PLAY"}
-            </button>
+        <div className={styles.meta}>
+          <span className={styles.label}>NOW PLAYING</span>
+          <span className={styles.track}>{TRACK}</span>
+          <span className={styles.artist}>{ARTIST}</span>
+        </div>
+
+        {open && (
+          <div className={styles.details}>
+            <div className={styles.seekRow}>
+              <span className={styles.time}>{formattedTime}</span>
+              <input
+                type="range"
+                min="0"
+                max={duration || 100}
+                step="0.1"
+                value={Math.min(currentTime, duration || 100)}
+                onChange={(event) => onSeek(Number(event.target.value))}
+                aria-label="Seek"
+                className={styles.seek}
+              />
+              <span className={styles.time}>{formattedDuration}</span>
+            </div>
+
             <label className={styles.volumeRow}>
               <span>VOL</span>
               <input
@@ -94,15 +93,19 @@ export default function MusicPlayer({
               />
               <span>{Math.round(volume * 100)}</span>
             </label>
-          </div>
 
-          {error && (
-            <span className={styles.hint}>
-              Add the song file at public/audio/california-dreamin.mp3
-            </span>
-          )}
-        </div>
-      )}
+            {error && (
+              <span className={styles.hint}>
+                Add the song file at public/audio/california-dreamin.mp3
+              </span>
+            )}
+          </div>
+        )}
+
+        <button type="button" className={styles.control} onClick={onToggle}>
+          {playing ? "❚❚ PAUSE" : "▶ PLAY"}
+        </button>
+      </div>
     </div>
   );
 }
