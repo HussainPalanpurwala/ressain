@@ -31,10 +31,11 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   const {
     enabled: soundOn,
     setEnabled: setSoundOn,
-    play,
     startLoading,
     updateLoading,
     stopLoading,
+    playComplete,
+    playEnter,
   } = useRetroSound();
 
   // Progress runs on its own clock, independent of any network activity, and
@@ -86,26 +87,16 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
     updateLoading(Math.round(progress) / 100);
   }, [Math.round(progress), phase, updateLoading]);
 
-  // Success chime when the boot finishes.
+  // Soft chord swell when the boot finishes.
   useEffect(() => {
     if (phase !== "ready") return;
-    play([
-      { freq: 523, duration: 0.1, volume: 0.14 },
-      { freq: 659, duration: 0.1, delay: 0.1, volume: 0.14 },
-      { freq: 784, duration: 0.1, delay: 0.2, volume: 0.14 },
-      { freq: 1047, duration: 0.12, delay: 0.3, volume: 0.14 },
-      { freq: 1319, duration: 0.28, delay: 0.42, type: "triangle", volume: 0.12 },
-    ]);
-  }, [phase, play]);
+    playComplete();
+  }, [phase, playComplete]);
 
   const handleEnter = () => {
     if (finishedRef.current) return;
     finishedRef.current = true;
-    play([
-      { freq: 880, duration: 0.08, volume: 0.16 },
-      { freq: 660, duration: 0.08, delay: 0.08, volume: 0.14 },
-      { freq: 440, duration: 0.22, delay: 0.16, type: "triangle", volume: 0.14 },
-    ]);
+    playEnter();
     setPhase("exiting");
   };
 
