@@ -103,6 +103,28 @@ body {
   text-align: center;
 }
 
+.boot__sound {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 2;
+  padding: 4px;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.4rem, 1.1vw, 0.52rem);
+  color: #ff9ed2;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.boot__sound:hover,
+.boot__sound:focus-visible {
+  color: #fff0f7;
+  opacity: 1;
+  outline: none;
+}
+
 .boot__caret {
   display: inline-block;
   width: 0.62em;

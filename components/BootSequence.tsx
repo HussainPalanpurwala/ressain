@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import PixelHeart from "./PixelHeart";
 import TypedMessage from "./TypedMessage";
 import usePrefersReducedMotion from "./usePrefersReducedMotion";
+import useRetroSound from "./useRetroSound";
 
 const HEART_COUNT = 10;
 const BOOT_DURATION = 16000;
@@ -27,6 +28,7 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   const [phase, setPhase] = useState<Phase>("loading");
   const rootRef = useRef<HTMLDivElement>(null);
   const finishedRef = useRef(false);
+  const { enabled: soundOn, setEnabled: setSoundOn, play } = useRetroSound();
 
   // Progress runs on its own clock, independent of any network activity, and
   // always reaches 100%.
@@ -65,9 +67,33 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   const filled = Math.min(HEART_COUNT, Math.ceil(progress / 10));
   const isComplete = phase !== "loading";
 
+  // Little arcade blip as each loading line appears.
+  useEffect(() => {
+    if (phase !== "loading") return;
+    play([
+      { freq: 740, duration: 0.04 },
+      { freq: 1100, duration: 0.035, delay: 0.05 },
+    ]);
+  }, [messageIndex, phase, play]);
+
+  // Success chime when the boot finishes.
+  useEffect(() => {
+    if (phase !== "ready") return;
+    play([
+      { freq: 523, duration: 0.09 },
+      { freq: 659, duration: 0.09, delay: 0.1 },
+      { freq: 784, duration: 0.09, delay: 0.2 },
+      { freq: 1046, duration: 0.18, delay: 0.3 },
+    ]);
+  }, [phase, play]);
+
   const handleEnter = () => {
     if (finishedRef.current) return;
     finishedRef.current = true;
+    play([
+      { freq: 660, duration: 0.08 },
+      { freq: 990, duration: 0.14, delay: 0.08 },
+    ]);
     setPhase("exiting");
   };
 
@@ -106,6 +132,15 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
         <div className="boot__glow" aria-hidden="true" />
 
         <div className="boot__box">
+          <button
+            type="button"
+            className="boot__sound"
+            onClick={() => setSoundOn((value) => !value)}
+            aria-label={soundOn ? "Turn sound off" : "Turn sound on"}
+          >
+            {soundOn ? "♪ ON" : "♪ OFF"}
+          </button>
+
           <p className="boot__label">
             LOADING <span className="boot__caret" aria-hidden="true" />
           </p>

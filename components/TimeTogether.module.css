@@ -49,6 +49,16 @@
     0 0 0 4px var(--blush),
     0 0 0 8px var(--burgundy),
     10px 10px 0 rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transform: translateY(48px) scale(0.94);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.2, 0.9, 0.25, 1.05);
+}
+
+.visible .console {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 .consoleTop,
@@ -67,13 +77,10 @@
 }
 
 .brand {
-  font-weight: 400;
-}
-
-.status {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  font-weight: 400;
   color: var(--cherry);
   text-shadow: 1px 1px 0 #fff0dc;
 }
@@ -250,6 +257,16 @@
   color: var(--cream);
   text-shadow: 2px 2px 0 #1c0710;
   min-height: 6em;
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s ease 0.35s,
+    transform 0.6s ease 0.35s;
+}
+
+.visible .closing {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .cursor {

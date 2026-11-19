@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import TimeGrid from "./TimeGrid";
 import styles from "./TimeTogether.module.css";
 
 // 19 November 2025, 12:07 PM IST (Asia/Kolkata) -> UTC+05:30
@@ -73,6 +74,29 @@ const pad = (value: number) => String(value).padStart(2, "0");
 
 export default function TimeTogether() {
   const [time, setTime] = useState<Time>(ZERO);
+  const sectionRef = useRef<HTMLElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const node = sectionRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0 }
+    );
+    observer.observe(node);
+    // Fallback so the timer can never stay hidden if the observer is missed.
+    const fallback = window.setTimeout(() => setVisible(true), 1200);
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(fallback);
+    };
+  }, []);
 
   useEffect(() => {
     const tick = () => setTime(calculate(Date.now() - START));
@@ -88,17 +112,22 @@ export default function TimeTogether() {
   ];
 
   return (
-    <section className={styles.section} id="our-time-together">
+    <section
+      ref={sectionRef}
+      className={`${styles.section} ${visible ? styles.visible : ""}`}
+      id="our-time-together"
+    >
+      <TimeGrid />
+
       <span className={`${styles.pixelDeco} ${styles.decoOne}`} aria-hidden="true" />
       <span className={`${styles.pixelDeco} ${styles.decoTwo}`} aria-hidden="true" />
       <span className={`${styles.pixelDeco} ${styles.decoThree}`} aria-hidden="true" />
 
       <div className={styles.console}>
         <div className={styles.consoleTop}>
-          <span className={styles.brand}>PIXEL HEART SYSTEM</span>
-          <span className={styles.status}>
+          <span className={styles.brand}>
             <span className={styles.led} aria-hidden="true" />
-            LOVE MODE: ON
+            Thanks to Zuckerberg
           </span>
         </div>
 
@@ -140,8 +169,8 @@ export default function TimeTogether() {
             ◀ ▲ ▼ ▶
           </span>
           <span className={styles.buttons} aria-hidden="true">
-            <i>A</i>
-            <i>B</i>
+            <i>R</i>
+            <i>H</i>
           </span>
         </div>
       </div>
