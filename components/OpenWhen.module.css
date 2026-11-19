@@ -42,7 +42,7 @@
   font-size: clamp(1.4rem, 4.5vw, 2.8rem);
   line-height: 1.5;
   font-weight: 400;
-  color: var(--blush);
+  color: #c0284b;
   text-shadow: 3px 3px 0 #000000, 0 0 20px rgba(228, 83, 163, 0.4);
 }
 
