@@ -31,9 +31,8 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   const {
     enabled: soundOn,
     setEnabled: setSoundOn,
-    startLoading,
-    updateLoading,
-    stopLoading,
+    playStartup,
+    playStage,
     playComplete,
     playEnter,
   } = useRetroSound();
@@ -75,19 +74,16 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   const filled = Math.min(HEART_COUNT, Math.ceil(progress / 10));
   const isComplete = phase !== "loading";
 
-  // One continuous swell while loading, rather than a blip per stage.
+  // Console-style power-on fanfare, then a crisp blip per loading line.
   useEffect(() => {
-    if (phase === "loading") startLoading();
-    else stopLoading();
-    return () => stopLoading();
-  }, [phase, startLoading, stopLoading]);
+    playStartup();
+  }, [playStartup]);
 
   useEffect(() => {
     if (phase !== "loading") return;
-    updateLoading(Math.round(progress) / 100);
-  }, [Math.round(progress), phase, updateLoading]);
+    playStage();
+  }, [messageIndex, phase, playStage]);
 
-  // Soft chord swell when the boot finishes.
   useEffect(() => {
     if (phase !== "ready") return;
     playComplete();
