@@ -91,8 +91,25 @@ function PhotoPlaceholder({
 }
 
 function VideoPlaceholder({ video }: { video: StoryVideo }) {
-  const [active, setActive] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
   const { label, featured, src } = video;
+
+  // Drive the button from the real media element: one implementation for every
+  // placeholder, so a future `src` automatically gets working playback too.
+  const togglePlayback = () => {
+    const node = videoRef.current;
+    if (!node) return; // no media yet (empty src) — nothing to control
+
+    if (node.paused) {
+      // play() returns a promise that rejects when playback is blocked or the
+      // media isn't available. Keep the label truthful instead of crashing.
+      void node.play().catch(() => setPlaying(false));
+    } else {
+      node.pause();
+    }
+  };
+
   return (
     <div
       className={`${styles.video} ${featured ? styles.videoFeatured : ""}`}
@@ -100,19 +117,28 @@ function VideoPlaceholder({ video }: { video: StoryVideo }) {
     >
       <div className={styles.videoThumb}>
         {src ? (
-          <video src={src} controls playsInline preload="metadata" />
+          <video
+            ref={videoRef}
+            src={src}
+            controls
+            playsInline
+            preload="metadata"
+            onPlay={() => setPlaying(true)}
+            onPause={() => setPlaying(false)}
+            onEnded={() => setPlaying(false)}
+          />
         ) : (
           <span className={styles.phLabel}>
-            [ {label} — {active ? "video playback here" : "video to be provided"} ]
+            [ {label} — {playing ? "video playback here" : "video to be provided"} ]
           </span>
         )}
       </div>
       <button
         type="button"
         className={styles.playButton}
-        onClick={() => setActive((value) => !value)}
+        onClick={togglePlayback}
       >
-        {active ? "❚❚ PAUSE" : "▶ PLAY"}
+        {playing ? "❚❚ PAUSE" : "▶ PLAY"}
       </button>
     </div>
   );
@@ -184,9 +210,12 @@ export default function OurStory() {
   const { beginning, conversations, surprise, palace, temple, train } = memories;
 
   return (
-    <section ref={sectionRef} className={styles.section} id="our-story">
+    <div className={styles.storyWrap}>
+      {/* Kept outside the clipped story section so overflow rules on small
+          screens can never cut off the dark → paper transition. */}
       <div className={styles.blendFromTimer} aria-hidden="true" />
 
+      <section ref={sectionRef} className={styles.section} id="our-story">
       <div className={styles.intro} data-reveal>
         <h2 className={styles.sectionTitle}>{intro.title}</h2>
         <p className={styles.introLine}>{intro.line}</p>
@@ -245,9 +274,13 @@ export default function OurStory() {
             <h3 className={styles.memoryTitle}>{surprise.title}</h3>
             <VideoPlaceholder video={surprise.reactionVideo} />
             <div className={styles.miniGallery}>
-              {surprise.gallery.map((photo) => (
-                <PhotoPlaceholder key={photo.label} photo={photo} onClick={setLightbox} />
-              ))}
+              {surprise.gallery.map((item) =>
+                "featured" in item ? (
+                  <VideoPlaceholder key={item.label} video={item} />
+                ) : (
+                  <PhotoPlaceholder key={item.label} photo={item} onClick={setLightbox} />
+                )
+              )}
             </div>
             <TextPlaceholder block={surprise.story} />
           </div>
@@ -364,6 +397,9 @@ export default function OurStory() {
           </div>
         </div>
       )}
-    </section>
+      </section>
+
+      <div className={styles.blendToCurious} aria-hidden="true" />
+    </div>
   );
 }

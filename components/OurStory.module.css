@@ -1,4 +1,9 @@
-.section {
+/* Positioning context for the blend only. It deliberately has no overflow
+   rule: the dark → paper strip is absolute and reaches above the story, so it
+   must never be clipped by the section's own overflow on narrow screens. */
+.storyWrap {
+  /* Shared by the blend and the section; the blend sits outside .section and
+     still needs the paper stops for its gradient. */
   --paper: #eee1c8;
   --paper-dark: #d9c7a8;
   --ink: #3a1420;
@@ -7,6 +12,10 @@
   --blush: #e453a3;
   --cream: #fff6e6;
 
+  position: relative;
+}
+
+.section {
   position: relative;
   margin-top: -140px;
   padding: clamp(3rem, 7vh, 5rem) clamp(1rem, 5vw, 4rem);
@@ -20,15 +29,22 @@
 }
 
 /* Single smooth blend: the timer's dark tail into this section's paper.
-   No light→dark→light band — it only ever gets lighter going down. */
+   No light→dark→light band — it only ever gets lighter going down.
+   It is a child of .storyWrap (not .section) so the section's overflow-x: clip
+   cannot cut it off on mobile. top still lines up with the timer's 140px
+   bottom gap and the story's -140px pull-up. */
 .blendFromTimer {
   position: absolute;
   top: -140px;
   left: 0;
   right: 0;
-  height: 140px;
+  /* 3px more than the timer's 140px gap: the extra pixels overlap the story
+     section so fractional layout can't leave a hairline seam above the title. */
+  height: 143px;
   pointer-events: none;
-  z-index: 0;
+  /* Must paint above .section (position: relative, z-index: auto), otherwise
+     the section edge wins the paint order and draws a thin joiner line. */
+  z-index: 2;
   background: linear-gradient(
     to bottom,
     #0a0509 0%,
@@ -36,6 +52,26 @@
     #8c5a63 58%,
     var(--paper-dark) 82%,
     var(--paper) 100%
+  );
+}
+
+/* Bottom seam: this story already darkens to black at its very bottom, and
+   Curious Corner starts black. This faint overlay makes the hand-off explicit
+   and, like the top blend, sits outside .section's overflow with a small
+   overlap so no horizontal joiner line can appear on any screen size. */
+.blendToCurious {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 120px;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 2, 7, 0) 0%,
+    rgba(5, 2, 7, 0.35) 55%,
+    #000000 100%
   );
 }
 
@@ -130,9 +166,11 @@
 /* Placeholders */
 .phLabel {
   display: block;
+  min-width: 0;
   font-size: clamp(0.42rem, 1vw, 0.58rem);
   line-height: 1.9;
   letter-spacing: 0.04em;
+  overflow-wrap: anywhere;
   color: #8a3c58;
 }
 
@@ -538,6 +576,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 0;
+  max-width: 100%;
   padding: 8px;
   background: var(--cream);
   border: 1px solid rgba(74, 16, 36, 0.25);
@@ -600,12 +640,32 @@
   border-radius: 2px;
 }
 
-/* 2x2 square grid on every screen so all four photos fit evenly. */
+/* 2x2 square grid on every screen so all four slots fit evenly. */
 .miniGallery {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   margin: clamp(1.5rem, 3vh, 2rem) 0;
+}
+
+/* The fourth Jammu slot is a video. Give its tile the same square footprint as
+   the three polaroids so the 2x2 grid stays even on every screen. The real
+   <video> is capped to the thumb (object-fit: contain already letterboxes it,
+   so it is never stretched or cropped) and the play button sits underneath. */
+.miniGallery .video {
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  transform: rotate(2.4deg);
+}
+
+.miniGallery .videoThumb {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0.5rem;
+}
+
+.miniGallery .videoThumb video {
+  max-height: 100%;
 }
 
 .palaceBottom {
