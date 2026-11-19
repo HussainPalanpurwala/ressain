@@ -52,8 +52,6 @@ export interface StoryLetter {
   readLabel: string;
   /** The full letter, shown when the card is opened. */
   fullText: StoryTextBlock;
-  /** Path to the scanned original letter image in /public. */
-  src: string;
 }
 
 export interface StorySong {
@@ -164,13 +162,32 @@ And somehow, that was enough to make me want to know more.`,
       title: "The Conversations",
       letter: {
         heading: "The original letter",
-        cardPreview: "[ letter text to be provided ]",
+        cardPreview: "There is about her a light that does not beg for attention, yet somehow guides me through the vast ocean of life.",
         readLabel: "Read the letter →",
-        src: "/media/original-letter.png",
         fullText: {
-          label: "Full original letter — preserve exactly as supplied",
+          label: "The original letter — preserve exactly as supplied",
           lines: 12,
-          text: `I think some people become a part of our routine so quietly that we don't even notice when it happens.
+          text: `There is about her a light that does not beg for attention, yet somehow guides me through the vast ocean of life. Not the loud blaze of the noon sun but the quiet, silver mercy of the moon. The kind that leads a lost traveler through a thick forest at midnight. The kind that steadies a fragile boat against a raging storm in the ocean
+
+And yet… she is also the first touch of sunrise after a long, cold merciless night. The warmth on cold skin. The reminder that darkness never truly wins. With her I feel something rare, something like home 
+
+She carries a grace that is not delicate, but deeply rooted. Strong and unmoving. There is a divine feminine presence in her that steadies the very air. When she is near, the noise of the world fades into nothing. Time slows. Everything else becomes irrelevant
+
+To speak with her is a strange kind of comfort. Words flow without effort, yet never lose their depth. One conversation with her feels like sitting upon an ancient oak growing from the edge of a cliff with clouds rolling beneath you. It is calming yet thrilling. Safe yet awakening. You feel understood in ways you did not know you longed for. She does not listen merely to answer but listens to uncover. To peel back layers. To see the versions of you the world has overlooked
+
+Her mind is no shallow stream but is like an ocean. Vast, philosophical and unafraid of depth or darkness. She does not skim the surface of ideas but dives into the trenches. Her views are not careless instead they are carved with thought. Firm as stone, yet alive like newly lit fire. When she stands her ground she does not need to raise her voice 
+
+She speaks of life as though she has lived it a thousand times before. As though she has wandered through unseen worlds and returned with wisdom. She loves travel, yes but more than places, she loves what lies beneath them. The questions, the meaning, the purpose. The long conversations under open skies where time forgets to move and the soul feels heard
+
+There is something beautifully unusual about her. She feels familiar, yet unknowable. Warm, yet deeply intriguing. Like a story written in ink that refuses to fade, no matter how many years pass
+
+To describe her fully would be like trying to capture the wind within my hands
+
+And yet…
+
+I would keep trying until my very last breath
+
+I think some people become a part of our routine so quietly that we don't even notice when it happens.
 
 That's how it felt with you.
 

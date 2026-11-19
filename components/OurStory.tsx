@@ -218,11 +218,7 @@ export default function OurStory() {
               >
                 <span className={styles.letterSeal} aria-hidden="true">✦</span>
                 <span className={styles.letterHeading}>{conversations.letter.heading}</span>
-                <img
-                  className={styles.letterCardImage}
-                  src={conversations.letter.src}
-                  alt={conversations.letter.heading}
-                />
+                <span className={styles.phLabel}>{conversations.letter.cardPreview}</span>
                 <span className={styles.letterOpen}>{conversations.letter.readLabel}</span>
               </button>
               <div className={styles.videoStack}>
@@ -363,11 +359,6 @@ export default function OurStory() {
               ✕
             </button>
             <h3 className={styles.memoryTitle}>{conversations.letter.heading}</h3>
-            <img
-              className={styles.letterImage}
-              src={conversations.letter.src}
-              alt={conversations.letter.heading}
-            />
             <TextPlaceholder block={conversations.letter.fullText} />
           </div>
         </div>

@@ -521,17 +521,6 @@
   line-height: 1.6;
 }
 
-/* The scan on the closed card is a small, self-contained thumbnail.
-   It can never grow past the card's inner width, whatever the viewport. */
-.letterCardImage {
-  display: block;
-  width: 100%;
-  max-width: 180px;
-  height: auto;
-  max-height: 220px;
-  object-fit: contain;
-}
-
 .letterOpen {
   margin-top: auto;
   font-size: 0.55rem;
@@ -884,12 +873,6 @@
   height: auto;
   max-height: 72vh;
   object-fit: contain;
-}
-
-/* The scanned letter in reading view: large and readable, still contained
-   within the viewport so the whole page scrolls instead of the image. */
-.lightboxInner .letterImage {
-  max-height: 58vh;
 }
 
 .closeButton {
