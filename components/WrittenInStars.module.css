@@ -112,32 +112,40 @@
   height: var(--ss);
   border-radius: 50%;
   background: var(--star-color);
-  /* A faint halo of the same palette colour — restrained, not a hard sparkle. */
-  box-shadow: 0 0 calc(var(--ss) * 2.5) var(--star-color);
-  opacity: 0.4;
+  /* A clearly visible, layered halo in the same palette colour. Three soft
+     shadows build a warm bloom rather than a hard sparkle, and stay elegant
+     because the outer layers are translucent. */
+  box-shadow:
+    0 0 calc(var(--ss) * 2) var(--star-color),
+    0 0 calc(var(--ss) * 7) var(--star-glow),
+    0 0 calc(var(--ss) * 14) var(--star-glow);
+  opacity: 0.55;
   animation: starTwinkle var(--sdur) ease-in-out var(--sd) infinite alternate;
 }
 
 .star[data-color="cream"] {
   --star-color: var(--cream);
+  --star-glow: rgba(255, 240, 220, 0.6);
 }
 
 .star[data-color="blush"] {
   --star-color: var(--blush);
+  --star-glow: rgba(228, 83, 163, 0.55);
 }
 
 .star[data-color="cherry"] {
   --star-color: var(--cherry);
+  --star-glow: rgba(192, 40, 75, 0.55);
 }
 
 @keyframes starTwinkle {
   from {
-    opacity: 0.12;
-    transform: scale(0.7);
+    opacity: 0.25;
+    transform: scale(0.8);
   }
   to {
-    opacity: 0.7;
-    transform: scale(1.15);
+    opacity: 0.95;
+    transform: scale(1.25);
   }
 }
 
@@ -246,10 +254,11 @@
     transition: none;
   }
 
-  /* Static, gently-lit stars — no twinkle or fade animation. */
+  /* Static, gently-lit stars — no twinkle or fade animation, but still
+     visibly glowing. */
   .star {
     animation: none;
-    opacity: 0.45;
+    opacity: 0.6;
   }
 
   .frame[data-active="true"] .map {

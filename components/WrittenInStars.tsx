@@ -62,10 +62,10 @@ const STARS: Star[] = (() => {
     return seed / 4294967296;
   };
   const colors: Star["color"][] = ["cream", "blush", "cherry"];
-  return Array.from({ length: 38 }, () => ({
+  return Array.from({ length: 84 }, () => ({
     x: 3 + rand() * 94, // keep dots away from the very edges
     y: 6 + rand() * 88,
-    size: 1 + rand() * 2, // 1–3px
+    size: 1.5 + rand() * 2.5, // 1.5–4px
     color: colors[Math.floor(rand() * colors.length)],
     delay: rand() * -8, // negative so dots start at different fade points
     duration: 4 + rand() * 5, // 4–9s, a slow and restrained twinkle
