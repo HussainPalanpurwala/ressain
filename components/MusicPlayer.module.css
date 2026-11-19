@@ -156,6 +156,27 @@
   color: #f0b8d8;
 }
 
+.seekRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time {
+  font-size: 0.36rem;
+  color: #f0b8d8;
+  min-width: 32px;
+  text-align: center;
+}
+
+.seek {
+  flex: 1;
+  min-width: 0;
+  height: 4px;
+  accent-color: #e453a3;
+  cursor: pointer;
+}
+
 .control {
   padding: 10px;
   font-family: inherit;

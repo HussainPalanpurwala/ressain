@@ -13,8 +13,52 @@ type Tone = {
 
 export default function useRetroSound() {
   const ctxRef = useRef<AudioContext | null>(null);
-  const unlockedRef = useRef(false);
+  const pendingRef = useRef<Tone[][]>([]);
+  const scheduleRef = useRef<(tones: Tone[]) => void>(() => {});
   const [enabled, setEnabled] = useState(true);
+
+  const schedule = useCallback(
+    (tones: Tone[]) => {
+      const ctx = ctxRef.current;
+      if (!ctx || ctx.state !== "running") return;
+      const now = ctx.currentTime + 0.01;
+      tones.forEach(
+        ({
+          freq,
+          duration,
+          type = "square",
+          delay = 0,
+          volume = 0.14,
+          slideTo,
+        }) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const start = now + delay;
+
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, start);
+          if (slideTo) {
+            osc.frequency.exponentialRampToValueAtTime(slideTo, start + duration);
+          }
+
+          gain.gain.setValueAtTime(0.0001, start);
+          gain.gain.exponentialRampToValueAtTime(volume, start + 0.008);
+          gain.gain.setValueAtTime(volume, start + duration * 0.55);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(start);
+          osc.stop(start + duration + 0.03);
+        }
+      );
+    },
+    []
+  );
+
+  useEffect(() => {
+    scheduleRef.current = schedule;
+  }, [schedule]);
 
   useEffect(() => {
     const AudioCtx =
@@ -27,8 +71,11 @@ export default function useRetroSound() {
     ctxRef.current = ctx;
 
     const unlock = () => {
-      unlockedRef.current = true;
-      if (ctx.state === "suspended") void ctx.resume();
+      void ctx.resume().then(() => {
+        const queued = pendingRef.current;
+        pendingRef.current = [];
+        queued.forEach((tones) => scheduleRef.current(tones));
+      });
     };
     const events = ["pointerdown", "touchstart", "keydown", "click"];
     events.forEach((event) => window.addEventListener(event, unlock, true));
@@ -45,64 +92,35 @@ export default function useRetroSound() {
       if (!enabled) return;
       const ctx = ctxRef.current;
       if (!ctx) return;
-      if (ctx.state === "suspended") {
+      if (ctx.state !== "running") {
+        // Queue it — it will sound as soon as a gesture unlocks audio.
         void ctx.resume();
+        pendingRef.current.push(tones);
         return;
       }
-      if (!unlockedRef.current && ctx.state !== "running") return;
-
-      const now = ctx.currentTime + 0.01;
-      tones.forEach(
-        ({
-          freq,
-          duration,
-          type = "square",
-          delay = 0,
-          volume = 0.08,
-          slideTo,
-        }) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          const start = now + delay;
-
-          osc.type = type;
-          osc.frequency.setValueAtTime(freq, start);
-          if (slideTo) {
-            osc.frequency.exponentialRampToValueAtTime(slideTo, start + duration);
-          }
-
-          gain.gain.setValueAtTime(0.0001, start);
-          gain.gain.exponentialRampToValueAtTime(volume, start + 0.006);
-          gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(start);
-          osc.stop(start + duration + 0.02);
-        }
-      );
+      schedule(tones);
     },
-    [enabled]
+    [enabled, schedule]
   );
 
-  // Classic handheld-console power-on fanfare.
+  // Console-style power-on fanfare.
   const playStartup = useCallback(
     () =>
       play([
-        { freq: 523, duration: 0.08, volume: 0.1 },
-        { freq: 659, duration: 0.08, delay: 0.09, volume: 0.1 },
-        { freq: 784, duration: 0.08, delay: 0.18, volume: 0.1 },
-        { freq: 1047, duration: 0.22, delay: 0.27, volume: 0.11 },
+        { freq: 523, duration: 0.14, volume: 0.15 },
+        { freq: 659, duration: 0.14, delay: 0.12, volume: 0.15 },
+        { freq: 784, duration: 0.14, delay: 0.24, volume: 0.15 },
+        { freq: 1047, duration: 0.3, delay: 0.36, volume: 0.16 },
       ]),
     [play]
   );
 
-  // Short, crisp blip for each loading message.
+  // Short but clearly audible blip per loading message — same level throughout.
   const playStage = useCallback(
     () =>
       play([
-        { freq: 880, duration: 0.045, volume: 0.08 },
-        { freq: 1320, duration: 0.04, delay: 0.05, volume: 0.06 },
+        { freq: 880, duration: 0.13, volume: 0.14 },
+        { freq: 1320, duration: 0.11, delay: 0.11, volume: 0.12 },
       ]),
     [play]
   );
@@ -110,11 +128,17 @@ export default function useRetroSound() {
   const playComplete = useCallback(
     () =>
       play([
-        { freq: 523, duration: 0.09, volume: 0.09 },
-        { freq: 659, duration: 0.09, delay: 0.09, volume: 0.09 },
-        { freq: 784, duration: 0.09, delay: 0.18, volume: 0.09 },
-        { freq: 1047, duration: 0.1, delay: 0.27, volume: 0.09 },
-        { freq: 1319, duration: 0.26, delay: 0.38, type: "triangle", volume: 0.08 },
+        { freq: 523, duration: 0.14, volume: 0.14 },
+        { freq: 659, duration: 0.14, delay: 0.12, volume: 0.14 },
+        { freq: 784, duration: 0.14, delay: 0.24, volume: 0.14 },
+        { freq: 1047, duration: 0.16, delay: 0.36, volume: 0.14 },
+        {
+          freq: 1319,
+          duration: 0.34,
+          delay: 0.5,
+          type: "triangle",
+          volume: 0.13,
+        },
       ]),
     [play]
   );
@@ -122,9 +146,9 @@ export default function useRetroSound() {
   const playEnter = useCallback(
     () =>
       play([
-        { freq: 784, duration: 0.08, volume: 0.09 },
-        { freq: 1047, duration: 0.08, delay: 0.08, volume: 0.09 },
-        { freq: 1319, duration: 0.18, delay: 0.16, volume: 0.09 },
+        { freq: 784, duration: 0.13, volume: 0.14 },
+        { freq: 1047, duration: 0.13, delay: 0.11, volume: 0.14 },
+        { freq: 1319, duration: 0.26, delay: 0.22, volume: 0.14 },
       ]),
     [play]
   );

@@ -37,8 +37,13 @@ export default function Experience() {
           playing={music.playing}
           volume={music.volume}
           error={music.error}
+          currentTime={music.currentTime}
+          duration={music.duration}
+          formattedTime={music.formattedTime}
+          formattedDuration={music.formattedDuration}
           onVolumeChange={music.setVolume}
           onToggle={music.toggle}
+          onSeek={music.seek}
         />
       )}
       {!entered && <BootSequence onEnter={handleEnter} />}
