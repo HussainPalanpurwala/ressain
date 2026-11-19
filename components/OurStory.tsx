@@ -5,7 +5,7 @@ import styles from "./OurStory.module.css";
 
 function TextPlaceholder({ label, lines = 3 }: { label: string; lines?: number }) {
   return (
-    <div className={styles.textPlaceholder}>
+    <div className={styles.textPlaceholder} data-reveal>
       <span className={styles.phLabel}>[ {label} — text to be provided ]</span>
       <div className={styles.phLines} aria-hidden="true">
         {Array.from({ length: lines }, (_, index) => (
@@ -31,7 +31,9 @@ function PhotoPlaceholder({
       className={`${styles.photo} ${styles[shape]}`}
       onClick={() => onClick(label)}
       aria-label={`Open ${label}`}
+      data-reveal
     >
+      <span className={styles.pin} aria-hidden="true" />
       <span className={styles.photoInner}>
         <span className={styles.clip} aria-hidden="true" />
         <span className={styles.photoIcon} aria-hidden="true">
@@ -53,7 +55,10 @@ function VideoPlaceholder({
 }) {
   const [active, setActive] = useState(false);
   return (
-    <div className={`${styles.video} ${featured ? styles.videoFeatured : ""}`}>
+    <div
+      className={`${styles.video} ${featured ? styles.videoFeatured : ""}`}
+      data-reveal
+    >
       <div className={styles.videoThumb}>
         <span className={styles.phLabel}>
           [ {label} — {active ? "video playback here" : "video to be provided"} ]
@@ -91,7 +96,10 @@ export default function OurStory() {
       },
       { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
     );
-    items.forEach((item) => observer.observe(item));
+    items.forEach((item) => {
+      item.classList.add(styles.reveal);
+      observer.observe(item);
+    });
     return () => observer.disconnect();
   }, []);
 
@@ -124,6 +132,8 @@ export default function OurStory() {
 
   return (
     <section ref={sectionRef} className={styles.section} id="our-story">
+      <div className={styles.blendFromTimer} aria-hidden="true" />
+
       <div className={styles.intro} data-reveal>
         <h2 className={styles.sectionTitle}>Our Story</h2>
         <p className={styles.introLine}>
@@ -163,6 +173,7 @@ export default function OurStory() {
                 type="button"
                 className={styles.letterCard}
                 onClick={() => setLetterOpen(true)}
+                data-reveal
               >
                 <span className={styles.letterSeal} aria-hidden="true">✦</span>
                 <span className={styles.letterHeading}>The original letter</span>

@@ -9,16 +9,36 @@
 
   position: relative;
   margin-top: -65vh;
-  padding: clamp(5rem, 12vh, 9rem) clamp(1rem, 5vw, 4rem);
+  padding: clamp(3rem, 7vh, 5rem) clamp(1rem, 5vw, 4rem);
   font-family: "Press Start 2P", monospace;
   color: var(--ink);
   background-color: var(--paper);
   background-image:
-    linear-gradient(to bottom, #000000 0%, #2b0a18 1%, #d9c7a8 3%, var(--paper) 7%, var(--paper) 96%, #2b0a18 99%, #000000 100%),
+    linear-gradient(to bottom, #000000 0%, #2b0a18 2%, #d9c7a8 5%, var(--paper) 9%, var(--paper) 95%, #d9c7a8 98%, #2b0a18 99%, #000000 100%),
     repeating-linear-gradient(45deg, rgba(74, 16, 36, 0.02) 0 2px, transparent 2px 4px);
 }
 
+/* Smoothens the timer's dark tail into the paper of this section. */
+.blendFromTimer {
+  position: absolute;
+  top: -65vh;
+  left: 0;
+  right: 0;
+  height: 65vh;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(11, 5, 9, 0) 0%,
+    #2b0a18 38%,
+    #d9c7a8 75%,
+    var(--paper) 100%
+  );
+}
+
 .intro {
+  position: relative;
+  z-index: 1;
   max-width: 760px;
   margin: 0 auto clamp(5rem, 12vh, 9rem);
   text-align: center;
@@ -35,6 +55,8 @@
 
 .sectionTitle {
   margin: 0;
+  color: #ff9ed2;
+  text-shadow: 3px 3px 0 #1a0710, 0 0 24px rgba(228, 83, 163, 0.45);
   font-size: clamp(1.7rem, 5vw, 3.6rem);
   line-height: 1.5;
 }
@@ -44,7 +66,8 @@
   max-width: 560px;
   font-size: clamp(0.55rem, 1.5vw, 0.78rem);
   line-height: 2.2;
-  color: #6d3a4c;
+  color: #fff0f7;
+  text-shadow: 1px 1px 0 #1a0710;
 }
 
 /* Diary binding: subtle stitching instead of a timeline line */
@@ -158,6 +181,100 @@
 
 .photo {
   transform: rotate(-0.7deg);
+}
+
+/* Varied fasteners — tape, staples, clips and pins in different spots */
+.memory::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 11px;
+  height: 3px;
+  background: rgba(74, 16, 36, 0.5);
+  transform: rotate(-22deg);
+  box-shadow: 0 1px 0 rgba(255, 246, 230, 0.7);
+}
+
+.memory::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  right: 30px;
+  width: 9px;
+  height: 17px;
+  border: 2px solid rgba(74, 16, 36, 0.4);
+  border-radius: 5px;
+  transform: rotate(14deg);
+}
+
+.memory:nth-of-type(even)::after {
+  transform: rotate(-16deg);
+}
+
+.pin {
+  display: none;
+}
+
+.memorySurprise .pin,
+.memoryTrain .pin,
+.memoryPalace .pin {
+  display: block;
+  position: absolute;
+  top: -7px;
+  left: 22px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffb3d1, #a81638);
+  box-shadow: 1px 2px 3px rgba(74, 16, 36, 0.4);
+}
+
+.memoryMinimal .textPlaceholder::before {
+  left: 20%;
+  transform: translateX(-50%) rotate(-7deg);
+}
+
+.memoryLetter .textPlaceholder::before {
+  left: 76%;
+  transform: translateX(-50%) rotate(5deg);
+}
+
+.memorySurprise .textPlaceholder::before {
+  left: 30%;
+  transform: translateX(-50%) rotate(4deg);
+  background: rgba(74, 16, 36, 0.18);
+}
+
+.memoryPalace .textPlaceholder::before {
+  left: 72%;
+  transform: translateX(-50%) rotate(-6deg);
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(228, 83, 163, 0.32) 0 4px,
+    rgba(255, 246, 230, 0.35) 4px 8px
+  );
+}
+
+.memoryTemple .textPlaceholder::before {
+  left: 26%;
+  transform: translateX(-50%) rotate(2deg);
+  background: rgba(192, 40, 75, 0.2);
+}
+
+.memoryTrain .textPlaceholder::before {
+  left: 80%;
+  transform: translateX(-50%) rotate(-4deg);
+}
+
+.memorySurprise .photo::before {
+  left: 26%;
+  transform: translateX(-50%) rotate(6deg);
+}
+
+.memoryTrain .photo::before {
+  left: 74%;
+  transform: translateX(-50%) rotate(-5deg);
 }
 
 /* Polaroids */
@@ -520,21 +637,90 @@
   color: var(--cherry);
 }
 
-/* Reveal — starts partly visible so no memory can be completely hidden */
-.memory,
+/* Presentation-style reveals: each piece pops in from its own direction. */
+.reveal {
+  opacity: 0.45;
+  translate: var(--from-x, 0px) var(--from-y, 24px);
+  rotate: var(--from-rot, 0deg);
+  scale: 0.93;
+  transition:
+    opacity 0.6s ease,
+    translate 0.8s cubic-bezier(0.16, 1.28, 0.3, 1) var(--pop-delay, 0s),
+    rotate 0.8s cubic-bezier(0.16, 1.28, 0.3, 1) var(--pop-delay, 0s),
+    scale 0.8s cubic-bezier(0.16, 1.28, 0.3, 1) var(--pop-delay, 0s);
+}
+
+.reveal.inView {
+  opacity: 1;
+  translate: 0 0;
+  rotate: 0deg;
+  scale: 1;
+}
+
+.memory:nth-of-type(1) {
+  --from-x: -34px;
+  --from-y: 22px;
+  --from-rot: -2deg;
+}
+
+.memory:nth-of-type(2) {
+  --from-x: 36px;
+  --from-y: 16px;
+  --from-rot: 2deg;
+}
+
+.memory:nth-of-type(3) {
+  --from-x: -26px;
+  --from-y: 34px;
+  --from-rot: 3deg;
+}
+
+.memory:nth-of-type(4) {
+  --from-x: 32px;
+  --from-y: -20px;
+  --from-rot: -3deg;
+}
+
+.memory:nth-of-type(5) {
+  --from-x: -24px;
+  --from-y: 26px;
+  --from-rot: 1deg;
+}
+
+.memory:nth-of-type(6) {
+  --from-x: 30px;
+  --from-y: 28px;
+  --from-rot: -2deg;
+}
+
+.textPlaceholder {
+  --pop-delay: 0.08s;
+}
+
+.photo {
+  --pop-delay: 0.14s;
+  --from-x: -44px;
+  --from-y: 18px;
+  --from-rot: -7deg;
+}
+
+.video {
+  --pop-delay: 0.2s;
+  --from-x: 44px;
+  --from-y: 12px;
+  --from-rot: 6deg;
+}
+
+.letterCard {
+  --pop-delay: 0.12s;
+  --from-x: -36px;
+  --from-rot: -4deg;
+}
+
 .intro,
 .transition,
 .note {
-  opacity: 0.6;
-  transform: translateY(18px);
-  transition:
-    opacity 0.7s ease,
-    transform 0.7s cubic-bezier(0.2, 0.8, 0.25, 1);
-}
-
-.inView {
-  opacity: 1;
-  transform: translateY(0);
+  --from-y: 30px;
 }
 
 /* Lightbox / reading view */
@@ -622,12 +808,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .memory,
-  .intro,
-  .transition,
-  .note {
+  .reveal {
     opacity: 1;
-    transform: none;
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
     transition: none;
   }
 }
