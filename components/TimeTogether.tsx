@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import PixelHeart from "./PixelHeart";
 import TimeGrid from "./TimeGrid";
 import styles from "./TimeTogether.module.css";
@@ -73,8 +73,46 @@ function Typewriter({ text }: { text: string }) {
 
 const pad = (value: number) => String(value).padStart(2, "0");
 
-export default function TimeTogether() {
+const TimeReadout = memo(function TimeReadout() {
   const [time, setTime] = useState<Time>(ZERO);
+
+  useEffect(() => {
+    const tick = () => setTime(calculate(Date.now() - START));
+    tick();
+    const timer = window.setInterval(tick, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const units = [
+    { label: "HOURS", value: pad(time.hours) },
+    { label: "MINUTES", value: pad(time.minutes) },
+    { label: "SECONDS", value: pad(time.seconds) },
+  ];
+
+  return (
+    <>
+      <div className={styles.daysBlock}>
+        <span key={time.days} className={styles.days}>
+          {time.days}
+        </span>
+        <span className={styles.daysLabel}>DAYS</span>
+      </div>
+
+      <div className={styles.units}>
+        {units.map((unit) => (
+          <div key={unit.label} className={styles.unit}>
+            <span key={unit.value} className={styles.unitValue}>
+              {unit.value}
+            </span>
+            <span className={styles.unitLabel}>{unit.label}</span>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+});
+
+export default function TimeTogether() {
   const sectionRef = useRef<HTMLElement>(null);
 
   // Drive the reveal from scroll position so the section blends in gradually
@@ -123,19 +161,6 @@ export default function TimeTogether() {
     };
   }, []);
 
-  useEffect(() => {
-    const tick = () => setTime(calculate(Date.now() - START));
-    tick();
-    const timer = window.setInterval(tick, 1000);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const units = [
-    { label: "HOURS", value: pad(time.hours) },
-    { label: "MINUTES", value: pad(time.minutes) },
-    { label: "SECONDS", value: pad(time.seconds) },
-  ];
-
   return (
     <section ref={sectionRef} className={styles.section} id="our-time-together">
       <div className={styles.blendTop} aria-hidden="true" />
@@ -173,23 +198,7 @@ export default function TimeTogether() {
             <p className={styles.subtitle}>Since the day we met</p>
           </div>
 
-          <div className={styles.daysBlock}>
-            <span key={time.days} className={styles.days}>
-              {time.days}
-            </span>
-            <span className={styles.daysLabel}>DAYS</span>
-          </div>
-
-          <div className={styles.units}>
-            {units.map((unit) => (
-              <div key={unit.label} className={styles.unit}>
-                <span key={unit.value} className={styles.unitValue}>
-                  {unit.value}
-                </span>
-                <span className={styles.unitLabel}>{unit.label}</span>
-              </div>
-            ))}
-          </div>
+          <TimeReadout />
 
           <div className={styles.screenFooter}>
             <span>PLAYER 01</span>
