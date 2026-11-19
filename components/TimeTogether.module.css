@@ -259,6 +259,37 @@
   animation: blink 1s steps(1) infinite;
 }
 
+.timestamp {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: clamp(12px, 2.4vw, 18px) clamp(16px, 3.5vw, 26px);
+  border: 2px solid var(--blush);
+  background: rgba(11, 5, 9, 0.88);
+  box-shadow:
+    5px 5px 0 #1c0710,
+    inset 0 0 20px rgba(228, 83, 163, 0.12);
+  opacity: var(--enter-close, 0);
+  transform: translateY(calc((1 - var(--enter-close, 0)) * 18px));
+}
+
+.timestampLabel {
+  font-size: clamp(0.38rem, 1vw, 0.5rem);
+  letter-spacing: 0.14em;
+  color: var(--cream);
+  opacity: 0.7;
+}
+
+.timestampValue {
+  font-size: clamp(0.5rem, 1.5vw, 0.72rem);
+  line-height: 1.8;
+  color: var(--cherry);
+  text-shadow: 2px 2px 0 #1c0710;
+}
+
 /* Very faint hearts stretching down from the previous section into the top of
    this one, so the two sections blend instead of starting abruptly. */
 .stretchedHearts {

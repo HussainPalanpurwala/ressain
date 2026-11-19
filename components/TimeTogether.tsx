@@ -196,6 +196,11 @@ export default function TimeTogether() {
       </div>
 
       <Typewriter text={CLOSING} />
+
+      <div className={styles.timestamp}>
+        <span className={styles.timestampLabel}>THE DAY IT BEGAN</span>
+        <span className={styles.timestampValue}>12:07 PM 19th November 2025</span>
+      </div>
     </section>
   );
 }
