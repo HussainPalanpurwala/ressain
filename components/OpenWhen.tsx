@@ -28,10 +28,91 @@ export default function OpenWhen() {
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const lastTrigger = useRef<HTMLButtonElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const noiseBufferRef = useRef<AudioBuffer | null>(null);
+
+  // One shared noise buffer, created lazily from whichever AudioContext is used.
+  const getNoiseBuffer = (context: AudioContext): AudioBuffer => {
+    if (noiseBufferRef.current) return noiseBufferRef.current;
+
+    const length = Math.floor(context.sampleRate * 0.4);
+    const buffer = context.createBuffer(1, length, context.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < length; i += 1) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    noiseBufferRef.current = buffer;
+    return buffer;
+  };
+
+  // Short filtered-noise "swishes" that read as a soft paper rustle / page turn.
+  // Everything below is synchronous so it still plays on mobile: the context is
+  // created/resumed inside the click gesture that calls this function.
+  const playOpenSound = () => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
+    const AudioContextClass: typeof AudioContext | undefined =
+      window.AudioContext ??
+      (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextClass) return;
+
+    if (!audioContextRef.current) {
+      audioContextRef.current = new AudioContextClass();
+    }
+    const context = audioContextRef.current;
+    if (context.state === "suspended") {
+      void context.resume();
+    }
+
+    const now = context.currentTime;
+    const buffer = getNoiseBuffer(context);
+
+    const swish = (start: number, duration: number, frequency: number, peak: number) => {
+      const source = context.createBufferSource();
+      source.buffer = buffer;
+
+      const filter = context.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.value = frequency;
+      filter.Q.value = 0.7;
+
+      const gain = context.createGain();
+      const end = start + duration;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.linearRampToValueAtTime(peak, start + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, end);
+
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(context.destination);
+
+      source.start(start);
+      source.stop(end + 0.01);
+    };
+
+    // Two quick, gentle swishes = paper rustle followed by a page turn.
+    swish(now, 0.16, 1600, 0.1);
+    swish(now + 0.09, 0.14, 2400, 0.075);
+  };
+
+  // Release the audio hardware when the component unmounts.
+  useEffect(() => {
+    return () => {
+      const context = audioContextRef.current;
+      if (context && context.state !== "closed") {
+        void context.close();
+      }
+      audioContextRef.current = null;
+      noiseBufferRef.current = null;
+    };
+  }, []);
 
   const close = useCallback(() => setActive(null), []);
 
   const open = (note: Note, trigger: HTMLButtonElement) => {
+    playOpenSound();
     lastTrigger.current = trigger;
     setActive(note);
   };
