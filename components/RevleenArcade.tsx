@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import {
   categoryMessages,
   quizCategories,
@@ -127,8 +133,61 @@ const FLAVOUR: Record<QuizCategoryId, string> = {
   future: styles.flavourFuture,
 };
 
-// Decorative pixel confetti scattered around the cabinet (aria-hidden).
-const PIXELS = ["♥", "✿", "★", "✦", "♥", "✿", "★", "♥"];
+/* Decorative pixel confetti scattered around the cabinet (aria-hidden).
+   A fixed seed keeps the server and client renders byte-for-byte identical
+   (no hydration mismatch), but the pieces land in varied, non-repeating
+   places. They are confined to the far left/right gutters and the strip below
+   the cabinet, so nothing is ever placed above the "READY, PLAYER ONE?" copy
+   in the middle of the screen. */
+type ScatterPixel = { glyph: string; style: CSSProperties };
+
+const PIXEL_GLYPHS = [
+  "♥", "✿", "★", "✦", "♥", "✿", "★", "♥",
+  "✿", "★", "✦", "♥", "✿", "★", "✦", "♥",
+];
+
+function seededRandom(seed: number) {
+  let state = seed >>> 0;
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const PIXELS: ScatterPixel[] = (() => {
+  const rand = seededRandom(0x7265766c); // "revl" — constant, deterministic.
+  const between = (min: number, max: number) => min + rand() * (max - min);
+  const round = (value: number) => Math.round(value * 10) / 10;
+  const tints = ["#f0254b", "#e9a6bb", "#f6cbd6", "#fff0dc"];
+
+  return PIXEL_GLYPHS.map((glyph, index) => {
+    const side = index % 5 < 3; // roughly 3 in 5 flank the cabinet, 2 in 5 sit below it
+    const left = rand() < 0.5;
+    const x = side
+      ? left
+        ? between(1.5, 9)
+        : between(91, 98)
+      : between(4, 96);
+    const y = side ? between(28, 78) : between(84, 97);
+
+    return {
+      glyph,
+      style: {
+        "--px": `${round(x)}%`,
+        "--py": `${round(y)}%`,
+        "--ps": round(between(0.65, 1.35)),
+        "--pr": `${round(between(-16, 16))}deg`,
+        "--pdx": `${round(between(-8, 8))}px`,
+        "--pdur": `${round(between(4.8, 8.2))}s`,
+        "--pd": `${round(between(0, 6))}s`,
+        "--pc": tints[index % tints.length],
+      } as CSSProperties,
+    };
+  });
+})();
 
 const TOTAL = quizQuestions.length;
 const CATEGORY_TOTAL = quizCategories.length;
@@ -401,11 +460,8 @@ export default function RevleenArcade() {
     >
       <div className={styles.pixels} aria-hidden="true">
         {PIXELS.map((pixel, index) => (
-          <span
-            key={index}
-            className={`${styles.pixel} ${styles[`pixel${index + 1}`]}`}
-          >
-            {pixel}
+          <span key={index} className={styles.pixel} style={pixel.style}>
+            {pixel.glyph}
           </span>
         ))}
       </div>

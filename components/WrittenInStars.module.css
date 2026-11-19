@@ -20,19 +20,22 @@
   isolation: isolate;
   font-family: "Press Start 2P", monospace;
   color: var(--cream);
-  /* Faint warm depth at the top, as in the adjacent dark sections. This sits
+  /* The base starts on Open When's exact near-black and darkens to the black
+     the Arcade starts on, so neither seam has a lighter tone to bounce off.
+     The radial still adds the faint warm depth near the heading; it sits
      behind the image only — the star map itself is never given a glow. */
   background:
     radial-gradient(ellipse 62% 42% at 50% 18%, rgba(74, 16, 36, 0.4) 0%, rgba(43, 10, 24, 0.18) 45%, transparent 75%),
-    linear-gradient(to bottom, #1a0812 0%, var(--night) 55%, #000000 100%);
+    linear-gradient(to bottom, #0b0509 0%, var(--night) 55%, #000000 100%);
 }
 
 /* Seamless joins with the neighbouring sections. Open When (above) ends on
-   its near-black #0b0509; the Revleen Arcade (below) begins on #0a0409. These
-   two low, fixed strips fade exactly those tones into this section's own
-   background so no hard horizontal line appears at either edge. They sit at
-   z-index 0 — behind .content (z-index 1) — and ignore pointers, so they never
-   cover the heading or the star map and never affect the full-screen layout. */
+   #0b0509 and the Revleen Arcade (below) begins on #000000 — the same tones
+   this section's own background reaches at its top and bottom edges. Each
+   strip paints that neighbour's exact colour at the edge and fades it out, so
+   there is no hard line and no light-dark-light band at either boundary.
+   They sit at z-index 0 — behind .content (z-index 1) — and ignore pointers,
+   so they never cover the heading or the star map and never affect layout. */
 .section::before,
 .section::after {
   content: "";
@@ -44,7 +47,7 @@
   pointer-events: none;
 }
 
-/* Top: Open When's near-black, easing into this section's warm burgundy. */
+/* Top: Open When's near-black, matching this section's own #0b0509 base. */
 .section::before {
   top: 0;
   background: linear-gradient(
@@ -56,15 +59,15 @@
   );
 }
 
-/* Bottom: the Arcade's near-black, rising out of this section's black tail. */
+/* Bottom: the Arcade's black, matching this section's own #000000 tail. */
 .section::after {
   bottom: 0;
   background: linear-gradient(
     to top,
-    #0a0409 0%,
-    rgba(10, 4, 9, 0.72) 30%,
-    rgba(10, 4, 9, 0.32) 62%,
-    rgba(10, 4, 9, 0) 100%
+    #000000 0%,
+    rgba(0, 0, 0, 0.72) 30%,
+    rgba(0, 0, 0, 0.32) 62%,
+    rgba(0, 0, 0, 0) 100%
   );
 }
 
