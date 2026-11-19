@@ -399,10 +399,7 @@ export default function RevleenArcade() {
       aria-labelledby="revleen-arcade-title"
       aria-describedby="revleen-arcade-subtitle"
     >
-      <div
-        className={`${styles.pixels} ${phase === "attract" ? styles.pixelsHidden : ""}`}
-        aria-hidden="true"
-      >
+      <div className={styles.pixels} aria-hidden="true">
         {PIXELS.map((pixel, index) => (
           <span
             key={index}

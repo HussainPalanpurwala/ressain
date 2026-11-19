@@ -88,35 +88,37 @@
   user-select: none;
 }
 
-/* The scattered pixel confetti crowds the attract screen, so the
-   section-level wrapper is hidden only while that phase is showing. */
-.pixelsHidden {
-  display: none;
-}
-
+/* Soft layered glow — a cherry halo, a blush bloom and a cream sparkle —
+   with a hard black offset that keeps the retro pixel edge crisp. */
 .pixel {
   position: absolute;
   font-family: "Press Start 2P", monospace;
   font-size: clamp(0.9rem, 2.6vw, 1.9rem);
   line-height: 1;
   color: var(--pink);
-  opacity: 0.38;
-  text-shadow: 2px 2px 0 #000, 0 0 14px rgba(233, 166, 187, 0.5);
+  opacity: 0.55;
+  text-shadow:
+    2px 2px 0 #000,
+    0 0 6px rgba(240, 37, 75, 0.45),
+    0 0 14px rgba(233, 166, 187, 0.6),
+    0 0 26px rgba(255, 240, 220, 0.28);
   animation: pixelBob 6s ease-in-out infinite;
 }
 
-.pixel1 { top: 8%; left: 5%; color: #f0254b; animation-delay: 0s; }
-.pixel2 { top: 14%; right: 7%; animation-delay: 0.9s; }
-.pixel3 { top: 42%; left: 2.5%; font-size: clamp(0.7rem, 2vw, 1.4rem); animation-delay: 1.7s; }
-.pixel4 { bottom: 26%; right: 3%; color: var(--pink-soft); animation-delay: 2.3s; }
-.pixel5 { bottom: 12%; left: 8%; animation-delay: 1.1s; }
-.pixel6 { top: 30%; right: 2%; font-size: clamp(0.7rem, 2vw, 1.3rem); animation-delay: 3s; }
-.pixel7 { bottom: 8%; right: 14%; color: #f0254b; animation-delay: 0.5s; }
-.pixel8 { top: 5%; left: 38%; font-size: clamp(0.65rem, 1.8vw, 1.1rem); animation-delay: 2.7s; }
+/* Kept to the section edges and bottom so they frame the cabinet without
+   sitting above or over the "READY, PLAYER ONE?" screen copy. */
+.pixel1 { top: 13%; left: 4%; color: #f0254b; animation-delay: 0s; }
+.pixel2 { top: 21%; right: 5%; animation-delay: 0.9s; }
+.pixel3 { top: 50%; left: 2.5%; font-size: clamp(0.7rem, 2vw, 1.4rem); animation-delay: 1.7s; }
+.pixel4 { bottom: 28%; right: 3%; color: var(--pink-soft); animation-delay: 2.3s; }
+.pixel5 { bottom: 14%; left: 8%; animation-delay: 1.1s; }
+.pixel6 { top: 40%; right: 2%; font-size: clamp(0.7rem, 2vw, 1.3rem); animation-delay: 3s; }
+.pixel7 { bottom: 9%; right: 13%; color: #f0254b; animation-delay: 0.5s; }
+.pixel8 { bottom: 6%; left: 29%; font-size: clamp(0.65rem, 1.8vw, 1.1rem); animation-delay: 2.7s; }
 
 @keyframes pixelBob {
-  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.28; }
-  50% { transform: translateY(-9px) rotate(12deg); opacity: 0.5; }
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.38; }
+  50% { transform: translateY(-9px) rotate(10deg); opacity: 0.6; }
 }
 
 /* ---------- Layout ---------- */
