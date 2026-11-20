@@ -394,6 +394,34 @@ export default function RevleenArcade() {
     setPhase("attract");
   };
 
+  // Physical control-deck buttons reuse the exact same phase handlers as the
+  // on-screen controls — no quiz logic is duplicated here.
+  const isStageClear = phase === "categoryDone";
+  // The physical buttons are always live — each phase maps to a real action.
+  const handlePrimary = () => {
+    if (phase === "attract") {
+      handleStart();
+    } else if (phase === "results") {
+      handlePlayAgain();
+    } else if (isStageClear) {
+      handleCategoryContinue();
+    } else if (selected === null) {
+      playClick();
+    } else {
+      handleNext();
+    }
+  };
+  const physicalPrimaryLabel = isStageClear
+    ? quizQuestions[qIndex + 1]
+      ? "CONTINUE"
+      : "SEE RESULTS"
+    : "NEXT QUESTION";
+  const physicalPrimaryAriaLabel = isStageClear
+    ? quizQuestions[qIndex + 1]
+      ? "Continue to next stage"
+      : "See results"
+    : "Next question";
+
   return (
     <section
       className={styles.section}
@@ -599,29 +627,8 @@ export default function RevleenArcade() {
                             ? "✓ CORRECT! +1 POINT"
                             : `✕ NOT QUITE — IT WAS: ${question.options[question.correctIndex]}`}
                       </p>
-
-                      <div className={styles.nextRow}>
-                        <button
-                          type="button"
-                          className={styles.backButton}
-                          onClick={handleNext}
-                          onMouseEnter={playHover}
-                          disabled={selected === null}
-                        >
-                          NEXT QUESTION <span aria-hidden="true">→</span>
-                        </button>
-                      </div>
-
-                      <div className={styles.exitRow}>
-                        <button
-                          type="button"
-                          className={`${styles.backButton} ${styles.exitButton}`}
-                          onClick={handleReturn}
-                          onMouseEnter={playHover}
-                        >
-                          EXIT GAME
-                        </button>
-                      </div>
+                      {/* NEXT QUESTION / EXIT GAME now live on the cabinet's
+                          control deck as the physical left-end buttons. */}
                     </div>
                   ) : phase === "categoryDone" ? (
                     /* ---- Category completion screen ---- */
@@ -731,16 +738,29 @@ export default function RevleenArcade() {
             </div>
           </div>
 
-          {/* Control panel: joystick, progress, sound toggle */}
+          {/* Control deck: physical NEXT / EXIT buttons, progress, sound */}
           <div className={styles.controlPanel}>
-            <div className={styles.controlsDecor} aria-hidden="true">
-              <span className={styles.joystick}>
-                <span className={styles.joystickBall} />
-              </span>
-              <span className={styles.actionButtons}>
-                <span className={styles.actionButton} />
-                <span className={`${styles.actionButton} ${styles.actionButtonAlt}`} />
-              </span>
+            <div className={styles.physicalControls}>
+              <button
+                type="button"
+                className={`${styles.physicalButton} ${styles.physicalButtonNext}`}
+                onClick={handlePrimary}
+                aria-label={physicalPrimaryAriaLabel}
+                title={physicalPrimaryAriaLabel}
+                onMouseEnter={playHover}
+              >
+                <span className={styles.physicalButtonLabel}>{physicalPrimaryLabel}</span>
+              </button>
+              <button
+                type="button"
+                className={`${styles.physicalButton} ${styles.physicalButtonExit}`}
+                onClick={handleReturn}
+                aria-label="Exit game"
+                title="Exit game"
+                onMouseEnter={playHover}
+              >
+                <span className={styles.physicalButtonLabel}>EXIT GAME</span>
+              </button>
             </div>
 
             <div

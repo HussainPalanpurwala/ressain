@@ -232,49 +232,70 @@
     0 0 18px rgba(255, 240, 220, 0.35);
 }
 
-/* ---------- Body + side art ---------- */
+/* ---------- Body + tapered side poles ---------- */
 .cabinetBody {
+  position: relative;
   display: flex;
   align-items: stretch;
-  gap: clamp(6px, 1.5vw, 12px);
+  gap: 0;
+  padding-inline: clamp(8px, 1.3vw, 14px);
 }
 
+/* The two glyph poles sit on the cabinet's slanted side edges. A rotateZ
+   matching the face taper (8% inset at top → 0% at the base) plus a trapezoid
+   clip makes them lean outward toward the bottom, flush with the shell — no
+   perspective/rotateY, so they read as part of the machine, not detached
+   sticks. Glyphs stay centred inside the clipped band at every height. */
 .sideArt {
-  flex: 0 0 clamp(20px, 4vw, 34px);
+  position: relative;
+  z-index: 1;
+  flex: 0 0 clamp(22px, 2.6vw, 28px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
-  padding: 0.6rem 0;
-  font-size: clamp(0.55rem, 1.6vw, 0.85rem);
+  padding: 0.9rem 0;
+  font-size: clamp(0.5rem, 1.4vw, 0.72rem);
   color: var(--pink);
+  pointer-events: none;
+  text-shadow: 1px 1px 0 #000;
   background: linear-gradient(
     90deg,
-    #1c0710 0%,
-    #5a1730 45%,
+    #2c0a18 0%,
+    #5a1730 42%,
     #6b1b39 55%,
-    #2a0a18 100%
+    #2c0a18 100%
   );
-  border: 2px solid #170610;
-  text-shadow: 1px 1px 0 #000;
   box-shadow:
-    inset 0 0 0 1px rgba(246, 203, 214, 0.1),
-    inset 0 0 12px rgba(0, 0, 0, 0.55);
+    inset 0 0 0 2px #170610,
+    inset 3px 0 6px rgba(255, 240, 220, 0.18),
+    inset -5px 0 10px rgba(0, 0, 0, 0.7),
+    0 0 12px rgba(233, 166, 187, 0.16);
+  transition: filter 0.2s ease;
 }
 
-/* The cabinet's outer side walls angle slightly outward, continuing the
-   shell's taper and framing the recessed screen. Transforms don't affect
-   flex sizing or flow, so all quiz content stays in place and clickable. */
+/* Poles lean outward at 5deg to follow the machine's tapered outer edges.
+   Positive rotateZ sends the TOP right / BOTTOM left (left pole leaning
+   outward); negative mirrors it on the right. Glyphs counter-rotate. */
 .sideArt:first-child {
-  /* Leans outward toward the base, following the cabinet's narrow-top /
-     wide-bottom taper, as well as angling back in 3D. */
-  transform: perspective(700px) rotateY(16deg) rotateZ(6deg);
-  transform-origin: left center;
+  transform: rotateZ(5deg);
+  transform-origin: center center;
+  clip-path: polygon(14% 0, 100% 0, 100% 100%, 0 100%);
 }
 
 .sideArt:last-child {
-  transform: perspective(700px) rotateY(-16deg) rotateZ(-6deg);
-  transform-origin: right center;
+  transform: rotateZ(-5deg);
+  transform-origin: center center;
+  clip-path: polygon(0 0, 86% 0, 100% 100%, 0 100%);
+}
+
+/* Counter-rotate the glyphs so they stay upright on the angled rails. */
+.sideArt:first-child span {
+  transform: rotateZ(-5deg);
+}
+
+.sideArt:last-child span {
+  transform: rotateZ(5deg);
 }
 
 /* ---------- Screen ---------- */
@@ -289,9 +310,10 @@
   position: relative;
   flex: 1 1 auto;
   min-width: 0;
-  /* Chunky moulded padding frames the glass and deepens the recess. */
-  padding: clamp(14px, 3vw, 26px) clamp(14px, 3vw, 26px)
-    clamp(16px, 3.2vw, 28px);
+  /* Moulded padding frames the glass and deepens the recess, kept compact so
+     the quiz content fills the opening instead of floating in empty space. */
+  padding: clamp(12px, 2.4vw, 20px) clamp(12px, 2.4vw, 20px)
+    clamp(14px, 2.6vw, 22px);
   transform: perspective(var(--screen-perspective)) rotateX(var(--screen-tilt));
   transform-origin: center bottom;
   /* Slightly curved, moulded corners like a vintage cabinet's bezel. */
@@ -326,67 +348,62 @@
     0 12px 20px rgba(0, 0, 0, 0.55);
 }
 
-/* The bezel's depth comes from its recess gradient and inset shadows, and the
-   3D slant lives on the cabinet's outer frame (see .cabinet and .sideArt).
-   The only additions here are the two hinged glass doors below. */
+/* The bezel's depth comes from its recess gradient, inset shadows and CRT
+   tilt. The only additions here are the two flat hinged panels below. */
 
-/* Open-door effect: two slim hinged panels flank the screen opening and angle
-   out toward the viewer, like a cabinet whose glass doors have swung open.
-   Decorative only — pointer-events are off, they sit above the bezel but below
-   the quiz content (content is z-index 2), and they stay inside the bezel so
-   they never add horizontal overflow. */
+/* Open-door effect, kept elegant: two slim FLAT panels flank the glass with a
+   hinge highlight on the outer edge and a soft shadow falling toward the
+   screen — no rounded pipes. Decorative only — pointer-events are off, they
+   sit above the bezel but below the quiz content (content is z-index 2), and
+   they stay inside the bezel so they never add horizontal overflow. */
 .screenBezel::before,
 .screenBezel::after {
   content: "";
   position: absolute;
   z-index: 1;
-  top: clamp(12px, 2.5vw, 22px);
-  bottom: clamp(14px, 3vw, 26px);
-  width: clamp(18px, 3.5vw, 34px);
+  top: clamp(12px, 2.5vw, 20px);
+  bottom: clamp(14px, 3vw, 22px);
+  width: clamp(10px, 1.8vw, 15px);
   pointer-events: none;
-  border: 1px solid rgba(233, 166, 187, 0.22);
+  border-radius: 2px;
 }
 
 .screenBezel::before {
-  left: clamp(4px, 1.2vw, 12px);
-  transform-origin: left center;
-  transform: perspective(420px) rotateY(-34deg);
-  border-radius: 7px 3px 3px 7px;
-  background:
-    /* Bright hinge catching the light along the outer edge. */
-    linear-gradient(90deg, rgba(255, 240, 220, 0.35) 0%, rgba(246, 203, 214, 0.08) 10%, transparent 26%),
-    linear-gradient(90deg, #5a1730 0%, #2e0b1a 55%, #120510 100%);
+  left: clamp(4px, 0.9vw, 8px);
+  background: linear-gradient(
+    90deg,
+    rgba(246, 203, 214, 0.22) 0 2px,
+    rgba(90, 23, 48, 0.85) 2px 55%,
+    #120510 100%
+  );
   box-shadow:
-    inset 3px 0 6px rgba(255, 240, 220, 0.18),
-    inset -8px 0 14px rgba(0, 0, 0, 0.75),
-    inset 0 0 0 1px rgba(233, 166, 187, 0.14),
-    4px 0 12px rgba(0, 0, 0, 0.55);
+    inset 1px 0 0 rgba(255, 240, 220, 0.28),
+    inset -3px 0 7px rgba(0, 0, 0, 0.7),
+    2px 0 5px rgba(0, 0, 0, 0.35);
 }
 
 .screenBezel::after {
-  right: clamp(4px, 1.2vw, 12px);
-  transform-origin: right center;
-  transform: perspective(420px) rotateY(34deg);
-  border-radius: 3px 7px 7px 3px;
-  background:
-    linear-gradient(270deg, rgba(255, 240, 220, 0.35) 0%, rgba(246, 203, 214, 0.08) 10%, transparent 26%),
-    linear-gradient(270deg, #5a1730 0%, #2e0b1a 55%, #120510 100%);
+  right: clamp(4px, 0.9vw, 8px);
+  background: linear-gradient(
+    270deg,
+    rgba(246, 203, 214, 0.22) 0 2px,
+    rgba(90, 23, 48, 0.85) 2px 55%,
+    #120510 100%
+  );
   box-shadow:
-    inset -3px 0 6px rgba(255, 240, 220, 0.18),
-    inset 8px 0 14px rgba(0, 0, 0, 0.75),
-    inset 0 0 0 1px rgba(233, 166, 187, 0.14),
-    -4px 0 12px rgba(0, 0, 0, 0.55);
+    inset -1px 0 0 rgba(255, 240, 220, 0.28),
+    inset 3px 0 7px rgba(0, 0, 0, 0.7),
+    -2px 0 5px rgba(0, 0, 0, 0.35);
 }
 
 .screen {
   position: relative;
   display: flex;
   flex-direction: column;
-  /* Height follows the content so every control — Next question, stage
-     transitions, results and Exit Game — stays reachable. The arcade never
-     needs to scroll internally; the page scrolls between sections instead. */
+  /* Glass grows to fit its content — no internal scrolling. A modest minimum
+     keeps the cabinet compact without inflating it into a sparse viewport. */
   height: auto;
-  min-height: clamp(320px, 46vh, 560px);
+  min-height: clamp(300px, 42vh, 420px);
   min-width: 0;
   overflow: hidden;
   color: var(--cream);
@@ -468,10 +485,11 @@
   position: relative;
   z-index: 2;
   flex: 1 1 auto;
-  /* The screen grows to fit its content, so no inner scrollbars are needed.
-     Keep overflow visible so no button is ever clipped or out of reach. */
+  /* No internal scroll: the screen and cabinet grow to fit all quiz content,
+     and the working next/exit controls live on the left-end control deck. */
+  min-height: 0;
   overflow: visible;
-  padding: clamp(0.7rem, 2vw, 1.25rem);
+  padding: clamp(0.6rem, 1.8vw, 1rem);
 }
 
 /* Curved glass reflection: a soft barrel sheen over the diagonal glare. */
@@ -1023,7 +1041,8 @@
 .controlPanel {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* Controls sit at the LEFT END; progress/sound are pushed to the right. */
+  justify-content: flex-start;
   gap: clamp(0.6rem, 2vw, 1.2rem);
   flex-wrap: wrap;
   margin-top: clamp(8px, 1.8vw, 14px);
@@ -1033,52 +1052,139 @@
   box-shadow: inset 0 2px 0 rgba(246, 203, 214, 0.2), inset 0 -6px 14px rgba(0, 0, 0, 0.4);
 }
 
-.controlsDecor {
+/* ---------- Physical NEXT / EXIT buttons on the control deck ----------
+   Chunky RECTANGULAR arcade buttons: a lit LED edge, glossy top surface,
+   hard pixel shadow and a pressed state that visibly sinks in. They are the
+   sole working next/exit controls and sit at the LEFT END of the deck. */
+.physicalControls {
   display: flex;
   align-items: center;
-  gap: clamp(0.8rem, 3vw, 1.8rem);
+  justify-content: flex-start;
+  flex: 0 0 auto;
+  gap: clamp(12px, 2.6vw, 26px);
+  min-width: 0;
+  margin-right: auto;
 }
 
-.joystick {
+.physicalButton {
   position: relative;
-  display: block;
-  width: clamp(30px, 5vw, 40px);
-  height: clamp(30px, 5vw, 40px);
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, #5a1730, #1b0712);
-  border: 2px solid #0d040a;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.8);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: clamp(118px, 15vw, 170px);
+  min-height: clamp(48px, 6vw, 58px);
+  padding: clamp(8px, 1.3vw, 11px) clamp(10px, 1.6vw, 16px);
+  color: #4a1028;
+  text-align: center;
+  /* Warm yellow face, kept in the palette's cream/amber family. The label is
+     deep wine rather than pure black, so it sits in the same colour world. */
+  background: #e8b84f;
+  border: 2px solid #170610;
+  border-radius: 5px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow:
+    /* Hard pixel drop shadow. */
+    5px 5px 0 #170610,
+    8px 8px 0 rgba(0, 0, 0, 0.55),
+    /* Chunky bevel: bright top/left, dark bottom/right. */
+    inset 0 2px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.28),
+    inset 3px 0 0 rgba(255, 255, 255, 0.45),
+    inset -3px 0 0 rgba(0, 0, 0, 0.22),
+    /* Faint coloured rim light, not a bright halo. */
+    0 0 7px rgba(54, 150, 140, 0.22);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
 }
 
-.joystickBall {
+/* Lit LED strip across the top edge of each button. */
+.physicalButton::before {
+  content: "";
   position: absolute;
-  left: 50%;
-  top: 42%;
-  width: 45%;
-  height: 45%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffd7e4, var(--red));
-  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.7);
+  top: 4px;
+  left: 7px;
+  right: 7px;
+  height: 1px;
+  pointer-events: none;
+  background: rgba(190, 230, 224, 0.35);
+  box-shadow: 0 0 3px rgba(120, 200, 190, 0.3);
 }
 
-.actionButtons {
-  display: flex;
-  gap: clamp(6px, 1.5vw, 10px);
+/* Bright cherry-red face with a clear red LED halo — the "danger" control. */
+.physicalButtonExit {
+  color: #fff0dc;
+  background: #c8324a;
+  box-shadow:
+    5px 5px 0 #170610,
+    8px 8px 0 rgba(0, 0, 0, 0.55),
+    inset 0 2px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.35),
+    inset 3px 0 0 rgba(255, 255, 255, 0.35),
+    inset -3px 0 0 rgba(0, 0, 0, 0.28),
+    0 0 14px rgba(200, 50, 74, 0.55);
 }
 
-.actionButton {
-  display: block;
-  width: clamp(20px, 3.4vw, 28px);
-  height: clamp(20px, 3.4vw, 28px);
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ff9fbe, #a8324a);
-  border: 2px solid #0d040a;
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+.physicalButtonExit::before {
+  background: rgba(255, 220, 225, 0.6);
+  box-shadow: 0 0 6px rgba(255, 90, 110, 0.7);
 }
 
-.actionButtonAlt {
-  background: radial-gradient(circle at 35% 30%, #fff0dc, #e9a6bb);
+.physicalButtonLabel {
+  position: relative;
+  z-index: 1;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.36rem, 1vw, 0.5rem);
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+}
+
+.physicalButton:hover:not(:disabled),
+.physicalButton:focus-visible {
+  transform: translate(-2px, -2px);
+  filter: brightness(1.05);
+}
+
+.physicalButtonNext:hover:not(:disabled),
+.physicalButtonNext:focus-visible {
+  box-shadow:
+    7px 7px 0 #170610,
+    10px 10px 0 rgba(0, 0, 0, 0.55),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.28),
+    inset 3px 0 0 rgba(255, 255, 255, 0.5),
+    inset -3px 0 0 rgba(0, 0, 0, 0.22),
+    0 0 10px rgba(54, 150, 140, 0.4);
+}
+
+.physicalButtonExit:hover:not(:disabled),
+.physicalButtonExit:focus-visible {
+  box-shadow:
+    7px 7px 0 #170610,
+    10px 10px 0 rgba(0, 0, 0, 0.55),
+    inset 0 2px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.3),
+    inset 3px 0 0 rgba(255, 255, 255, 0.45),
+    inset -3px 0 0 rgba(0, 0, 0, 0.22),
+    0 0 10px rgba(150, 50, 70, 0.45);
+}
+
+/* Pressed: the whole cap sinks into the deck and the LED dims. */
+.physicalButton:active:not(:disabled) {
+  transform: translate(4px, 4px);
+  filter: brightness(0.95);
+  box-shadow:
+    1px 1px 0 #170610,
+    2px 2px 0 rgba(0, 0, 0, 0.5),
+    inset 0 4px 7px rgba(0, 0, 0, 0.45),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.physicalButton:focus-visible {
+  outline: 3px solid var(--cream);
+  outline-offset: 4px;
 }
 
 .progress {
@@ -1512,6 +1618,7 @@
     --screen-tilt: 8deg;
     --screen-perspective: 900px;
   }
+  /* The slanting poles crowd a narrow phone screen, so hide them there. */
   .sideArt { display: none; }
   .categoryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .flavourFlowers .factList { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1521,11 +1628,14 @@
 @media (max-width: 520px) {
   .section { padding-left: 0.75rem; padding-right: 0.75rem; }
   .screenBezel { --screen-tilt: 6deg; }
-  .controlsDecor { display: none; }
-  .controlPanel { justify-content: space-between; }
-  /* Grow with content on small screens too — never trap controls behind an
-     inner scrollbar. The page can scroll between sections instead. */
-  .screen { min-height: clamp(340px, 52vh, 520px); }
+  /* Physical buttons get their own full row so the deck never overflows on a
+     phone; progress and the sound toggle sit neatly underneath. */
+  .controlPanel { justify-content: space-between; row-gap: clamp(8px, 2vw, 12px); }
+  .physicalControls { order: -1; flex: 1 1 100%; gap: clamp(10px, 3vw, 16px); }
+  .physicalButton { min-width: 0; flex: 1 1 0; }
+  .progress { flex: 1 1 auto; }
+  /* No inner scroll on phones either — the glass grows with its content. */
+  .screen { min-height: clamp(280px, 44vh, 400px); }
   .flavourFood .factList,
   .flavourWorld .factList,
   .flavourFlowers .factList { grid-template-columns: 1fr; }
@@ -1573,7 +1683,10 @@
   .backButton:hover,
   .backButton:focus-visible,
   .option:hover:not(.optionLocked),
-  .option:focus-visible {
+  .option:focus-visible,
+  .physicalButton:hover:not(:disabled),
+  .physicalButton:focus-visible,
+  .physicalButton:active:not(:disabled) {
     transform: none;
   }
 
