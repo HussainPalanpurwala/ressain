@@ -27,6 +27,7 @@ export default function useRetroSound() {
   const scheduleRef = useRef<(tones: Tone[], offset?: number) => void>(
     () => {}
   );
+  const unlockRef = useRef<() => Promise<boolean>>(() => Promise.resolve(false));
   const [enabled, setEnabled] = useState(true);
   // Mirrors `enabled` so the one-shot unlock callback (created once) always
   // sees the current mute state instead of a stale captured value.
@@ -124,7 +125,7 @@ export default function useRetroSound() {
       }
     };
 
-    const unlock = () => {
+    const unlock = async (): Promise<boolean> => {
       // Mobile browsers only grant audio access to media played *inside* a user
       // gesture. The silent WAV satisfies that rule inaudibly, after which the
       // Web Audio context is free to resume.
@@ -149,18 +150,23 @@ export default function useRetroSound() {
           unlockedRef.current = true;
           flush();
         }
-        return;
+        return true;
       }
-      void active
-        .resume()
-        .then(() => {
-          if (active.state === "running") {
-            unlockedRef.current = true;
-            flush();
-          }
-        })
-        .catch(() => {});
+      try {
+        await active.resume();
+      } catch {
+        return false;
+      }
+      if (String(active.state) === "running") {
+        if (!unlockedRef.current) {
+          unlockedRef.current = true;
+          flush();
+        }
+        return true;
+      }
+      return false;
     };
+    unlockRef.current = unlock;
 
     const events = ["pointerdown", "touchstart", "keydown", "click"];
     events.forEach((event) => window.addEventListener(event, unlock, true));
@@ -251,9 +257,14 @@ export default function useRetroSound() {
     [play]
   );
 
+  // Lets a component unlock audio from INSIDE a real user gesture (e.g. a
+  // "tap to boot" gate) before it starts a timed sequence that needs sound.
+  const unlockAudio = useCallback(() => unlockRef.current(), []);
+
   return {
     enabled,
     setEnabled,
+    unlockAudio,
     playStartup,
     playStage,
     playComplete,

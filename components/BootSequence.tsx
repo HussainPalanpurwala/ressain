@@ -26,6 +26,11 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   const reduceMotion = usePrefersReducedMotion();
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<Phase>("loading");
+  // Mobile browsers keep Web Audio locked until a real gesture. On touch
+  // devices we wait for one tap, unlock audio, THEN run the 10s boot so its
+  // fanfare and every loading blip are actually audible from 0 to 100%.
+  const [needsGesture, setNeedsGesture] = useState(false);
+  const [started, setStarted] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const finishedRef = useRef(false);
   const didEnterRef = useRef(false);
@@ -57,11 +62,27 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
     playStage,
     playComplete,
     playEnter,
+    unlockAudio,
   } = useRetroSound();
+
+  useEffect(() => {
+    const touch =
+      window.matchMedia?.("(hover: none)").matches ||
+      navigator.maxTouchPoints > 0;
+    if (touch) setNeedsGesture(true);
+    else setStarted(true);
+  }, []);
+
+  const handleBootStart = async () => {
+    await unlockAudio();
+    setNeedsGesture(false);
+    setStarted(true);
+  };
 
   // Progress runs on its own clock, independent of any network activity, and
   // always reaches 100%.
   useEffect(() => {
+    if (!started) return;
     if (reduceMotion) {
       setProgress(100);
       setPhase("ready");
@@ -83,7 +104,7 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [reduceMotion]);
+  }, [reduceMotion, started]);
 
   const messageIndex = useMemo(() => {
     let index = 0;
@@ -98,18 +119,19 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
 
   // Console-style power-on fanfare, then a crisp blip per loading line.
   useEffect(() => {
+    if (!started) return;
     playStartup();
-  }, [playStartup]);
+  }, [started, playStartup]);
 
   useEffect(() => {
-    if (phase !== "loading") return;
+    if (!started || phase !== "loading") return;
     playStage();
-  }, [messageIndex, phase, playStage]);
+  }, [started, messageIndex, phase, playStage]);
 
   useEffect(() => {
-    if (phase !== "ready") return;
+    if (!started || phase !== "ready") return;
     playComplete();
-  }, [phase, playComplete]);
+  }, [started, phase, playComplete]);
 
   const handleEnter = () => {
     if (finishedRef.current) return;
@@ -152,6 +174,13 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
         .join(" ")}
       onTransitionEnd={handleTransitionEnd}
     >
+      {needsGesture && (
+        <button type="button" className="boot__gate" onClick={handleBootStart}>
+          <span className="boot__gate-title">TAP TO START BOOT</span>
+          <span className="boot__gate-note">Tap once to enable sound</span>
+        </button>
+      )}
+
       <div className="boot__inner">
         <div className="boot__glow" aria-hidden="true" />
 
