@@ -21,13 +21,16 @@
   overflow: hidden;
   color: var(--cream);
   font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
-  /* Original arcade palette: deep burgundy-to-black base with a soft wine
-     glow behind the cabinet. No extra background elements. */
+  /* "Velvet dusk" — a deep plum-to-black vertical base carries a gentle
+     diagonal wash of blush and cherry, with a soft, low-contrast spotlight
+     settling behind the cabinet's centre. Colour and light only: no motifs,
+     texture or pattern, so the cabinet stays the clear centrepiece. */
   background-color: #0a0409;
   background-image:
     /* Seam blend: Written in the Stars ends on #000000, so the top edge is
        exactly #000000 too — no line, no lighter band. The bottom lands on the
-       page's near-black (#0b0509). */
+       page's near-black (#0b0509). This layer is opaque at both ends, so the
+       gradient treatment behind it can never expose a seam. */
     linear-gradient(
       to bottom,
       #000000 0%,
@@ -35,11 +38,29 @@
       rgba(11, 5, 9, 0) 91%,
       #0b0509 100%
     ),
+    /* Soft spotlight following the cabinet centre: cream and blush tints
+       layered at low opacity, easing fully to transparency at the edges. */
     radial-gradient(
-      ellipse at 50% 40%,
-      var(--burgundy) 0%,
-      #12050d 55%,
-      var(--ink) 100%
+      ellipse 68% 52% at 50% 40%,
+      rgba(255, 240, 220, 0.07) 0%,
+      rgba(233, 166, 187, 0.12) 30%,
+      rgba(168, 50, 74, 0.16) 58%,
+      rgba(0, 0, 0, 0) 82%
+    ),
+    /* Gentle diagonal wash of blush (#E453A3) into cherry, drifting into
+       near-black — kept faint so it never competes with the cabinet. */
+    linear-gradient(
+      135deg,
+      rgba(228, 83, 163, 0.09) 0%,
+      rgba(168, 50, 74, 0.07) 34%,
+      rgba(11, 5, 9, 0) 68%
+    ),
+    /* Deep plum-to-black vertical base. */
+    linear-gradient(
+      to bottom,
+      #1c0818 0%,
+      #150613 45%,
+      #0a0409 100%
     );
 }
 

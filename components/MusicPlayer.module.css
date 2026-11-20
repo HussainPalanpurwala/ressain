@@ -13,12 +13,12 @@
 
 .panel {
   box-sizing: border-box;
-  width: min(320px, calc(100vw - 24px));
-  margin-bottom: 10px;
-  padding: 12px;
+  width: min(336px, calc(100vw - 24px));
+  margin-bottom: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 18px;
   background: rgba(12, 5, 11, 0.97);
   border: 2px solid #e453a3;
   box-shadow: 4px 4px 0 #000, 0 -6px 24px rgba(228, 83, 163, 0.25);
@@ -40,10 +40,30 @@
   }
 }
 
+/* Panel header: title plus a pixel-dashed rule that separates it from the
+   track card below. */
+.panelHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
 .panelTitle {
-  font-size: 0.36rem;
-  letter-spacing: 0.1em;
+  font-size: 0.4rem;
+  letter-spacing: 0.12em;
   color: #ff9ed2;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.headerLine {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(228, 83, 163, 0.9) 0 8px,
+    rgba(228, 83, 163, 0.16) 8px 12px
+  );
 }
 
 .toggleArea {
@@ -109,10 +129,14 @@
 
 .turntable:focus-visible,
 .control:focus-visible,
-.seek:focus-visible,
-.volumeRow input:focus-visible {
+.slider:focus-visible {
   outline: 2px solid #ff9ed2;
   outline-offset: 3px;
+}
+
+/* The bright control button needs a cream outline to stay visible. */
+.control:focus-visible {
+  outline-color: #fff0f7;
 }
 
 /* All artwork is sized in percentages of this 100% deck, so the record can
@@ -244,22 +268,27 @@
   fill: #2a0b1c;
 }
 
-.meta {
+/* Track/artist card: the top of the visual hierarchy. The cherry left edge
+   and inset glow give it a retro "now playing" plate feel without a label. */
+.trackInfo {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 8px;
   min-width: 0;
-}
-
-.label {
-  font-size: 0.34rem;
-  letter-spacing: 0.12em;
-  color: #ff9ed2;
+  padding: 14px 14px 14px 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(120, 38, 72, 0.42) 0%,
+    rgba(60, 18, 42, 0.32) 100%
+  );
+  border: 1px solid rgba(228, 83, 163, 0.32);
+  border-left: 3px solid #ff4fa3;
+  box-shadow: inset 0 0 18px rgba(255, 79, 163, 0.08), 2px 2px 0 rgba(0, 0, 0, 0.45);
 }
 
 .track {
-  font-size: 0.54rem;
-  line-height: 1.5;
+  font-size: 0.56rem;
+  line-height: 1.6;
   color: #fff0f7;
   text-shadow: 2px 2px 0 #000;
   white-space: nowrap;
@@ -276,132 +305,175 @@
   text-overflow: ellipsis;
 }
 
-.details {
-  min-width: 0;
+/* Controls column: generous gap so no row feels cramped. */
+.controls {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 16px;
 }
 
-.seekRow {
+.seekBlock {
   display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.time {
-  font-size: 0.34rem;
-  color: #f0b8d8;
-  min-width: 32px;
-  text-align: center;
-}
-
-.seek {
-  flex: 1;
+  flex-direction: column;
   min-width: 0;
-  /* 44px touch target; negative margins keep the 24px layout box (and the
-     centred track) exactly where it was. */
+}
+
+/* Times sit on one compact line directly under the seek track. The small
+   negative margin pulls them visually closer without shrinking the slider's
+   44px touch target. */
+.timeRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: -10px;
+  padding-inline: 2px;
+  font-size: 0.32rem;
+  letter-spacing: 0.08em;
+}
+
+.timeCurrent {
+  color: #fff0f7;
+}
+
+.timeTotal {
+  color: #d98bb6;
+}
+
+/* Shared custom range styling: no native chrome, a 44px hit area, a thin
+   rounded track and a glowing round thumb. --fill is painted per-slider by
+   the component so the played portion reads at a glance. */
+.slider {
+  --fill: 0%;
+  display: block;
+  width: 100%;
+  min-width: 0;
   height: 44px;
-  margin-block: -10px;
+  margin: 0;
+  padding: 0;
   appearance: none;
+  -webkit-appearance: none;
   background: transparent;
   cursor: pointer;
 }
 
-.seek::-webkit-slider-runnable-track {
-  height: 4px;
-  background: #e453a3;
+.seek {
+  width: 100%;
 }
 
-.seek::-webkit-slider-thumb {
+.volume {
+  flex: 1;
+  width: auto;
+}
+
+.slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    #ff4fa3 0%,
+    #ff9ed2 var(--fill),
+    rgba(233, 226, 232, 0.2) var(--fill),
+    rgba(233, 226, 232, 0.2) 100%
+  );
+  box-shadow: inset 0 0 0 1px rgba(12, 5, 11, 0.65), 0 0 8px rgba(255, 79, 163, 0.2);
+}
+
+.slider::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(233, 226, 232, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(12, 5, 11, 0.65);
+}
+
+.slider::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff4fa3, #ff9ed2);
+  box-shadow: 0 0 8px rgba(255, 79, 163, 0.2);
+}
+
+.slider::-webkit-slider-thumb {
   appearance: none;
-  width: 14px;
-  height: 14px;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
   margin-top: -5px;
+  border: 2px solid #2a0b1c;
   border-radius: 50%;
-  background: #ff9ed2;
+  background: radial-gradient(circle at 35% 30%, #fff0f7 0%, #ff9ed2 55%, #e453a3 100%);
+  box-shadow: 0 0 0 1px #ff4fa3, 0 0 10px rgba(255, 79, 163, 0.6), 1px 1px 0 #000;
+  transition: box-shadow 140ms ease, transform 140ms ease;
 }
 
-.seek::-moz-range-track {
-  height: 4px;
-  background: #e453a3;
-}
-
-.seek::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  border: 0;
+.slider::-moz-range-thumb {
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #2a0b1c;
   border-radius: 50%;
-  background: #ff9ed2;
+  background: radial-gradient(circle at 35% 30%, #fff0f7 0%, #ff9ed2 55%, #e453a3 100%);
+  box-shadow: 0 0 0 1px #ff4fa3, 0 0 10px rgba(255, 79, 163, 0.6), 1px 1px 0 #000;
+  transition: box-shadow 140ms ease, transform 140ms ease;
 }
 
-.volumeRow {
+.slider:hover::-webkit-slider-thumb,
+.slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 1px #ff4fa3, 0 0 14px rgba(255, 79, 163, 0.85), 1px 1px 0 #000;
+}
+
+.slider:hover::-moz-range-thumb,
+.slider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 1px #ff4fa3, 0 0 14px rgba(255, 79, 163, 0.85), 1px 1px 0 #000;
+}
+
+/* Volume replaces the old "VOL" label and number with a single icon. */
+.volumeBlock {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.38rem;
-  color: #ff9ed2;
-}
-
-.volumeRow input {
-  flex: 1;
+  gap: 12px;
   min-width: 0;
-  /* Same 44px hit area / 24px layout box treatment as the seek slider. */
-  height: 44px;
-  margin-block: -10px;
-  appearance: none;
-  background: transparent;
 }
 
-.volumeRow input::-webkit-slider-runnable-track {
-  height: 4px;
-  background: #e453a3;
-}
-
-.volumeRow input::-webkit-slider-thumb {
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  margin-top: -5px;
-  border-radius: 50%;
-  background: #ff9ed2;
-}
-
-.volumeRow input::-moz-range-track {
-  height: 4px;
-  background: #e453a3;
-}
-
-.volumeRow input::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  border: 0;
-  border-radius: 50%;
-  background: #ff9ed2;
+.volumeIcon {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  fill: #ff9ed2;
+  filter: drop-shadow(1px 1px 0 #000);
 }
 
 .control {
   flex: 0 0 auto;
   align-self: stretch;
-  min-height: 44px;
-  padding: 9px 12px;
+  min-height: 46px;
+  padding: 10px 14px;
   font-family: inherit;
   font-size: 0.46rem;
-  color: #ff9ed2;
-  background: rgba(228, 83, 163, 0.08);
-  border: 1px solid rgba(228, 83, 163, 0.7);
+  letter-spacing: 0.1em;
+  color: #2a0b1c;
+  background: linear-gradient(180deg, #ff9ed2 0%, #e453a3 100%);
+  border: 1px solid #ffb8dc;
+  box-shadow: 2px 2px 0 #000, inset 0 1px 0 rgba(255, 240, 247, 0.55);
   cursor: pointer;
+  transition: filter 140ms ease, transform 140ms ease;
 }
 
 .control:hover {
-  color: #fff0f7;
-  background: rgba(228, 83, 163, 0.2);
+  filter: brightness(1.12);
+}
+
+.control:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #000, inset 0 1px 0 rgba(255, 240, 247, 0.55);
 }
 
 .hint {
-  font-size: 0.34rem;
+  font-size: 0.32rem;
+  line-height: 1.6;
   color: #f0b8d8;
-  opacity: 0.75;
+  opacity: 0.8;
+  text-align: center;
 }
 
 @media (max-width: 600px) {
@@ -416,18 +488,26 @@
   }
 
   .panel {
-    width: min(300px, calc(100vw - 24px));
-    padding: 10px;
-    gap: 8px;
+    width: min(320px, calc(100vw - 24px));
+    padding: 14px;
+    gap: 14px;
     margin-bottom: 8px;
   }
 
+  .trackInfo {
+    padding: 12px;
+  }
+
   .track {
-    font-size: 0.46rem;
+    font-size: 0.5rem;
   }
 
   .artist {
     font-size: 0.32rem;
+  }
+
+  .controls {
+    gap: 14px;
   }
 
   .hint {
@@ -445,6 +525,12 @@
   }
 
   .hoverLabel {
+    transition: none;
+  }
+
+  .slider::-webkit-slider-thumb,
+  .slider::-moz-range-thumb,
+  .control {
     transition: none;
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import styles from "./MusicPlayer.module.css";
 
 type MusicPlayerProps = {
@@ -36,6 +37,13 @@ export default function MusicPlayer({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const panelId = useId();
+
+  // Visual-only values for the custom slider fills. All playback state still
+  // comes from the props; these just paint the "played" portion of each track.
+  const seekMax = duration || 100;
+  const seekValue = Math.min(currentTime, seekMax);
+  const seekFill = seekMax > 0 ? (seekValue / seekMax) * 100 : 0;
+  const volumeValue = Math.round(volume * 100);
 
   // On first load show the "MUSIC CONTROL" tooltip for 10s, then let it fall
   // back to hover/focus-only behaviour. Cleanup clears the timer on unmount.
@@ -80,60 +88,74 @@ export default function MusicPlayer({
         aria-label="Music control"
         hidden={!expanded}
       >
-        <span className={styles.panelTitle}>♫ MUSIC CONTROL</span>
+        <div className={styles.panelHeader}>
+          <span className={styles.panelTitle}>♫ MUSIC CONTROL</span>
+          <span className={styles.headerLine} aria-hidden="true" />
+        </div>
 
-        <div className={styles.meta}>
-          <span className={styles.label}>NOW PLAYING</span>
+        <div className={styles.trackInfo}>
           <span className={styles.track}>{TRACK}</span>
           <span className={styles.artist}>{ARTIST}</span>
         </div>
 
-        <div className={styles.details}>
-          <div className={styles.seekRow}>
-            <span className={styles.time}>{formattedTime}</span>
+        <div className={styles.controls}>
+          <div className={styles.seekBlock}>
             <input
               type="range"
               min="0"
-              max={duration || 100}
+              max={seekMax}
               step="0.1"
-              value={Math.min(currentTime, duration || 100)}
+              value={seekValue}
               onChange={(event) => onSeek(Number(event.target.value))}
               aria-label="Seek"
-              className={styles.seek}
+              className={`${styles.slider} ${styles.seek}`}
+              style={{ "--fill": `${seekFill}%` } as CSSProperties}
             />
-            <span className={styles.time}>{formattedDuration}</span>
+            <div className={styles.timeRow}>
+              <span className={styles.timeCurrent}>{formattedTime}</span>
+              <span className={styles.timeTotal}>{formattedDuration}</span>
+            </div>
           </div>
 
-          <label className={styles.volumeRow}>
-            <span>VOL</span>
+          <div className={styles.volumeBlock}>
+            <svg
+              className={styles.volumeIcon}
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M3 9h3.5L11 5v14l-4.5-4H3V9Z" />
+              <path d="M14 8.6a5 5 0 0 1 0 6.8l1.4-1.4a3 3 0 0 0 0-4L14 8.6Z" />
+            </svg>
             <input
               type="range"
               min="0"
               max="100"
-              value={Math.round(volume * 100)}
+              value={volumeValue}
               onChange={(event) =>
                 onVolumeChange(Number(event.target.value) / 100)
               }
               aria-label="Volume"
+              className={`${styles.slider} ${styles.volume}`}
+              style={{ "--fill": `${volumeValue}%` } as CSSProperties}
             />
-            <span>{Math.round(volume * 100)}</span>
-          </label>
+          </div>
 
           {error && (
             <span className={styles.hint}>
               Add the song file at public/audio/california-dreamin.mp3
             </span>
           )}
-        </div>
 
-        <button
-          type="button"
-          className={styles.control}
-          onClick={onToggle}
-          aria-label={playing ? "Pause music" : "Play music"}
-        >
-          {playing ? "❚❚ PAUSE" : "▶ PLAY"}
-        </button>
+          <button
+            type="button"
+            className={styles.control}
+            onClick={onToggle}
+            aria-label={playing ? "Pause music" : "Play music"}
+          >
+            {playing ? "❚❚ PAUSE" : "▶ PLAY"}
+          </button>
+        </div>
       </div>
 
       <div className={styles.toggleArea}>
