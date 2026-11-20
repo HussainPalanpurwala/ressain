@@ -65,7 +65,8 @@ function newHeart(rand: () => number, occupied: { x: number; y: number }[], fres
     left: x,
     top: y,
     size: 8 + rand() * 40,
-    duration: 7 + rand() * 7,
+    // 15% fewer respawns per minute than the original 7–14s loop.
+    duration: (7 + rand() * 7) * 1.18,
     // Only the initial render is staggered. Re-spawns keep their existing
     // timing (see reroll) so the animation never restarts mid-cycle.
     delay: fresh ? -(rand() * 14) : 0,
