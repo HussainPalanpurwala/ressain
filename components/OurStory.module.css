@@ -531,16 +531,6 @@
   transform: rotate(0deg) scale(1.02);
 }
 
-/* Mood: quiet diary pages — 01 and 05 */
-.memoryMinimal .textPlaceholder,
-.memoryTemple .textPlaceholder {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0 30px,
-    rgba(74, 16, 36, 0.1) 30px 31px
-  );
-}
-
 .memoryTemple .photo {
   background: var(--paper);
 }
