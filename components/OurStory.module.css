@@ -254,9 +254,11 @@
 }
 
 /* Paper clips hook over a TOP corner of each polaroid, straddling the corner
-   edge exactly like a real clip. Two deliberate variants: a left-corner clip
-   angled negative (runs down-right across the corner) and a right-corner clip
-   angled positive (runs down-left across the corner). They stay BIG and LONG. */
+   edge exactly like a real clip. A left-corner hook rotates negative (runs
+   down-right across the corner) and a right-corner hook rotates positive (runs
+   down-left across the corner). Corners and angles are hand-scattered so the
+   clips look casually placed rather than one repeated rotation. They stay BIG
+   and LONG. */
 .paperClip {
   display: block;
   position: absolute;
@@ -267,7 +269,7 @@
   height: clamp(44px, 9vw, 54px);
   border: 3px solid #8d8792;
   border-radius: 12px;
-  transform: rotate(-42deg);
+  transform: rotate(-54deg);
   box-shadow:
     1px 2px 3px rgba(74, 16, 36, 0.32),
     0 0 7px rgba(255, 255, 255, 0.35);
@@ -287,33 +289,33 @@
   border-radius: 5px;
 }
 
-/* Deliberate corner per photo: left-corner clips rotate negative (~-37 to
-   -46deg), right-corner clips rotate positive (~+40 to +47deg), so every
-   polaroid reads as a real clip gripping its own corner. */
+/* Hand-assigned, irregular angles (roughly -55deg to +55deg) and mixed hooked
+   corners per photo/memory, so no two clips read as the same repeated tilt. */
 .miniGallery .photo:nth-child(1) .paperClip {
-  left: -6px;
+  left: auto;
+  right: -6px;
   top: -14px;
-  transform: rotate(-44deg);
+  transform: rotate(48deg);
 }
 
 .miniGallery .photo:nth-child(2) .paperClip {
   left: auto;
   right: -6px;
   top: -14px;
-  transform: rotate(40deg);
+  transform: rotate(31deg);
 }
 
 .miniGallery .photo:nth-child(3) .paperClip {
   left: -4px;
   top: -12px;
-  transform: rotate(-37deg);
+  transform: rotate(-26deg);
 }
 
 .miniGallery .photo:nth-child(4) .paperClip {
   left: auto;
   right: -4px;
   top: -12px;
-  transform: rotate(47deg);
+  transform: rotate(55deg);
 }
 
 .miniGallery .photo:nth-child(1) {
@@ -338,36 +340,37 @@
 }
 
 .memoryTrain .paperClip {
-  left: auto;
-  right: -6px;
+  left: -6px;
+  right: auto;
   top: -14px;
-  transform: rotate(46deg);
+  transform: rotate(-35deg);
 }
 
 .memoryPalace .paperClip {
   left: -6px;
   top: -14px;
-  transform: rotate(-41deg);
-}
-
-/* Chat images: the two corners differ so the pair isn't mirrored-identical. */
-.memoryLetter .videoStack .photo:nth-child(1) .paperClip {
-  left: -6px;
-  top: -14px;
   transform: rotate(-46deg);
 }
 
-.memoryLetter .videoStack .photo:nth-child(2) .paperClip {
+/* Chat images: the two corners still differ so the pair isn't mirrored. */
+.memoryLetter .videoStack .photo:nth-child(1) .paperClip {
   left: auto;
   right: -6px;
   top: -14px;
-  transform: rotate(43deg);
+  transform: rotate(40deg);
+}
+
+.memoryLetter .videoStack .photo:nth-child(2) .paperClip {
+  left: -6px;
+  right: auto;
+  top: -14px;
+  transform: rotate(-23deg);
 }
 
 .memoryTemple .paperClip {
   left: -6px;
   top: -14px;
-  transform: rotate(-39deg);
+  transform: rotate(-52deg);
 }
 
 .memoryMinimal .textPlaceholder::before {
@@ -686,7 +689,7 @@
   left: -6px;
   width: clamp(26px, 5.5vw, 32px);
   height: clamp(34px, 7vw, 42px);
-  transform: rotate(-44deg);
+  transform: rotate(-53deg);
   background: linear-gradient(135deg, #e2e2e8, #8a8a94 55%, #b9b9c2);
   border: 2px solid #5a5a62;
   border-radius: 6px;
