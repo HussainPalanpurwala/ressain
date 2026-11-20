@@ -16,25 +16,30 @@
   pointer-events: none;
   opacity: calc(0.85 + var(--enter, 0) * 0.15);
   /* Fade in gently at the top, stay clearly visible through the middle, then
-     dissolve slowly into the section's dark→paper gradient: opaque until 62%,
-     a long smooth falloff to fully transparent by 95%. Reaching transparent
-     before the box ends guarantees the grid never stops abruptly or bleeds. */
+     dissolve into the section's dark→paper gradient with a long, gentle tail:
+     opaque until 46%, then a smooth multi-step falloff that is already fully
+     transparent by 90%. Reaching zero well before the box ends guarantees the
+     grid never stops abruptly at the bottom or leaves a visible hard edge. */
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0%,
     rgba(0, 0, 0, 0.35) 5%,
     #000000 15%,
-    #000000 62%,
-    rgba(0, 0, 0, 0.5) 79%,
-    transparent 95%
+    #000000 46%,
+    rgba(0, 0, 0, 0.85) 60%,
+    rgba(0, 0, 0, 0.5) 72%,
+    rgba(0, 0, 0, 0.18) 82%,
+    transparent 90%
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 0%,
     rgba(0, 0, 0, 0.35) 5%,
     #000000 15%,
-    #000000 62%,
-    rgba(0, 0, 0, 0.5) 79%,
-    transparent 95%
+    #000000 46%,
+    rgba(0, 0, 0, 0.85) 60%,
+    rgba(0, 0, 0, 0.5) 72%,
+    rgba(0, 0, 0, 0.18) 82%,
+    transparent 90%
   );
 }
