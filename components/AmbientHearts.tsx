@@ -5,9 +5,11 @@ import PixelHeart from "./PixelHeart";
 
 const HEART_COUNT = 12;
 const SMALL_HEARTS = 4;
+const SLOT_COUNT = 16;
 const COLORS = ["#E453A3", "#F0254B", "#FF8FC7"];
 
 type Heart = {
+  slot: number;
   left: number;
   top: number;
   small: boolean;
@@ -29,10 +31,9 @@ function seededRandom(seed: number) {
   };
 }
 
-// Pick a free, scattered spot. The middle stays clear for the title and its
-// permanent hearts, and the lowest band stops above the landing's seam fade.
+// A point in the free area, kept away from existing points and the title zone.
 function scatter(rand: () => number, occupied: { x: number; y: number }[]) {
-  const MIN_GAP = 11;
+  const MIN_GAP = 10;
   const ASPECT = 1.25;
   const inTitleZone = (x: number, y: number) => {
     const dx = (x - 50) / 33;
@@ -42,8 +43,9 @@ function scatter(rand: () => number, occupied: { x: number; y: number }[]) {
 
   let best = { x: 50, y: 50 };
   let bestGap = -1;
-  for (let attempt = 0; attempt < 260; attempt += 1) {
+  for (let attempt = 0; attempt < 400; attempt += 1) {
     const x = 3 + rand() * 94;
+    // Stop above the landing's seam fade so hearts stay visible.
     const y = 6 + rand() * 88;
     if (inTitleZone(x, y)) continue;
     const gap =
@@ -61,24 +63,33 @@ function scatter(rand: () => number, occupied: { x: number; y: number }[]) {
   return best;
 }
 
-function newHeart(
-  rand: () => number,
-  occupied: { x: number; y: number }[],
+// A fixed set of well-separated spots. Hearts only ever occupy these, and
+// respawn into a DIFFERENT free one, so they can never bunch up in one place.
+const SLOTS: { x: number; y: number }[] = (() => {
+  const rand = seededRandom(11);
+  const points: { x: number; y: number }[] = [];
+  for (let i = 0; i < SLOT_COUNT; i += 1) {
+    points.push(scatter(rand, points));
+  }
+  return points;
+})();
+
+function makeHeart(
+  slot: number,
   fresh: boolean,
-  small: boolean
+  small: boolean,
+  rand: () => number
 ): Heart {
-  const { x, y } = scatter(rand, occupied);
+  const { x, y } = SLOTS[slot];
   return {
+    slot,
     left: x,
     top: y,
     small,
-    // A few small hearts for variety; the rest stay large so the field reads
-    // calm rather than speckled.
     size: small ? 9 + rand() * 9 : 20 + rand() * 34,
-    // Slower loops mean fewer respawns and a longer, gentler fade.
     duration: (7 + rand() * 7) * 1.4,
-    // Only the initial render is staggered. Re-spawns keep their existing
-    // timing (see reroll) so the animation never restarts mid-cycle.
+    // Only the initial field is staggered; respawns keep their timing so the
+    // animation never restarts mid-cycle.
     delay: fresh ? -(rand() * 14) : 0,
     rot: (rand() * 2 - 1) * 20,
     opacity: 0.35 + rand() * 0.45,
@@ -86,18 +97,14 @@ function newHeart(
   };
 }
 
-// Deterministic initial field — generated once at module load for SSR safety.
-const initialHearts = () => {
-  const rand = seededRandom(11);
-  const occupied: { x: number; y: number }[] = [];
-  return Array.from({ length: HEART_COUNT }, (_, index) => {
-    const heart = newHeart(rand, occupied, true, index < SMALL_HEARTS);
-    occupied.push({ x: heart.left, y: heart.top });
-    return heart;
-  });
-};
-
-const INITIAL_HEARTS = initialHearts();
+// Deterministic initial field for SSR-safe hydration.
+const INITIAL_HEARTS: Heart[] = (() => {
+  const rand = seededRandom(27);
+  const slots = SLOTS.map((_, i) => i).sort(() => rand() - 0.5);
+  return Array.from({ length: HEART_COUNT }, (_, i) =>
+    makeHeart(slots[i], true, i < SMALL_HEARTS, rand)
+  );
+})();
 
 type HeartStyle = CSSProperties & {
   "--left": string;
@@ -113,23 +120,20 @@ type HeartStyle = CSSProperties & {
 export default function AmbientHearts() {
   const [hearts, setHearts] = useState<Heart[]>(INITIAL_HEARTS);
 
-  // The original effect moved each heart to a new spot every loop. Doing it
-  // here — on animationiteration, when the keyframe opacity is exactly 0 —
-  // keeps that lively respawn without any visible jump or jitter.
+  // Called at the end of each animation loop, when opacity is exactly 0, so
+  // the move is invisible. Pick a different free slot to guarantee an even,
+  // ever-changing spread instead of hearts revisiting the same area.
   const reroll = useCallback((index: number) => {
     setHearts((prev) => {
-      const occupied = prev
-        .filter((_, i) => i !== index)
-        .map((h) => ({ x: h.left, y: h.top }));
-      const next = newHeart(Math.random, occupied, false, prev[index].small);
+      const used = new Set(prev.filter((_, i) => i !== index).map((h) => h.slot));
+      const free = SLOTS.map((_, i) => i).filter((i) => !used.has(i));
+      if (free.length === 0) return prev;
+      const nextSlot = free[Math.floor(Math.random() * free.length)];
+      const current = prev[index];
+      const next = makeHeart(nextSlot, false, current.small, Math.random);
       return prev.map((heart, i) =>
         i === index
-          ? {
-              ...next,
-              // Preserve the timing so the animation phase is uninterrupted.
-              duration: heart.duration,
-              delay: heart.delay,
-            }
+          ? { ...next, duration: heart.duration, delay: heart.delay }
           : heart
       );
     });
