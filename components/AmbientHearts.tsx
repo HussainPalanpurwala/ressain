@@ -3,8 +3,8 @@
 import { useCallback, useState, type CSSProperties } from "react";
 import PixelHeart from "./PixelHeart";
 
-const HEART_COUNT = 12;
-const SMALL_HEARTS = 4;
+const HEART_COUNT = 9;
+const SMALL_HEARTS = 3;
 const COLORS = ["#E453A3", "#F0254B", "#FF8FC7"];
 
 // The landing's text block sits in the middle. Hearts are never placed here.
