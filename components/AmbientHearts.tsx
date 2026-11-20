@@ -8,18 +8,16 @@ const COLS = 6;
 const ROWS = 5;
 const COLORS = ["#E453A3", "#F0254B", "#FF8FC7"];
 
-// One heart per cell. Keep the whole central band clear (rows 1–4, cols 2–3)
-// so nothing forms directly beneath the permanent hearts around the title, and
-// also leave the cells flanking the title (cols 1 & 4 at the middle row) empty
-// so fading hearts never sit right beside the permanent ones. 20 cells remain
-// for the 20 hearts.
+// One heart per cell. Keep the centre clear around the title (cols 2–3,
+// rows 1–3) and leave the two cells flanking it empty, but let the whole lower
+// band (row 4) fill again so fading hearts still appear across the bottom half.
 const CELLS = Array.from({ length: COLS * ROWS }, (_, index) => index).filter(
   (index) => {
     const col = index % COLS;
     const row = Math.floor(index / COLS);
-    const centralBand = col >= 2 && col <= 3 && row >= 1 && row <= 4;
+    const aroundTitle = col >= 2 && col <= 3 && row >= 1 && row <= 3;
     const flankingTitle = (col === 1 || col === 4) && row === 2;
-    return !centralBand && !flankingTitle;
+    return !aroundTitle && !flankingTitle;
   }
 );
 
@@ -48,9 +46,12 @@ function seededRandom(seed: number) {
 function cellPosition(cell: number, rand: () => number) {
   const col = cell % COLS;
   const row = Math.floor(cell / COLS);
+  const top = ((row + 0.2 + rand() * 0.6) / ROWS) * 100;
   return {
     left: ((col + 0.2 + rand() * 0.6) / COLS) * 100,
-    top: ((row + 0.2 + rand() * 0.6) / ROWS) * 100,
+    // The landing's bottom seam fades to solid black near the very edge, so
+    // keep the lowest row just above it — otherwise those hearts vanish.
+    top: row === ROWS - 1 ? Math.min(top, 87) : top,
   };
 }
 

@@ -494,15 +494,15 @@ body {
   pointer-events: none;
   opacity: var(--scroll-fade, 1);
   -webkit-mask-image: radial-gradient(
-    ellipse 50% 46% at 50% 50%,
+    ellipse 48% 44% at 50% 50%,
     transparent 0%,
-    transparent 68%,
+    transparent 65%,
     #000000 100%
   );
   mask-image: radial-gradient(
-    ellipse 50% 46% at 50% 50%,
+    ellipse 48% 44% at 50% 50%,
     transparent 0%,
-    transparent 68%,
+    transparent 65%,
     #000000 100%
   );
 }
