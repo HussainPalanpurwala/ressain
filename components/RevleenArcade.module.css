@@ -444,12 +444,12 @@
   border-radius: inherit;
   background-image: radial-gradient(
     circle at center,
-    rgba(0, 0, 0, 0.55) 0,
-    rgba(0, 0, 0, 0.3) 0.7px,
-    rgba(0, 0, 0, 0) 1.3px
+    rgba(0, 0, 0, 0.9) 0,
+    rgba(0, 0, 0, 0.6) 1px,
+    rgba(0, 0, 0, 0) 1.8px
   );
-  background-size: 3px 3px;
-  opacity: 0.45;
+  background-size: 4px 4px;
+  opacity: 0.85;
 }
 
 .screenTop {
@@ -1632,7 +1632,14 @@
      phone; progress and the sound toggle sit neatly underneath. */
   .controlPanel { justify-content: space-between; row-gap: clamp(8px, 2vw, 12px); }
   .physicalControls { order: -1; flex: 1 1 100%; gap: clamp(10px, 3vw, 16px); }
-  .physicalButton { min-width: 0; flex: 1 1 0; }
+  .physicalButton { min-width: 0; flex: 1 1 0; padding-inline: 6px; }
+  /* Readable labels on phones — the desktop 0.36rem floor was far too small. */
+  .physicalButtonLabel {
+    font-size: clamp(0.5rem, 2.7vw, 0.64rem);
+    line-height: 1.5;
+    letter-spacing: 0;
+    white-space: normal;
+  }
   .progress { flex: 1 1 auto; }
   /* No inner scroll on phones either — the glass grows with its content. */
   .screen { min-height: clamp(280px, 44vh, 400px); }

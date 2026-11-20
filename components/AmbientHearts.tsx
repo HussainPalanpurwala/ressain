@@ -14,7 +14,7 @@ type Heart = {
   left: number;
   top: number;
   small: boolean;
-  size: number;
+  size: string;
   duration: number;
   delay: number;
   rot: number;
@@ -67,12 +67,19 @@ function findSpot(rand: () => number, occupied: Point[], rects: Rect[]): Point {
   return best;
 }
 
+// Sizes scale with the smaller viewport dimension so phones never get tiny
+// specks and large screens never get oversized hearts.
+const sizeFor = (min: number, vmin: number, max: number) =>
+  `clamp(${min.toFixed(1)}px, ${vmin.toFixed(2)}vmin, ${max.toFixed(1)}px)`;
+
 function makeHeart(rand: () => number, spot: Point, small: boolean, fresh: boolean): Heart {
   return {
     left: spot.x,
     top: spot.y,
     small,
-    size: small ? 9 + rand() * 9 : 20 + rand() * 34,
+    size: small
+      ? sizeFor(18 + rand() * 4, 2.8 + rand() * 0.6, 26 + rand() * 6)
+      : sizeFor(30 + rand() * 8, 5 + rand() * 1.2, 48 + rand() * 14),
     duration: (7 + rand() * 7) * 1.4,
     delay: fresh ? -(rand() * 14) : 0,
     rot: (rand() * 2 - 1) * 20,
@@ -161,7 +168,7 @@ export default function AmbientHearts() {
             {
               "--left": `${heart.left.toFixed(2)}%`,
               "--top": `${heart.top.toFixed(2)}%`,
-              "--size": `${heart.size.toFixed(2)}px`,
+              "--size": heart.size,
               "--duration": `${heart.duration.toFixed(2)}s`,
               "--delay": `${heart.delay.toFixed(2)}s`,
               "--rot": `${heart.rot.toFixed(2)}deg`,
