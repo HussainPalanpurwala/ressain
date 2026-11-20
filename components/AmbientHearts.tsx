@@ -3,7 +3,7 @@
 import { useCallback, useState, type CSSProperties } from "react";
 import PixelHeart from "./PixelHeart";
 
-const HEART_COUNT = 14;
+const HEART_COUNT = 10;
 const COLORS = ["#E453A3", "#F0254B", "#FF8FC7"];
 
 type Heart = {
@@ -64,7 +64,8 @@ function newHeart(rand: () => number, occupied: { x: number; y: number }[], fres
   return {
     left: x,
     top: y,
-    size: 8 + rand() * 40,
+    // No tiny hearts — the small end used to read as visual noise.
+    size: 20 + rand() * 34,
     // Slower loops mean fewer respawns and a longer, gentler fade.
     duration: (7 + rand() * 7) * 1.4,
     // Only the initial render is staggered. Re-spawns keep their existing

@@ -537,10 +537,10 @@ body {
     transform: scale(0.85) rotate(var(--rot));
     filter: drop-shadow(0 0 2px currentColor);
   }
-  8% {
+  20% {
     opacity: var(--heart-opacity);
   }
-  72% {
+  68% {
     opacity: var(--heart-opacity);
     filter: drop-shadow(0 0 12px currentColor);
   }
