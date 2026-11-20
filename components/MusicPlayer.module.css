@@ -13,12 +13,12 @@
 
 .panel {
   box-sizing: border-box;
-  width: min(320px, calc(100vw - 24px));
+  width: min(340px, calc(100vw - 24px));
   margin-bottom: 10px;
-  padding: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
   background: rgba(12, 5, 11, 0.97);
   border: 2px solid #e453a3;
   box-shadow: 4px 4px 0 #000, 0 -6px 24px rgba(228, 83, 163, 0.25);
@@ -41,7 +41,8 @@
 }
 
 .panelTitle {
-  font-size: 0.36rem;
+  font-size: 0.5rem;
+  line-height: 1.4;
   letter-spacing: 0.1em;
   color: #ff9ed2;
 }
@@ -60,7 +61,7 @@
   transform: translateY(-50%) translateX(6px);
   padding: 6px 8px;
   white-space: nowrap;
-  font-size: 0.34rem;
+  font-size: 0.4rem;
   letter-spacing: 0.1em;
   color: #ff9ed2;
   background: rgba(12, 5, 11, 0.95);
@@ -255,17 +256,18 @@
 
 .label {
   display: block;
-  padding-bottom: 7px;
-  margin-bottom: 10px;
+  padding-bottom: 9px;
+  margin-bottom: 12px;
   border-bottom: 1px solid rgba(228, 83, 163, 0.28);
-  font-size: 0.3rem;
+  font-size: 0.4rem;
+  line-height: 1.4;
   letter-spacing: 0.2em;
   color: #e453a3;
 }
 
 .track {
-  font-size: 0.56rem;
-  line-height: 1.45;
+  font-size: 0.7rem;
+  line-height: 1.5;
   letter-spacing: 0.01em;
   color: #fff0f7;
   text-shadow: 1px 1px 0 #000;
@@ -275,8 +277,8 @@
 }
 
 .artist {
-  margin-top: 5px;
-  font-size: 0.34rem;
+  margin-top: 9px;
+  font-size: 0.5rem;
   line-height: 1.5;
   letter-spacing: 0.04em;
   color: #f0b8d8;
@@ -289,7 +291,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
 }
 
 .seekRow {
@@ -299,9 +301,9 @@
 }
 
 .time {
-  font-size: 0.34rem;
+  font-size: 0.45rem;
   color: #f0b8d8;
-  min-width: 32px;
+  min-width: 40px;
   text-align: center;
 }
 
@@ -313,7 +315,7 @@
   flex: 1;
   min-width: 0;
   height: 44px;
-  margin-block: -10px;
+  margin-block: -8px;
   padding: 0;
   appearance: none;
   -webkit-appearance: none;
@@ -402,7 +404,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.38rem;
+  font-size: 0.45rem;
   color: #ff9ed2;
 }
 
@@ -410,9 +412,9 @@
   flex: 0 0 auto;
   align-self: stretch;
   min-height: 44px;
-  padding: 9px 12px;
+  padding: 11px 14px;
   font-family: inherit;
-  font-size: 0.46rem;
+  font-size: 0.5rem;
   letter-spacing: 0.1em;
   color: #ff9ed2;
   background: rgba(228, 83, 163, 0.08);
@@ -434,7 +436,7 @@
 }
 
 .hint {
-  font-size: 0.34rem;
+  font-size: 0.4rem;
   line-height: 1.6;
   color: #f0b8d8;
   opacity: 0.75;
@@ -453,23 +455,27 @@
 
   .panel {
     width: min(300px, calc(100vw - 24px));
-    padding: 10px;
-    gap: 10px;
+    padding: 12px;
+    gap: 14px;
     margin-bottom: 8px;
+  }
+
+  .details {
+    gap: 14px;
   }
 
   .label {
-    padding-bottom: 6px;
-    margin-bottom: 8px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
   }
 
   .track {
-    font-size: 0.46rem;
+    font-size: 0.64rem;
   }
 
   .artist {
-    margin-top: 4px;
-    font-size: 0.32rem;
+    margin-top: 8px;
+    font-size: 0.46rem;
   }
 
   .hint {
