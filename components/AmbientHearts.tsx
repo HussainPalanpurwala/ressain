@@ -3,7 +3,7 @@
 import { useCallback, useState, type CSSProperties } from "react";
 import PixelHeart from "./PixelHeart";
 
-const HEART_COUNT = 20;
+const HEART_COUNT = 14;
 const COLORS = ["#E453A3", "#F0254B", "#FF8FC7"];
 
 type Heart = {
@@ -65,8 +65,8 @@ function newHeart(rand: () => number, occupied: { x: number; y: number }[], fres
     left: x,
     top: y,
     size: 8 + rand() * 40,
-    // 15% fewer respawns per minute than the original 7–14s loop.
-    duration: (7 + rand() * 7) * 1.18,
+    // Slower loops mean fewer respawns and a longer, gentler fade.
+    duration: (7 + rand() * 7) * 1.4,
     // Only the initial render is staggered. Re-spawns keep their existing
     // timing (see reroll) so the animation never restarts mid-cycle.
     delay: fresh ? -(rand() * 14) : 0,
