@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import type { CSSProperties } from "react";
 import styles from "./MusicPlayer.module.css";
 
 type MusicPlayerProps = {
@@ -37,13 +36,6 @@ export default function MusicPlayer({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const panelId = useId();
-
-  // Visual-only values for the custom slider fills. All playback state still
-  // comes from the props; these just paint the "played" portion of each track.
-  const seekMax = duration || 100;
-  const seekValue = Math.min(currentTime, seekMax);
-  const seekFill = seekMax > 0 ? (seekValue / seekMax) * 100 : 0;
-  const volumeValue = Math.round(volume * 100);
 
   // On first load show the "MUSIC CONTROL" tooltip for 10s, then let it fall
   // back to hover/focus-only behaviour. Cleanup clears the timer on unmount.
@@ -88,58 +80,44 @@ export default function MusicPlayer({
         aria-label="Music control"
         hidden={!expanded}
       >
-        <div className={styles.panelHeader}>
-          <span className={styles.panelTitle}>♫ MUSIC CONTROL</span>
-          <span className={styles.headerLine} aria-hidden="true" />
-        </div>
+        <span className={styles.panelTitle}>♫ MUSIC CONTROL</span>
 
-        <div className={styles.trackInfo}>
+        <div className={styles.meta}>
+          <span className={styles.label}>NOW PLAYING</span>
           <span className={styles.track}>{TRACK}</span>
           <span className={styles.artist}>{ARTIST}</span>
         </div>
 
-        <div className={styles.controls}>
-          <div className={styles.seekBlock}>
+        <div className={styles.details}>
+          <div className={styles.seekRow}>
+            <span className={styles.time}>{formattedTime}</span>
             <input
               type="range"
               min="0"
-              max={seekMax}
+              max={duration || 100}
               step="0.1"
-              value={seekValue}
+              value={Math.min(currentTime, duration || 100)}
               onChange={(event) => onSeek(Number(event.target.value))}
               aria-label="Seek"
-              className={`${styles.slider} ${styles.seek}`}
-              style={{ "--fill": `${seekFill}%` } as CSSProperties}
+              className={styles.seek}
             />
-            <div className={styles.timeRow}>
-              <span className={styles.timeCurrent}>{formattedTime}</span>
-              <span className={styles.timeTotal}>{formattedDuration}</span>
-            </div>
+            <span className={styles.time}>{formattedDuration}</span>
           </div>
 
-          <div className={styles.volumeBlock}>
-            <svg
-              className={styles.volumeIcon}
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <path d="M3 9h3.5L11 5v14l-4.5-4H3V9Z" />
-              <path d="M14 8.6a5 5 0 0 1 0 6.8l1.4-1.4a3 3 0 0 0 0-4L14 8.6Z" />
-            </svg>
+          <label className={styles.volumeRow}>
+            <span>VOL</span>
             <input
               type="range"
               min="0"
               max="100"
-              value={volumeValue}
+              value={Math.round(volume * 100)}
               onChange={(event) =>
                 onVolumeChange(Number(event.target.value) / 100)
               }
               aria-label="Volume"
-              className={`${styles.slider} ${styles.volume}`}
-              style={{ "--fill": `${volumeValue}%` } as CSSProperties}
             />
-          </div>
+            <span>{Math.round(volume * 100)}</span>
+          </label>
 
           {error && (
             <span className={styles.hint}>

@@ -13,12 +13,12 @@
 
 .panel {
   box-sizing: border-box;
-  width: min(336px, calc(100vw - 24px));
-  margin-bottom: 12px;
-  padding: 16px;
+  width: min(320px, calc(100vw - 24px));
+  margin-bottom: 10px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
   background: rgba(12, 5, 11, 0.97);
   border: 2px solid #e453a3;
   box-shadow: 4px 4px 0 #000, 0 -6px 24px rgba(228, 83, 163, 0.25);
@@ -40,30 +40,10 @@
   }
 }
 
-/* Panel header: title plus a pixel-dashed rule that separates it from the
-   track card below. */
-.panelHeader {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-
 .panelTitle {
-  font-size: 0.4rem;
-  letter-spacing: 0.12em;
+  font-size: 0.36rem;
+  letter-spacing: 0.1em;
   color: #ff9ed2;
-  text-shadow: 1px 1px 0 #000;
-}
-
-.headerLine {
-  display: block;
-  width: 100%;
-  height: 2px;
-  background: repeating-linear-gradient(
-    90deg,
-    rgba(228, 83, 163, 0.9) 0 8px,
-    rgba(228, 83, 163, 0.16) 8px 12px
-  );
 }
 
 .toggleArea {
@@ -129,14 +109,10 @@
 
 .turntable:focus-visible,
 .control:focus-visible,
-.slider:focus-visible {
+.seek:focus-visible,
+.volumeRow input:focus-visible {
   outline: 2px solid #ff9ed2;
   outline-offset: 3px;
-}
-
-/* The bright control button needs a cream outline to stay visible. */
-.control:focus-visible {
-  outline-color: #fff0f7;
 }
 
 /* All artwork is sized in percentages of this 100% deck, so the record can
@@ -268,26 +244,23 @@
   fill: #2a0b1c;
 }
 
-/* Track/artist card: the top of the visual hierarchy. The cherry left edge
-   and inset glow give it a retro "now playing" plate feel without a label. */
-.trackInfo {
+/* Track info: the label, title and artist each get their own comfortable
+   line so nothing feels cramped. */
+.meta {
   display: flex;
   flex-direction: column;
   gap: 8px;
   min-width: 0;
-  padding: 14px 14px 14px 16px;
-  background: linear-gradient(
-    135deg,
-    rgba(120, 38, 72, 0.42) 0%,
-    rgba(60, 18, 42, 0.32) 100%
-  );
-  border: 1px solid rgba(228, 83, 163, 0.32);
-  border-left: 3px solid #ff4fa3;
-  box-shadow: inset 0 0 18px rgba(255, 79, 163, 0.08), 2px 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+.label {
+  font-size: 0.34rem;
+  letter-spacing: 0.12em;
+  color: #ff9ed2;
 }
 
 .track {
-  font-size: 0.56rem;
+  font-size: 0.54rem;
   line-height: 1.6;
   color: #fff0f7;
   text-shadow: 2px 2px 0 #000;
@@ -298,57 +271,42 @@
 
 .artist {
   font-size: 0.36rem;
-  line-height: 1.5;
+  line-height: 1.6;
   color: #f0b8d8;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Controls column: generous gap so no row feels cramped. */
-.controls {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.seekBlock {
-  display: flex;
-  flex-direction: column;
+.details {
   min-width: 0;
-}
-
-/* Times sit on one compact line directly under the seek track. The small
-   negative margin pulls them visually closer without shrinking the slider's
-   44px touch target. */
-.timeRow {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-top: -10px;
-  padding-inline: 2px;
-  font-size: 0.32rem;
-  letter-spacing: 0.08em;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.timeCurrent {
-  color: #fff0f7;
+.seekRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.timeTotal {
-  color: #d98bb6;
+.time {
+  font-size: 0.34rem;
+  color: #f0b8d8;
+  min-width: 32px;
+  text-align: center;
 }
 
-/* Shared custom range styling: no native chrome, a 44px hit area, a thin
-   rounded track and a glowing round thumb. --fill is painted per-slider by
-   the component so the played portion reads at a glance. */
-.slider {
-  --fill: 0%;
-  display: block;
-  width: 100%;
+/* Boxy sliders: a 44px touch target with the visual box kept compact by
+   negative vertical margins. Both the seek and volume ranges share the same
+   squared-off pink slot and silver metallic rectangular thumb. */
+.seek,
+.volumeRow input {
+  flex: 1;
   min-width: 0;
   height: 44px;
-  margin: 0;
+  margin-block: -10px;
   padding: 0;
   appearance: none;
   -webkit-appearance: none;
@@ -356,124 +314,123 @@
   cursor: pointer;
 }
 
-.seek {
-  width: 100%;
-}
-
-.volume {
-  flex: 1;
-  width: auto;
-}
-
-.slider::-webkit-slider-runnable-track {
-  height: 6px;
-  border-radius: 999px;
+/* Squared-off track — a recessed chrome-pink slot, no rounded corners. */
+.seek::-webkit-slider-runnable-track,
+.volumeRow input::-webkit-slider-runnable-track,
+.seek::-moz-range-track,
+.volumeRow input::-moz-range-track {
+  box-sizing: border-box;
+  height: 10px;
+  border-radius: 0;
+  border: 1px solid #2a0b1c;
   background: linear-gradient(
-    90deg,
-    #ff4fa3 0%,
-    #ff9ed2 var(--fill),
-    rgba(233, 226, 232, 0.2) var(--fill),
-    rgba(233, 226, 232, 0.2) 100%
+    180deg,
+    #7a224c 0%,
+    #e453a3 38%,
+    #ff9ed2 50%,
+    #c23c7e 64%,
+    #6d244c 100%
   );
-  box-shadow: inset 0 0 0 1px rgba(12, 5, 11, 0.65), 0 0 8px rgba(255, 79, 163, 0.2);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.55);
 }
 
-.slider::-moz-range-track {
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(233, 226, 232, 0.2);
-  box-shadow: inset 0 0 0 1px rgba(12, 5, 11, 0.65);
-}
-
-.slider::-moz-range-progress {
-  height: 6px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #ff4fa3, #ff9ed2);
-  box-shadow: 0 0 8px rgba(255, 79, 163, 0.2);
-}
-
-.slider::-webkit-slider-thumb {
+/* The "mover": a small silver/chrome rectangular bar — squared edges, a
+   vertical brushed-metal sheen, and a hard pixel drop shadow. Not a circle,
+   not pink. */
+.seek::-webkit-slider-thumb,
+.volumeRow input::-webkit-slider-thumb {
   appearance: none;
   -webkit-appearance: none;
   box-sizing: border-box;
-  width: 16px;
-  height: 16px;
-  margin-top: -5px;
-  border: 2px solid #2a0b1c;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff0f7 0%, #ff9ed2 55%, #e453a3 100%);
-  box-shadow: 0 0 0 1px #ff4fa3, 0 0 10px rgba(255, 79, 163, 0.6), 1px 1px 0 #000;
-  transition: box-shadow 140ms ease, transform 140ms ease;
+  width: 14px;
+  height: 22px;
+  margin-top: -6px;
+  border-radius: 1px;
+  border: 1px solid #2b2b31;
+  background: linear-gradient(
+    90deg,
+    #7d7d86 0%,
+    #fdfdff 18%,
+    #d5d5dc 42%,
+    #9c9ca6 60%,
+    #eef0f4 82%,
+    #71717a 100%
+  );
+  box-shadow: 1px 1px 0 #000, inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+  transition: filter 140ms ease;
 }
 
-.slider::-moz-range-thumb {
+.seek::-moz-range-thumb,
+.volumeRow input::-moz-range-thumb {
   box-sizing: border-box;
-  width: 16px;
-  height: 16px;
-  border: 2px solid #2a0b1c;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff0f7 0%, #ff9ed2 55%, #e453a3 100%);
-  box-shadow: 0 0 0 1px #ff4fa3, 0 0 10px rgba(255, 79, 163, 0.6), 1px 1px 0 #000;
-  transition: box-shadow 140ms ease, transform 140ms ease;
+  width: 14px;
+  height: 22px;
+  border-radius: 1px;
+  border: 1px solid #2b2b31;
+  background: linear-gradient(
+    90deg,
+    #7d7d86 0%,
+    #fdfdff 18%,
+    #d5d5dc 42%,
+    #9c9ca6 60%,
+    #eef0f4 82%,
+    #71717a 100%
+  );
+  box-shadow: 1px 1px 0 #000, inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+  transition: filter 140ms ease;
 }
 
-.slider:hover::-webkit-slider-thumb,
-.slider:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 1px #ff4fa3, 0 0 14px rgba(255, 79, 163, 0.85), 1px 1px 0 #000;
+.seek:hover::-webkit-slider-thumb,
+.seek:focus-visible::-webkit-slider-thumb,
+.volumeRow input:hover::-webkit-slider-thumb,
+.volumeRow input:focus-visible::-webkit-slider-thumb,
+.seek:hover::-moz-range-thumb,
+.seek:focus-visible::-moz-range-thumb,
+.volumeRow input:hover::-moz-range-thumb,
+.volumeRow input:focus-visible::-moz-range-thumb {
+  filter: brightness(1.14);
 }
 
-.slider:hover::-moz-range-thumb,
-.slider:focus-visible::-moz-range-thumb {
-  box-shadow: 0 0 0 1px #ff4fa3, 0 0 14px rgba(255, 79, 163, 0.85), 1px 1px 0 #000;
-}
-
-/* Volume replaces the old "VOL" label and number with a single icon. */
-.volumeBlock {
+.volumeRow {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.volumeIcon {
-  flex: 0 0 auto;
-  width: 16px;
-  height: 16px;
-  fill: #ff9ed2;
-  filter: drop-shadow(1px 1px 0 #000);
+  gap: 8px;
+  font-size: 0.38rem;
+  color: #ff9ed2;
 }
 
 .control {
   flex: 0 0 auto;
   align-self: stretch;
-  min-height: 46px;
-  padding: 10px 14px;
+  min-height: 44px;
+  padding: 9px 12px;
   font-family: inherit;
   font-size: 0.46rem;
   letter-spacing: 0.1em;
-  color: #2a0b1c;
-  background: linear-gradient(180deg, #ff9ed2 0%, #e453a3 100%);
-  border: 1px solid #ffb8dc;
-  box-shadow: 2px 2px 0 #000, inset 0 1px 0 rgba(255, 240, 247, 0.55);
+  color: #ff9ed2;
+  background: rgba(228, 83, 163, 0.08);
+  border: 1px solid rgba(228, 83, 163, 0.7);
   cursor: pointer;
-  transition: filter 140ms ease, transform 140ms ease;
+}
+
+.control:focus-visible {
+  outline-color: #fff0f7;
 }
 
 .control:hover {
-  filter: brightness(1.12);
+  color: #fff0f7;
+  background: rgba(228, 83, 163, 0.2);
 }
 
 .control:active {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 #000, inset 0 1px 0 rgba(255, 240, 247, 0.55);
+  background: rgba(228, 83, 163, 0.28);
 }
 
 .hint {
-  font-size: 0.32rem;
+  font-size: 0.34rem;
   line-height: 1.6;
   color: #f0b8d8;
-  opacity: 0.8;
-  text-align: center;
+  opacity: 0.75;
 }
 
 @media (max-width: 600px) {
@@ -488,26 +445,18 @@
   }
 
   .panel {
-    width: min(320px, calc(100vw - 24px));
-    padding: 14px;
-    gap: 14px;
+    width: min(300px, calc(100vw - 24px));
+    padding: 10px;
+    gap: 10px;
     margin-bottom: 8px;
   }
 
-  .trackInfo {
-    padding: 12px;
-  }
-
   .track {
-    font-size: 0.5rem;
+    font-size: 0.46rem;
   }
 
   .artist {
     font-size: 0.32rem;
-  }
-
-  .controls {
-    gap: 14px;
   }
 
   .hint {
@@ -528,9 +477,10 @@
     transition: none;
   }
 
-  .slider::-webkit-slider-thumb,
-  .slider::-moz-range-thumb,
-  .control {
+  .seek::-webkit-slider-thumb,
+  .seek::-moz-range-thumb,
+  .volumeRow input::-webkit-slider-thumb,
+  .volumeRow input::-moz-range-thumb {
     transition: none;
   }
 }
