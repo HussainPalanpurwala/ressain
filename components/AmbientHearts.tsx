@@ -5,11 +5,12 @@ import PixelHeart from "./PixelHeart";
 
 const HEART_COUNT = 12;
 const SMALL_HEARTS = 4;
-const SLOT_COUNT = 16;
 const COLORS = ["#E453A3", "#F0254B", "#FF8FC7"];
 
+// The landing's text block sits in the middle. Hearts are never placed here.
+const TEXT_ZONE = { left: 18, right: 82, top: 24, bottom: 72 };
+
 type Heart = {
-  slot: number;
   left: number;
   top: number;
   small: boolean;
@@ -21,6 +22,9 @@ type Heart = {
   color: string;
 };
 
+type Point = { x: number; y: number };
+type Rect = { left: number; right: number; top: number; bottom: number };
+
 function seededRandom(seed: number) {
   let a = seed >>> 0;
   return () => {
@@ -31,28 +35,28 @@ function seededRandom(seed: number) {
   };
 }
 
-// A point in the free area, kept away from existing points and the title zone.
-function scatter(rand: () => number, occupied: { x: number; y: number }[]) {
-  const MIN_GAP = 10;
-  const ASPECT = 1.25;
-  const inTitleZone = (x: number, y: number) => {
-    const dx = (x - 50) / 33;
-    const dy = (y - 47) / 29;
-    return dx * dx + dy * dy < 1;
-  };
+const inRect = (x: number, y: number, r: Rect, pad = 0) =>
+  x > r.left - pad && x < r.right + pad && y > r.top - pad && y < r.bottom + pad;
 
-  let best = { x: 50, y: 50 };
+// Find a random free spot: outside the text, clear of every existing heart,
+// and above the landing's bottom seam. Never falls back to a crowded point
+// unless the viewport is genuinely too small to fit them all.
+function findSpot(rand: () => number, occupied: Point[], rects: Rect[]): Point {
+  const MIN_GAP = 13;
+  let best: Point = { x: 50, y: 50 };
   let bestGap = -1;
-  for (let attempt = 0; attempt < 400; attempt += 1) {
+
+  for (let attempt = 0; attempt < 600; attempt += 1) {
     const x = 3 + rand() * 94;
-    // Stop above the landing's seam fade so hearts stay visible.
-    const y = 6 + rand() * 88;
-    if (inTitleZone(x, y)) continue;
+    const y = 5 + rand() * 83;
+    if (inRect(x, y, TEXT_ZONE)) continue;
+    if (rects.some((r) => inRect(x, y, r, 3))) continue;
+
     const gap =
       occupied.length === 0
         ? Infinity
         : Math.min(
-            ...occupied.map((p) => Math.hypot((p.x - x) * ASPECT, p.y - y))
+            ...occupied.map((p) => Math.hypot((p.x - x) * 1.2, p.y - y))
           );
     if (gap > bestGap) {
       bestGap = gap;
@@ -63,33 +67,13 @@ function scatter(rand: () => number, occupied: { x: number; y: number }[]) {
   return best;
 }
 
-// A fixed set of well-separated spots. Hearts only ever occupy these, and
-// respawn into a DIFFERENT free one, so they can never bunch up in one place.
-const SLOTS: { x: number; y: number }[] = (() => {
-  const rand = seededRandom(11);
-  const points: { x: number; y: number }[] = [];
-  for (let i = 0; i < SLOT_COUNT; i += 1) {
-    points.push(scatter(rand, points));
-  }
-  return points;
-})();
-
-function makeHeart(
-  slot: number,
-  fresh: boolean,
-  small: boolean,
-  rand: () => number
-): Heart {
-  const { x, y } = SLOTS[slot];
+function makeHeart(rand: () => number, spot: Point, small: boolean, fresh: boolean): Heart {
   return {
-    slot,
-    left: x,
-    top: y,
+    left: spot.x,
+    top: spot.y,
     small,
     size: small ? 9 + rand() * 9 : 20 + rand() * 34,
     duration: (7 + rand() * 7) * 1.4,
-    // Only the initial field is staggered; respawns keep their timing so the
-    // animation never restarts mid-cycle.
     delay: fresh ? -(rand() * 14) : 0,
     rot: (rand() * 2 - 1) * 20,
     opacity: 0.35 + rand() * 0.45,
@@ -97,14 +81,36 @@ function makeHeart(
   };
 }
 
-// Deterministic initial field for SSR-safe hydration.
+// Deterministic first paint (SSR-safe). Later respawns use live text rects.
 const INITIAL_HEARTS: Heart[] = (() => {
-  const rand = seededRandom(27);
-  const slots = SLOTS.map((_, i) => i).sort(() => rand() - 0.5);
-  return Array.from({ length: HEART_COUNT }, (_, i) =>
-    makeHeart(slots[i], true, i < SMALL_HEARTS, rand)
-  );
+  const rand = seededRandom(11);
+  const occupied: Point[] = [];
+  return Array.from({ length: HEART_COUNT }, (_, index) => {
+    const spot = findSpot(rand, occupied, []);
+    occupied.push(spot);
+    return makeHeart(rand, spot, index < SMALL_HEARTS, true);
+  });
 })();
+
+// Measure the actual text on screen so respawns can avoid it precisely.
+function textRects(): Rect[] {
+  if (typeof window === "undefined") return [];
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  return Array.from(
+    document.querySelectorAll(
+      ".landing__title-wrap, .landing__subtitle, .landing__scroll"
+    )
+  ).map((el) => {
+    const r = el.getBoundingClientRect();
+    return {
+      left: (r.left / vw) * 100,
+      right: (r.right / vw) * 100,
+      top: (r.top / vh) * 100,
+      bottom: (r.bottom / vh) * 100,
+    };
+  });
+}
 
 type HeartStyle = CSSProperties & {
   "--left": string;
@@ -120,17 +126,22 @@ type HeartStyle = CSSProperties & {
 export default function AmbientHearts() {
   const [hearts, setHearts] = useState<Heart[]>(INITIAL_HEARTS);
 
-  // Called at the end of each animation loop, when opacity is exactly 0, so
-  // the move is invisible. Pick a different free slot to guarantee an even,
-  // ever-changing spread instead of hearts revisiting the same area.
+  // Fires at the end of each loop, when opacity is exactly 0 — the new random
+  // position appears invisibly, so there is no jump. The text and the other
+  // hearts are measured fresh each time to prevent any overlap.
   const reroll = useCallback((index: number) => {
     setHearts((prev) => {
-      const used = new Set(prev.filter((_, i) => i !== index).map((h) => h.slot));
-      const free = SLOTS.map((_, i) => i).filter((i) => !used.has(i));
-      if (free.length === 0) return prev;
-      const nextSlot = free[Math.floor(Math.random() * free.length)];
+      const rects = textRects();
+      const occupied = prev
+        .filter((_, i) => i !== index)
+        .map((h) => ({ x: h.left, y: h.top }));
       const current = prev[index];
-      const next = makeHeart(nextSlot, false, current.small, Math.random);
+      const next = makeHeart(
+        Math.random,
+        findSpot(Math.random, occupied, rects),
+        current.small,
+        false
+      );
       return prev.map((heart, i) =>
         i === index
           ? { ...next, duration: heart.duration, delay: heart.delay }

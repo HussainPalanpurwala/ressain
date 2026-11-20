@@ -497,18 +497,18 @@ body {
   overflow: hidden;
   pointer-events: none;
   opacity: var(--scroll-fade, 1);
-  /* Only the title area is masked out. Everything below it — including the
-     band beneath "Scroll to continue" — stays fully visible. */
+  /* Safety veil over the title only. Hearts are already placed away from all
+     text in JS; this just guarantees none ever shows through the heading. */
   -webkit-mask-image: radial-gradient(
-    ellipse 42% 30% at 50% 38%,
+    ellipse 32% 22% at 50% 40%,
     transparent 0%,
-    transparent 60%,
+    transparent 55%,
     #000000 100%
   );
   mask-image: radial-gradient(
-    ellipse 42% 30% at 50% 38%,
+    ellipse 32% 22% at 50% 40%,
     transparent 0%,
-    transparent 60%,
+    transparent 55%,
     #000000 100%
   );
 }
