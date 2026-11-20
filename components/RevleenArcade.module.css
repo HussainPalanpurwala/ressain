@@ -17,7 +17,7 @@
 
   position: relative;
   isolation: isolate;
-  padding: clamp(3rem, 9vh, 7rem) clamp(0.85rem, 4vw, 3rem);
+  padding: clamp(2rem, 6vh, 5rem) clamp(0.85rem, 4vw, 3rem);
   overflow: hidden;
   color: var(--cream);
   font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
@@ -68,7 +68,7 @@
 .inner {
   position: relative;
   z-index: 1;
-  width: min(100%, 800px);
+  width: min(100%, 1080px);
   margin: 0 auto;
 }
 
@@ -102,15 +102,16 @@
 }
 
 /* The cabinet FACE is the 3D element: its outer left and right edges taper
-   slightly outward toward the base, like a real vintage cabinet shell. This
+   clearly outward toward the base, like a real vintage cabinet shell. This
    replaces the inner slanted rails, so the glass opening stays clean. Inset
-   rings/shadows live here so they survive the clip. */
+   rings/shadows live here so they survive the clip. The parent keeps its
+   drop-shadow filter so the tapered silhouette still casts a shadow. */
 .cabinet::before {
   content: "";
   position: absolute;
   z-index: -1;
   inset: 0;
-  clip-path: polygon(1.6% 0, 98.4% 0, 100% 100%, 0 100%);
+  clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
   background-color: #2c0a18;
   background-image:
     /* Crisp light catch along the very top edge. */
@@ -155,6 +156,11 @@
 /* ---------- Marquee ---------- */
 .marqueeHousing {
   position: relative;
+  /* The marquee sits at the narrow end of the cabinet's taper, so inset it
+     to stay inside the clipped face instead of overhanging its top corners. */
+  width: 86%;
+  margin-left: auto;
+  margin-right: auto;
   margin-bottom: clamp(8px, 1.8vw, 14px);
   padding: clamp(0.7rem, 2vw, 1.1rem) clamp(0.5rem, 2vw, 1rem)
     clamp(0.55rem, 1.6vw, 0.9rem);
@@ -318,15 +324,67 @@
     0 12px 20px rgba(0, 0, 0, 0.55);
 }
 
-/* No inner rails/poles here: the bezel's depth comes only from its recess
-   gradient and inset shadows, and the 3D slant lives on the cabinet's outer
-   frame (see .cabinet and .sideArt). This keeps the glass opening clean. */
+/* The bezel's depth comes from its recess gradient and inset shadows, and the
+   3D slant lives on the cabinet's outer frame (see .cabinet and .sideArt).
+   The only additions here are the two hinged glass doors below. */
+
+/* Open-door effect: two slim hinged panels flank the screen opening and angle
+   out toward the viewer, like a cabinet whose glass doors have swung open.
+   Decorative only — pointer-events are off, they sit above the bezel but below
+   the quiz content (content is z-index 2), and they stay inside the bezel so
+   they never add horizontal overflow. */
+.screenBezel::before,
+.screenBezel::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: clamp(12px, 2.5vw, 22px);
+  bottom: clamp(14px, 3vw, 26px);
+  width: clamp(18px, 3.5vw, 34px);
+  pointer-events: none;
+  border: 1px solid rgba(233, 166, 187, 0.22);
+}
+
+.screenBezel::before {
+  left: clamp(4px, 1.2vw, 12px);
+  transform-origin: left center;
+  transform: perspective(420px) rotateY(-34deg);
+  border-radius: 7px 3px 3px 7px;
+  background:
+    /* Bright hinge catching the light along the outer edge. */
+    linear-gradient(90deg, rgba(255, 240, 220, 0.35) 0%, rgba(246, 203, 214, 0.08) 10%, transparent 26%),
+    linear-gradient(90deg, #5a1730 0%, #2e0b1a 55%, #120510 100%);
+  box-shadow:
+    inset 3px 0 6px rgba(255, 240, 220, 0.18),
+    inset -8px 0 14px rgba(0, 0, 0, 0.75),
+    inset 0 0 0 1px rgba(233, 166, 187, 0.14),
+    4px 0 12px rgba(0, 0, 0, 0.55);
+}
+
+.screenBezel::after {
+  right: clamp(4px, 1.2vw, 12px);
+  transform-origin: right center;
+  transform: perspective(420px) rotateY(34deg);
+  border-radius: 3px 7px 7px 3px;
+  background:
+    linear-gradient(270deg, rgba(255, 240, 220, 0.35) 0%, rgba(246, 203, 214, 0.08) 10%, transparent 26%),
+    linear-gradient(270deg, #5a1730 0%, #2e0b1a 55%, #120510 100%);
+  box-shadow:
+    inset -3px 0 6px rgba(255, 240, 220, 0.18),
+    inset 8px 0 14px rgba(0, 0, 0, 0.75),
+    inset 0 0 0 1px rgba(233, 166, 187, 0.14),
+    -4px 0 12px rgba(0, 0, 0, 0.55);
+}
 
 .screen {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: clamp(340px, 50vh, 500px);
+  /* Height follows the content so every control — Next question, stage
+     transitions, results and Exit Game — stays reachable. The arcade never
+     needs to scroll internally; the page scrolls between sections instead. */
+  height: auto;
+  min-height: clamp(320px, 46vh, 560px);
   min-width: 0;
   overflow: hidden;
   color: var(--cream);
@@ -383,7 +441,7 @@
   justify-content: space-between;
   gap: 0.5rem 1rem;
   flex-wrap: wrap;
-  padding: 0.55rem clamp(0.7rem, 2.2vw, 1.3rem);
+  padding: 0.45rem clamp(0.7rem, 2.2vw, 1.3rem);
   background: rgba(11, 4, 9, 0.7);
   border-bottom: 1px solid rgba(233, 166, 187, 0.28);
 }
@@ -408,19 +466,10 @@
   position: relative;
   z-index: 2;
   flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: clamp(1rem, 3.5vw, 2rem);
-  scrollbar-width: thin;
-  scrollbar-color: var(--pink-dim) transparent;
-}
-
-.screenMain::-webkit-scrollbar { width: 8px; }
-.screenMain::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
-.screenMain::-webkit-scrollbar-thumb {
-  background: var(--pink-dim);
-  border: 1px solid #000;
+  /* The screen grows to fit its content, so no inner scrollbars are needed.
+     Keep overflow visible so no button is ever clipped or out of reach. */
+  overflow: visible;
+  padding: clamp(0.7rem, 2vw, 1.25rem);
 }
 
 /* Curved glass reflection: a soft barrel sheen over the diagonal glare. */
@@ -1113,7 +1162,7 @@
   justify-content: space-between;
   gap: 0.6rem 1rem;
   flex-wrap: wrap;
-  padding-bottom: clamp(0.6rem, 2vh, 1rem);
+  padding-bottom: clamp(0.4rem, 1.2vh, 0.65rem);
   border-bottom: 2px dashed rgba(233, 166, 187, 0.4);
 }
 
@@ -1146,7 +1195,7 @@
 .progressTrack {
   width: 100%;
   height: 12px;
-  margin: clamp(0.7rem, 2vh, 1rem) 0;
+  margin: clamp(0.45rem, 1.2vh, 0.7rem) 0;
   background: rgba(11, 4, 9, 0.7);
   border: 2px solid var(--pink-dim);
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.8);
@@ -1164,7 +1213,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: clamp(0.8rem, 2.5vh, 1.2rem);
+  margin-bottom: clamp(0.5rem, 1.5vh, 0.8rem);
 }
 
 .catChip {
@@ -1193,10 +1242,10 @@
 }
 
 .questionText {
-  margin: 0 0 clamp(0.8rem, 2.5vh, 1.2rem);
-  font-size: clamp(0.95rem, 2.8vw, 1.3rem);
+  margin: 0 0 clamp(0.5rem, 1.5vh, 0.85rem);
+  font-size: clamp(0.9rem, 2.4vw, 1.15rem);
   font-weight: 600;
-  line-height: 1.5;
+  line-height: 1.42;
   color: var(--cream);
   text-shadow: 2px 2px 0 #000;
   overflow-wrap: anywhere;
@@ -1205,7 +1254,7 @@
 .options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(0.5rem, 1.8vw, 0.85rem);
+  gap: clamp(0.45rem, 1.4vw, 0.7rem);
 }
 
 .option {
@@ -1214,8 +1263,8 @@
   align-items: center;
   gap: clamp(0.5rem, 1.6vw, 0.8rem);
   min-width: 0;
-  min-height: 56px;
-  padding: clamp(0.5rem, 1.6vw, 0.8rem);
+  min-height: 50px;
+  padding: clamp(0.45rem, 1.4vw, 0.7rem);
   text-align: left;
   color: var(--cream);
   background: linear-gradient(160deg, #4a1230 0%, #2a0a18 100%);
@@ -1297,7 +1346,7 @@
 
 .feedback {
   min-height: 1.5em;
-  margin: clamp(0.7rem, 2vh, 1rem) 0 0;
+  margin: clamp(0.45rem, 1.2vh, 0.7rem) 0 0;
   text-align: center;
   font-family: "Press Start 2P", monospace;
   font-size: clamp(0.42rem, 1.3vw, 0.6rem);
@@ -1316,7 +1365,7 @@
 .nextRow {
   display: flex;
   justify-content: center;
-  margin-top: clamp(0.8rem, 2.5vh, 1.2rem);
+  margin-top: clamp(0.5rem, 1.5vh, 0.85rem);
 }
 
 /* Small, unobtrusive exit affordance during gameplay. It reuses the
@@ -1324,7 +1373,7 @@
 .exitRow {
   display: flex;
   justify-content: center;
-  margin-top: clamp(0.5rem, 1.5vh, 0.85rem);
+  margin-top: clamp(0.35rem, 1vh, 0.55rem);
 }
 
 .exitButton {
@@ -1472,7 +1521,9 @@
   .screenBezel { --screen-tilt: 6deg; }
   .controlsDecor { display: none; }
   .controlPanel { justify-content: space-between; }
-  .screen { height: clamp(360px, 56vh, 520px); }
+  /* Grow with content on small screens too — never trap controls behind an
+     inner scrollbar. The page can scroll between sections instead. */
+  .screen { min-height: clamp(340px, 52vh, 520px); }
   .flavourFood .factList,
   .flavourWorld .factList,
   .flavourFlowers .factList { grid-template-columns: 1fr; }
