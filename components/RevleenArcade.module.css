@@ -88,11 +88,22 @@
    CABINET
    ============================================================ */
 .cabinet {
+  position: relative;
   width: 100%;
   margin: 0 auto;
   padding: clamp(8px, 1.8vw, 14px);
   background-color: #2c0a18;
   background-image:
+    /* Crisp light catch along the very top edge. */
+    linear-gradient(to bottom, rgba(255, 240, 220, 0.12) 0%, transparent 5%),
+    /* Edge bevels: darker at the sides so the front face reads as inset. */
+    linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.4) 0%,
+      transparent 6%,
+      transparent 94%,
+      rgba(0, 0, 0, 0.45) 100%
+    ),
     repeating-linear-gradient(
       135deg,
       rgba(255, 240, 220, 0.028) 0 2px,
@@ -101,10 +112,31 @@
     linear-gradient(160deg, #4a1028 0%, #2c0a18 42%, #160610 100%);
   border: 3px solid #170610;
   box-shadow:
+    /* Inner bevel + top highlight. */
+    inset 0 2px 0 rgba(255, 240, 220, 0.16),
+    inset 0 0 0 1px rgba(233, 166, 187, 0.1),
+    inset 4px 4px 10px rgba(0, 0, 0, 0.55),
+    inset -4px -6px 12px rgba(0, 0, 0, 0.6),
+    /* Original cabinet outline rings. */
     0 0 0 3px var(--red),
     0 0 0 6px #170610,
     10px 12px 0 rgba(0, 0, 0, 0.55),
+    /* Deeper cast shadow for lift off the page. */
+    18px 24px 40px rgba(0, 0, 0, 0.65),
     0 0 50px rgba(233, 166, 187, 0.16);
+}
+
+/* Recessed, shadowed plinth along the bottom of the cabinet. */
+.cabinet::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 2px;
+  height: clamp(4px, 1vw, 6px);
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.85));
+  box-shadow: inset 0 1px 0 rgba(233, 166, 187, 0.09);
 }
 
 /* ---------- Marquee ---------- */
@@ -116,10 +148,16 @@
   text-align: center;
   background: linear-gradient(180deg, #7a1f3f 0%, var(--wine) 55%, #3b0f22 100%);
   border: 2px solid #170610;
+  /* The illuminated sign leans back a few degrees for a lit-marquee depth.
+     Self-contained perspective keeps this independent of the flex layout. */
+  transform: perspective(900px) rotateX(6deg);
+  transform-origin: center bottom;
   box-shadow:
+    inset 0 2px 0 rgba(255, 240, 220, 0.22),
     inset 0 0 0 2px rgba(246, 203, 214, 0.28),
-    inset 0 -8px 18px rgba(0, 0, 0, 0.45),
-    0 3px 0 rgba(0, 0, 0, 0.5);
+    inset 0 -10px 22px rgba(0, 0, 0, 0.55),
+    0 4px 0 rgba(0, 0, 0, 0.55),
+    0 8px 14px rgba(0, 0, 0, 0.5);
 }
 
 .marqueeLights {
@@ -191,9 +229,30 @@
   padding: 0.6rem 0;
   font-size: clamp(0.55rem, 1.6vw, 0.85rem);
   color: var(--pink);
-  background: linear-gradient(180deg, #5a1730 0%, #2a0a18 100%);
+  background: linear-gradient(
+    90deg,
+    #1c0710 0%,
+    #5a1730 45%,
+    #6b1b39 55%,
+    #2a0a18 100%
+  );
   border: 2px solid #170610;
   text-shadow: 1px 1px 0 #000;
+  box-shadow:
+    inset 0 0 0 1px rgba(246, 203, 214, 0.1),
+    inset 0 0 12px rgba(0, 0, 0, 0.55);
+}
+
+/* The side walls angle gently toward the screen so the display reads as
+   recessed between them. Transforms don't affect flex sizing or flow. */
+.sideArt:first-child {
+  transform: perspective(700px) rotateY(20deg);
+  transform-origin: left center;
+}
+
+.sideArt:last-child {
+  transform: perspective(700px) rotateY(-20deg);
+  transform-origin: right center;
 }
 
 /* ---------- Screen ---------- */
@@ -201,11 +260,12 @@
   flex: 1 1 auto;
   min-width: 0;
   padding: clamp(8px, 2vw, 18px);
-  background: linear-gradient(160deg, #260b18, #12050e);
+  background: linear-gradient(160deg, #2c0e1b, #100409);
   border: 3px solid #0d040a;
   box-shadow:
+    inset 0 2px 0 rgba(255, 240, 220, 0.1),
     inset 0 0 0 2px rgba(233, 166, 187, 0.18),
-    inset 0 0 26px rgba(0, 0, 0, 0.85);
+    inset 0 0 34px rgba(0, 0, 0, 0.9);
 }
 
 .screen {
@@ -225,6 +285,26 @@
   box-shadow:
     inset 0 0 34px rgba(0, 0, 0, 0.9),
     inset 0 0 0 2px rgba(246, 203, 214, 0.08);
+}
+
+/* Screen-door effect: a fine perforated-mesh dot grid sitting above the
+   screen background but below the z-index:2 text/content, so readability is
+   untouched. Purely decorative and non-interactive. */
+.screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  background-image: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0.55) 0,
+    rgba(0, 0, 0, 0.3) 0.7px,
+    rgba(0, 0, 0, 0) 1.3px
+  );
+  background-size: 3px 3px;
+  opacity: 0.45;
 }
 
 .screenTop {
