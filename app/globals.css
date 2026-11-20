@@ -493,6 +493,9 @@ body {
   overflow: hidden;
   pointer-events: none;
   opacity: var(--scroll-fade, 1);
+  /* Intro fade hides the first-few-seconds repositioning (safety passes +
+     early rerolls from staggered delays) without touching per-heart timing. */
+  animation: ambientHeartsIntro 2.5s ease-out;
   -webkit-mask-image: radial-gradient(
     ellipse 46% 42% at 50% 50%,
     transparent 0%,
@@ -542,6 +545,17 @@ body {
     opacity: 0;
     transform: scale(1.05) rotate(var(--rot));
     filter: drop-shadow(0 0 4px currentColor);
+  }
+}
+
+/* Keeps hearts invisible until the last startup reposition (the 1.5s timer
+   pass), then fades the container in. No per-heart animation is altered. */
+@keyframes ambientHeartsIntro {
+  0%, 60% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
@@ -865,6 +879,7 @@ body {
   .boot-heart,
   .boot__message,
   .boot__caret,
+  .ambient-hearts,
   .ambient-heart,
   .landing__title-wrap,
   .landing__subtitle,
