@@ -257,15 +257,84 @@
 
 /* ---------- Screen ---------- */
 .screenBezel {
+  /* Vintage CRT tilt: the whole screen panel leans back so its top edge
+     recedes toward the vanishing point, like a real arcade cabinet's glass.
+     The inner screen/content stays flat ON this plane, so every quiz label,
+     button and scroll interaction remains crisp and clickable. */
+  --screen-tilt: 11deg;
+  --screen-perspective: 1100px;
+
+  position: relative;
   flex: 1 1 auto;
   min-width: 0;
-  padding: clamp(8px, 2vw, 18px);
-  background: linear-gradient(160deg, #2c0e1b, #100409);
+  /* Deeper padding reads as a chunkier moulded bezel around the glass. */
+  padding: clamp(12px, 2.8vw, 24px) clamp(12px, 2.8vw, 24px)
+    clamp(14px, 3vw, 26px);
+  transform: perspective(var(--screen-perspective)) rotateX(var(--screen-tilt));
+  transform-origin: center bottom;
+  background-color: #1a0710;
+  background-image:
+    /* Light catching the top lip of the bezel. */
+    linear-gradient(to bottom, rgba(255, 240, 220, 0.16) 0%, transparent 7%),
+    /* Burgundy side rails shading in toward the recessed screen. */
+    linear-gradient(
+      90deg,
+      #43132a 0%,
+      #260c1a 9%,
+      #1a0710 50%,
+      #260c1a 91%,
+      #43132a 100%
+    );
   border: 3px solid #0d040a;
+  border-radius: 10px 10px 4px 4px;
   box-shadow:
-    inset 0 2px 0 rgba(255, 240, 220, 0.1),
-    inset 0 0 0 2px rgba(233, 166, 187, 0.18),
-    inset 0 0 34px rgba(0, 0, 0, 0.9);
+    /* Highlight along the top edge, deep shadow along the bottom. */
+    inset 0 3px 0 rgba(255, 240, 220, 0.24),
+    inset 0 -10px 18px rgba(0, 0, 0, 0.85),
+    inset 6px 0 12px rgba(0, 0, 0, 0.55),
+    inset -6px 0 12px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 2px rgba(233, 166, 187, 0.2),
+    0 10px 18px rgba(0, 0, 0, 0.5);
+}
+
+/* Tapered side rails: solid bevels that angle inward toward the bottom,
+   framing the glass and finishing the cabinet's slanted silhouette. They
+   sit in the bezel padding and are non-interactive. */
+.screenBezel::before,
+.screenBezel::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  width: clamp(12px, 3vw, 26px);
+  pointer-events: none;
+}
+
+.screenBezel::before {
+  left: 0;
+  clip-path: polygon(0 0, 100% 0, 58% 100%, 0 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(11, 4, 9, 0.9) 0%,
+    rgba(90, 23, 48, 0.85) 42%,
+    rgba(246, 203, 214, 0.22) 74%,
+    rgba(11, 4, 9, 0.8) 100%
+  );
+  box-shadow: inset 0 2px 0 rgba(255, 240, 220, 0.14);
+}
+
+.screenBezel::after {
+  right: 0;
+  clip-path: polygon(100% 0, 0 0, 42% 100%, 100% 100%);
+  background: linear-gradient(
+    270deg,
+    rgba(11, 4, 9, 0.9) 0%,
+    rgba(90, 23, 48, 0.85) 42%,
+    rgba(246, 203, 214, 0.22) 74%,
+    rgba(11, 4, 9, 0.8) 100%
+  );
+  box-shadow: inset 0 2px 0 rgba(255, 240, 220, 0.14);
 }
 
 .screen {
@@ -283,6 +352,9 @@
   border: 2px solid #000;
   border-radius: 14px / 10px;
   box-shadow:
+    /* Subtle glass bevel: bright top lip, darkened lower edge. */
+    inset 0 3px 0 rgba(255, 240, 220, 0.12),
+    inset 0 -8px 16px rgba(0, 0, 0, 0.7),
     inset 0 0 34px rgba(0, 0, 0, 0.9),
     inset 0 0 0 2px rgba(246, 203, 214, 0.08);
 }
@@ -1381,6 +1453,12 @@
    RESPONSIVE
    ============================================================ */
 @media (max-width: 720px) {
+  /* Ease the tilt on narrow screens so text stays large and legible while
+     the cabinet keeps its reclined vintage posture. */
+  .screenBezel {
+    --screen-tilt: 8deg;
+    --screen-perspective: 900px;
+  }
   .sideArt { display: none; }
   .categoryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .flavourFlowers .factList { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1389,6 +1467,7 @@
 
 @media (max-width: 520px) {
   .section { padding-left: 0.75rem; padding-right: 0.75rem; }
+  .screenBezel { --screen-tilt: 6deg; }
   .controlsDecor { display: none; }
   .controlPanel { justify-content: space-between; }
   .screen { height: clamp(360px, 56vh, 520px); }

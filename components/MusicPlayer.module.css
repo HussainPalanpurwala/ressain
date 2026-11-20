@@ -244,34 +244,41 @@
   fill: #2a0b1c;
 }
 
-/* Track info: the label, title and artist each get their own comfortable
-   line so nothing feels cramped. */
+/* Track info: a calm, two-tier hierarchy. The eyebrow sits above a subtle
+   divider; the title stays prominent while the artist is tucked closely
+   beneath it. Spacing is set with margins so the gaps aren't all uniform. */
 .meta {
   display: flex;
   flex-direction: column;
-  gap: 8px;
   min-width: 0;
 }
 
 .label {
-  font-size: 0.34rem;
-  letter-spacing: 0.12em;
-  color: #ff9ed2;
+  display: block;
+  padding-bottom: 7px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(228, 83, 163, 0.28);
+  font-size: 0.3rem;
+  letter-spacing: 0.2em;
+  color: #e453a3;
 }
 
 .track {
-  font-size: 0.54rem;
-  line-height: 1.6;
+  font-size: 0.56rem;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
   color: #fff0f7;
-  text-shadow: 2px 2px 0 #000;
+  text-shadow: 1px 1px 0 #000;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .artist {
-  font-size: 0.36rem;
-  line-height: 1.6;
+  margin-top: 5px;
+  font-size: 0.34rem;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
   color: #f0b8d8;
   white-space: nowrap;
   overflow: hidden;
@@ -451,11 +458,17 @@
     margin-bottom: 8px;
   }
 
+  .label {
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+  }
+
   .track {
     font-size: 0.46rem;
   }
 
   .artist {
+    margin-top: 4px;
     font-size: 0.32rem;
   }
 
