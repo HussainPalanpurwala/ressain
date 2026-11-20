@@ -1,15 +1,14 @@
 .grid {
   position: absolute;
-  /* Pin the canvas exactly to the timer section's own box. The section only
-     clips horizontally (overflow-x: clip), so an over-tall canvas could spill
-     its still-visible lines into the bottom padding — the same band Our Story's
-     blend strip overlaps — and read as grid bleeding onto that section. With
-     top/height locked to the section box, no grid pixel can ever leave it on
-     any viewport, desktop or mobile. */
-  top: 0;
+  /* Extend the canvas two grid rows (2 × 42px spacing = 84px) ABOVE the timer
+     section. Those two extra rows are drawn by the same loop and are absorbed
+     by the top of the mask, so they fade in gently instead of stopping at a
+     hard edge. The section only clips horizontally, so the overhang is visible;
+     the bottom stays pinned to the section box and never bleeds into Our Story. */
+  top: -84px;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% + 84px);
   /* Above the section's z-index:0 decorative layers (scanlines, blend strip,
      stretched hearts, pixel deco) but below the z-index:1 console content. */
   z-index: 1;
