@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import PixelHeart from "./PixelHeart";
 
@@ -76,79 +75,11 @@ function initialHearts(): Heart[] {
   return pool.slice(0, HEART_COUNT).map((cell) => makeHeart(cell, rand, true));
 }
 
-function protectedRects() {
-  return Array.from(
-    document.querySelectorAll(
-      ".landing__heart, .landing__title-wrap, .landing__subtitle, .landing__scroll"
-    )
-  ).map((el) => el.getBoundingClientRect());
-}
-
-function isSafe(x: number, y: number, rects: DOMRect[]): boolean {
-  return rects.every((r) => {
-    // Distance from the heart centre to the nearest edge of the protected
-    // element. 24 = largest heart half-size, plus room for the gentle floating
-    // motion of the text / permanent hearts.
-    const dx = Math.max(r.left - x, 0, x - r.right);
-    const dy = Math.max(r.top - y, 0, y - r.bottom);
-    return Math.hypot(dx, dy) > 36;
-  });
-}
-
-function heartPoint(heart: Heart) {
-  return {
-    x: (heart.left / 100) * window.innerWidth,
-    y: (heart.top / 100) * window.innerHeight,
-  };
-}
-
-function pickSafeCell(
-  free: number[],
-  rects: DOMRect[],
-  occupied: { x: number; y: number }[]
-): { cell: number; pos: { left: number; top: number } } {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const shuffled = [...free].sort(() => Math.random() - 0.5);
-
-  for (const cell of shuffled) {
-    const pos = cellPosition(cell, Math.random);
-    const x = (pos.left / 100) * vw;
-    const y = (pos.top / 100) * vh;
-    const clearOfHearts = occupied.every(
-      (o) => Math.hypot(x - o.x, y - o.y) > 90
-    );
-    if (isSafe(x, y, rects) && clearOfHearts) return { cell, pos };
-  }
-  const fallback = shuffled[0];
-  return { cell: fallback, pos: cellPosition(fallback, Math.random) };
-}
-
-function safetyPass(prev: Heart[], rects: DOMRect[]): Heart[] {
-  const next = [...prev];
-  for (let pass = 0; pass < 3; pass += 1) {
-    for (let i = 0; i < next.length; i += 1) {
-      const point = heartPoint(next[i]);
-      const occupied = next.filter((_, j) => j !== i).map(heartPoint);
-      const clear =
-        isSafe(point.x, point.y, rects) &&
-        occupied.every(
-          (o) => Math.hypot(point.x - o.x, point.y - o.y) > 90
-        );
-      if (clear) continue;
-      const used = new Set(next.map((h) => h.cell));
-      const free = CELLS.filter((cell) => !used.has(cell));
-      if (!free.length) continue;
-      const { cell, pos } = pickSafeCell(free, rects, occupied);
-      next[i] = {
-        ...makeHeart(cell, Math.random, false),
-        ...pos,
-        duration: next[i].duration,
-      };
-    }
-  }
-  return next;
-}
+// The 20 hearts are generated exactly once at module load with the seeded
+// (deterministic, SSR-safe) PRNG. Their cells and inline CSS variables never
+// change at runtime; the CSS ambientGlow animation alone drives the looping
+// appear / float / glow / fade behaviour.
+const HEARTS: Heart[] = initialHearts();
 
 type HeartStyle = CSSProperties & {
   "--left": string;
@@ -162,58 +93,12 @@ type HeartStyle = CSSProperties & {
 };
 
 export default function AmbientHearts() {
-  const [hearts, setHearts] = useState<Heart[]>(initialHearts);
-  const mounted = useRef(false);
-
-  useEffect(() => {
-    mounted.current = true;
-
-    const run = () => {
-      if (mounted.current) {
-        setHearts((prev) => safetyPass(prev, protectedRects()));
-      }
-    };
-
-    run();
-    // The pixel font loads after mount and can resize the text, so re-check
-    // once fonts are ready and again shortly after.
-    document.fonts?.ready.then(run);
-    const timer = window.setTimeout(run, 1500);
-
-    return () => {
-      mounted.current = false;
-      window.clearTimeout(timer);
-    };
-  }, []);
-
-  // Each cycle: move this heart into a free, non-overlapping cell.
-  const reroll = (index: number) => {
-    if (!mounted.current) return;
-    setHearts((prev) => {
-      const used = new Set(prev.filter((_, i) => i !== index).map((h) => h.cell));
-      const free = CELLS.filter((cell) => !used.has(cell));
-      if (free.length === 0) return prev;
-      const occupied = prev.filter((_, i) => i !== index).map(heartPoint);
-      const { cell, pos } = pickSafeCell(free, protectedRects(), occupied);
-      return prev.map((heart, i) =>
-        i === index
-          ? {
-              ...makeHeart(cell, Math.random, false),
-              ...pos,
-              duration: heart.duration,
-            }
-          : heart
-      );
-    });
-  };
-
   return (
     <div className="ambient-hearts" aria-hidden="true">
-      {hearts.map((heart, index) => (
+      {HEARTS.map((heart, index) => (
         <span
           key={index}
           className="ambient-heart"
-          onAnimationIteration={() => reroll(index)}
           style={
             {
               "--left": `${heart.left.toFixed(2)}%`,
