@@ -3,8 +3,8 @@
 import { useCallback, useState, type CSSProperties } from "react";
 import PixelHeart from "./PixelHeart";
 
-const HEART_COUNT = 9;
-const SMALL_HEARTS = 3;
+const HEART_COUNT = 12;
+const SMALL_HEARTS = 4;
 const COLORS = ["#E453A3", "#F0254B", "#FF8FC7"];
 
 // The landing's text block sits in the middle. Hearts are never placed here.
@@ -73,7 +73,7 @@ function makeHeart(rand: () => number, spot: Point, small: boolean, fresh: boole
     top: spot.y,
     small,
     size: small ? 9 + rand() * 9 : 20 + rand() * 34,
-    duration: (7 + rand() * 7) * 1.7,
+    duration: (7 + rand() * 7) * 1.4,
     delay: fresh ? -(rand() * 14) : 0,
     rot: (rand() * 2 - 1) * 20,
     opacity: 0.35 + rand() * 0.45,
