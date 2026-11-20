@@ -31,6 +31,7 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   // fanfare and every loading blip are actually audible from 0 to 100%.
   const [needsGesture, setNeedsGesture] = useState(false);
   const [started, setStarted] = useState(false);
+  const isTouchRef = useRef(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const finishedRef = useRef(false);
   const didEnterRef = useRef(false);
@@ -58,22 +59,32 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   const {
     enabled: soundOn,
     setEnabled: setSoundOn,
-    playStartup,
-    playStage,
-    playComplete,
     playEnter,
     unlockAudio,
   } = useRetroSound();
+  const bootAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const touch =
       window.matchMedia?.("(hover: none)").matches ||
       navigator.maxTouchPoints > 0;
+    isTouchRef.current = touch;
     if (touch) setNeedsGesture(true);
     else setStarted(true);
   }, []);
 
   const handleBootStart = async () => {
+    // A real media element played INSIDE the tap is reliable on mobile, unlike
+    // Web Audio which stays suspended until the gesture. The file contains the
+    // fanfare, a blip per loading line and the completion chime across 10s.
+    try {
+      const audio = new Audio("/audio/boot-sequence.wav");
+      audio.preload = "auto";
+      bootAudioRef.current = audio;
+      void audio.play().catch(() => {});
+    } catch {
+      // Sound failing must never block entering the site.
+    }
     await unlockAudio();
     setNeedsGesture(false);
     setStarted(true);
@@ -118,20 +129,30 @@ export default function BootSequence({ onEnter }: { onEnter: () => void }) {
   const isComplete = phase !== "loading";
 
   // Console-style power-on fanfare, then a crisp blip per loading line.
+  // Desktop has no gate, so start the same file when the boot clock starts.
+  // Touch devices start it inside the tap (see handleBootStart) instead.
   useEffect(() => {
-    if (!started) return;
-    playStartup();
-  }, [started, playStartup]);
+    if (!started || isTouchRef.current) return;
+    try {
+      const audio = new Audio("/audio/boot-sequence.wav");
+      audio.preload = "auto";
+      bootAudioRef.current = audio;
+      void audio.play().catch(() => {});
+    } catch {
+      // Autoplay may be declined; the visual boot still completes.
+    }
+  }, [started]);
 
   useEffect(() => {
-    if (!started || phase !== "loading") return;
-    playStage();
-  }, [started, messageIndex, phase, playStage]);
+    if (!soundOn) bootAudioRef.current?.pause();
+  }, [soundOn]);
 
   useEffect(() => {
-    if (!started || phase !== "ready") return;
-    playComplete();
-  }, [started, phase, playComplete]);
+    return () => {
+      bootAudioRef.current?.pause();
+      bootAudioRef.current = null;
+    };
+  }, []);
 
   const handleEnter = () => {
     if (finishedRef.current) return;

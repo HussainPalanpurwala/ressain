@@ -397,30 +397,21 @@ export default function RevleenArcade() {
   // Physical control-deck buttons reuse the exact same phase handlers as the
   // on-screen controls — no quiz logic is duplicated here.
   const isStageClear = phase === "categoryDone";
-  // The physical buttons are always live — each phase maps to a real action.
+  // The machine buttons keep their fixed names. During a stage-clear they are
+  // disabled so only the on-screen CONTINUE / EXIT buttons are usable.
   const handlePrimary = () => {
     if (phase === "attract") {
       handleStart();
     } else if (phase === "results") {
       handlePlayAgain();
-    } else if (isStageClear) {
-      handleCategoryContinue();
     } else if (selected === null) {
       playClick();
     } else {
       handleNext();
     }
   };
-  const physicalPrimaryLabel = isStageClear
-    ? quizQuestions[qIndex + 1]
-      ? "CONTINUE"
-      : "SEE RESULTS"
-    : "NEXT QUESTION";
-  const physicalPrimaryAriaLabel = isStageClear
-    ? quizQuestions[qIndex + 1]
-      ? "Continue to next stage"
-      : "See results"
-    : "Next question";
+  const physicalPrimaryLabel = "NEXT QUESTION";
+  const physicalPrimaryAriaLabel = "Next question";
 
   return (
     <section
@@ -745,6 +736,7 @@ export default function RevleenArcade() {
                 type="button"
                 className={`${styles.physicalButton} ${styles.physicalButtonNext}`}
                 onClick={handlePrimary}
+                disabled={isStageClear}
                 aria-label={physicalPrimaryAriaLabel}
                 title={physicalPrimaryAriaLabel}
                 onMouseEnter={playHover}
@@ -755,6 +747,7 @@ export default function RevleenArcade() {
                 type="button"
                 className={`${styles.physicalButton} ${styles.physicalButtonExit}`}
                 onClick={handleReturn}
+                disabled={isStageClear}
                 aria-label="Exit game"
                 title="Exit game"
                 onMouseEnter={playHover}
