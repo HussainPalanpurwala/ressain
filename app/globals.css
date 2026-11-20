@@ -481,7 +481,11 @@ body {
   height: clamp(72px, 12vh, 140px);
   z-index: 3;
   pointer-events: none;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #000000 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.82) 100%
+  );
 }
 
 /* Ambient hearts fade in and out around the edges only — the centre stays
@@ -493,16 +497,18 @@ body {
   overflow: hidden;
   pointer-events: none;
   opacity: var(--scroll-fade, 1);
+  /* Only the title area is masked out. Everything below it — including the
+     band beneath "Scroll to continue" — stays fully visible. */
   -webkit-mask-image: radial-gradient(
-    ellipse 48% 44% at 50% 50%,
+    ellipse 42% 30% at 50% 38%,
     transparent 0%,
-    transparent 65%,
+    transparent 60%,
     #000000 100%
   );
   mask-image: radial-gradient(
-    ellipse 48% 44% at 50% 50%,
+    ellipse 42% 30% at 50% 38%,
     transparent 0%,
-    transparent 65%,
+    transparent 60%,
     #000000 100%
   );
 }
@@ -531,10 +537,10 @@ body {
     transform: scale(0.85) rotate(var(--rot));
     filter: drop-shadow(0 0 2px currentColor);
   }
-  14% {
+  10% {
     opacity: var(--heart-opacity);
   }
-  55% {
+  84% {
     opacity: var(--heart-opacity);
     filter: drop-shadow(0 0 12px currentColor);
   }

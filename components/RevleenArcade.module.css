@@ -266,12 +266,14 @@
    shell's taper and framing the recessed screen. Transforms don't affect
    flex sizing or flow, so all quiz content stays in place and clickable. */
 .sideArt:first-child {
-  transform: perspective(700px) rotateY(16deg);
+  /* Leans outward toward the base, following the cabinet's narrow-top /
+     wide-bottom taper, as well as angling back in 3D. */
+  transform: perspective(700px) rotateY(16deg) rotateZ(6deg);
   transform-origin: left center;
 }
 
 .sideArt:last-child {
-  transform: perspective(700px) rotateY(-16deg);
+  transform: perspective(700px) rotateY(-16deg) rotateZ(-6deg);
   transform-origin: right center;
 }
 

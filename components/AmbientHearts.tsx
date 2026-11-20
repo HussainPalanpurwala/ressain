@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import { useCallback, useState, type CSSProperties } from "react";
 import PixelHeart from "./PixelHeart";
 
 const HEART_COUNT = 20;
@@ -27,62 +27,66 @@ function seededRandom(seed: number) {
   };
 }
 
-// Hearts are scattered freely (not snapped to a grid) once at module load with
-// the seeded, SSR-safe PRNG, so their positions are random-looking yet stable —
-// nothing is reassigned at runtime, which is what used to cause the jitter.
-function initialHearts(): Heart[] {
-  const rand = seededRandom(11);
-  const placed: { x: number; y: number }[] = [];
-  const MIN_GAP = 11; // percent-space spacing so they never clump
-  const ASPECT = 1.25; // weight x slightly so the scatter feels even
-
-  // Keep the middle clear for the title and its permanent hearts.
+// Pick a free, scattered spot. The middle stays clear for the title and its
+// permanent hearts, and the lowest band stops above the landing's seam fade.
+function scatter(rand: () => number, occupied: { x: number; y: number }[]) {
+  const MIN_GAP = 11;
+  const ASPECT = 1.25;
   const inTitleZone = (x: number, y: number) => {
     const dx = (x - 50) / 33;
     const dy = (y - 47) / 29;
     return dx * dx + dy * dy < 1;
   };
 
-  const scatter = () => {
-    let best = { x: 50, y: 50 };
-    let bestGap = -1;
-    for (let attempt = 0; attempt < 260; attempt += 1) {
-      const x = 3 + rand() * 94;
-      // Stop above the landing's bottom seam so bottom hearts stay visible.
-      const y = 6 + rand() * 81;
-      if (inTitleZone(x, y)) continue;
-      const gap =
-        placed.length === 0
-          ? Infinity
-          : Math.min(
-              ...placed.map((p) => Math.hypot((p.x - x) * ASPECT, p.y - y))
-            );
-      if (gap > bestGap) {
-        bestGap = gap;
-        best = { x, y };
-      }
-      if (gap >= MIN_GAP) break;
+  let best = { x: 50, y: 50 };
+  let bestGap = -1;
+  for (let attempt = 0; attempt < 260; attempt += 1) {
+    const x = 3 + rand() * 94;
+    const y = 6 + rand() * 88;
+    if (inTitleZone(x, y)) continue;
+    const gap =
+      occupied.length === 0
+        ? Infinity
+        : Math.min(
+            ...occupied.map((p) => Math.hypot((p.x - x) * ASPECT, p.y - y))
+          );
+    if (gap > bestGap) {
+      bestGap = gap;
+      best = { x, y };
     }
-    placed.push(best);
-    return best;
-  };
-
-  return Array.from({ length: HEART_COUNT }, () => {
-    const { x, y } = scatter();
-    return {
-      left: x,
-      top: y,
-      size: 8 + rand() * 40,
-      duration: 7 + rand() * 7,
-      delay: -(rand() * 14),
-      rot: (rand() * 2 - 1) * 20,
-      opacity: 0.35 + rand() * 0.45,
-      color: COLORS[Math.floor(rand() * COLORS.length)],
-    };
-  });
+    if (gap >= MIN_GAP) break;
+  }
+  return best;
 }
 
-const HEARTS: Heart[] = initialHearts();
+function newHeart(rand: () => number, occupied: { x: number; y: number }[], fresh: boolean): Heart {
+  const { x, y } = scatter(rand, occupied);
+  return {
+    left: x,
+    top: y,
+    size: 8 + rand() * 40,
+    duration: 7 + rand() * 7,
+    // Only the initial render is staggered. Re-spawns keep their existing
+    // timing (see reroll) so the animation never restarts mid-cycle.
+    delay: fresh ? -(rand() * 14) : 0,
+    rot: (rand() * 2 - 1) * 20,
+    opacity: 0.35 + rand() * 0.45,
+    color: COLORS[Math.floor(rand() * COLORS.length)],
+  };
+}
+
+// Deterministic initial field — generated once at module load for SSR safety.
+const initialHearts = () => {
+  const rand = seededRandom(11);
+  const occupied: { x: number; y: number }[] = [];
+  return Array.from({ length: HEART_COUNT }, () => {
+    const heart = newHeart(rand, occupied, true);
+    occupied.push({ x: heart.left, y: heart.top });
+    return heart;
+  });
+};
+
+const INITIAL_HEARTS = initialHearts();
 
 type HeartStyle = CSSProperties & {
   "--left": string;
@@ -96,12 +100,37 @@ type HeartStyle = CSSProperties & {
 };
 
 export default function AmbientHearts() {
+  const [hearts, setHearts] = useState<Heart[]>(INITIAL_HEARTS);
+
+  // The original effect moved each heart to a new spot every loop. Doing it
+  // here — on animationiteration, when the keyframe opacity is exactly 0 —
+  // keeps that lively respawn without any visible jump or jitter.
+  const reroll = useCallback((index: number) => {
+    setHearts((prev) => {
+      const occupied = prev
+        .filter((_, i) => i !== index)
+        .map((h) => ({ x: h.left, y: h.top }));
+      const next = newHeart(Math.random, occupied, false);
+      return prev.map((heart, i) =>
+        i === index
+          ? {
+              ...next,
+              // Preserve the timing so the animation phase is uninterrupted.
+              duration: heart.duration,
+              delay: heart.delay,
+            }
+          : heart
+      );
+    });
+  }, []);
+
   return (
     <div className="ambient-hearts" aria-hidden="true">
-      {HEARTS.map((heart, index) => (
+      {hearts.map((heart, index) => (
         <span
           key={index}
           className="ambient-heart"
+          onAnimationIteration={() => reroll(index)}
           style={
             {
               "--left": `${heart.left.toFixed(2)}%`,
