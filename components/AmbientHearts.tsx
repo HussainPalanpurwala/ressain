@@ -73,7 +73,7 @@ function makeHeart(rand: () => number, spot: Point, small: boolean, fresh: boole
     top: spot.y,
     small,
     size: small ? 9 + rand() * 9 : 20 + rand() * 34,
-    duration: (7 + rand() * 7) * 1.4,
+    duration: (7 + rand() * 7) * 1.7,
     delay: fresh ? -(rand() * 14) : 0,
     rot: (rand() * 2 - 1) * 20,
     opacity: 0.35 + rand() * 0.45,
