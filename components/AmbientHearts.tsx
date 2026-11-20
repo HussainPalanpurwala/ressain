@@ -3,12 +3,14 @@
 import { useCallback, useState, type CSSProperties } from "react";
 import PixelHeart from "./PixelHeart";
 
-const HEART_COUNT = 10;
+const HEART_COUNT = 12;
+const SMALL_HEARTS = 4;
 const COLORS = ["#E453A3", "#F0254B", "#FF8FC7"];
 
 type Heart = {
   left: number;
   top: number;
+  small: boolean;
   size: number;
   duration: number;
   delay: number;
@@ -59,13 +61,20 @@ function scatter(rand: () => number, occupied: { x: number; y: number }[]) {
   return best;
 }
 
-function newHeart(rand: () => number, occupied: { x: number; y: number }[], fresh: boolean): Heart {
+function newHeart(
+  rand: () => number,
+  occupied: { x: number; y: number }[],
+  fresh: boolean,
+  small: boolean
+): Heart {
   const { x, y } = scatter(rand, occupied);
   return {
     left: x,
     top: y,
-    // No tiny hearts — the small end used to read as visual noise.
-    size: 20 + rand() * 34,
+    small,
+    // A few small hearts for variety; the rest stay large so the field reads
+    // calm rather than speckled.
+    size: small ? 9 + rand() * 9 : 20 + rand() * 34,
     // Slower loops mean fewer respawns and a longer, gentler fade.
     duration: (7 + rand() * 7) * 1.4,
     // Only the initial render is staggered. Re-spawns keep their existing
@@ -81,8 +90,8 @@ function newHeart(rand: () => number, occupied: { x: number; y: number }[], fres
 const initialHearts = () => {
   const rand = seededRandom(11);
   const occupied: { x: number; y: number }[] = [];
-  return Array.from({ length: HEART_COUNT }, () => {
-    const heart = newHeart(rand, occupied, true);
+  return Array.from({ length: HEART_COUNT }, (_, index) => {
+    const heart = newHeart(rand, occupied, true, index < SMALL_HEARTS);
     occupied.push({ x: heart.left, y: heart.top });
     return heart;
   });
@@ -112,7 +121,7 @@ export default function AmbientHearts() {
       const occupied = prev
         .filter((_, i) => i !== index)
         .map((h) => ({ x: h.left, y: h.top }));
-      const next = newHeart(Math.random, occupied, false);
+      const next = newHeart(Math.random, occupied, false, prev[index].small);
       return prev.map((heart, i) =>
         i === index
           ? {
