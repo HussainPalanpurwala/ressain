@@ -15,15 +15,15 @@
   z-index: 1;
   pointer-events: none;
   opacity: calc(0.85 + var(--enter, 0) * 0.15);
-  /* Reach full opacity sooner at the top so more grid shows right away, stay
-     clearly visible through the middle, then dissolve into the section's
-     dark→paper gradient with a long, gentle tail that is fully transparent by
-     90% — so it never stops abruptly at the bottom or leaves a hard edge. */
+  /* Keep the original 15% fade ramp, but start the grid already faintly
+     visible at the very top edge so more rows show higher up. Full opacity is
+     still reached at 15%; the middle stays clear and the long tail dissolves
+     to fully transparent by 90% with no hard edge at the bottom. */
   -webkit-mask-image: linear-gradient(
     to bottom,
-    transparent 0%,
-    rgba(0, 0, 0, 0.5) 2%,
-    #000000 8%,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.65) 7%,
+    #000000 15%,
     #000000 46%,
     rgba(0, 0, 0, 0.85) 60%,
     rgba(0, 0, 0, 0.5) 72%,
@@ -32,9 +32,9 @@
   );
   mask-image: linear-gradient(
     to bottom,
-    transparent 0%,
-    rgba(0, 0, 0, 0.5) 2%,
-    #000000 8%,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.65) 7%,
+    #000000 15%,
     #000000 46%,
     rgba(0, 0, 0, 0.85) 60%,
     rgba(0, 0, 0, 0.5) 72%,
