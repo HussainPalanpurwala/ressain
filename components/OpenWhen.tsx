@@ -28,155 +28,36 @@ export default function OpenWhen() {
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const lastTrigger = useRef<HTMLButtonElement | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const noiseBufferRef = useRef<AudioBuffer | null>(null);
+  const openSoundRef = useRef<HTMLAudioElement | null>(null);
 
-  // One shared noise buffer, created lazily from whichever AudioContext is used.
-  // Long enough to slice several decorrelated rustles out of a single buffer.
-  const getNoiseBuffer = (context: AudioContext): AudioBuffer => {
-    if (noiseBufferRef.current) return noiseBufferRef.current;
-
-    const length = Math.floor(context.sampleRate * 1.8);
-    const buffer = context.createBuffer(1, length, context.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < length; i += 1) {
-      data[i] = Math.random() * 2 - 1;
-    }
-
-    noiseBufferRef.current = buffer;
-    return buffer;
-  };
-
-  // A gentle, layered letter-opening sequence, synthesized entirely at call
-  // time. Everything below is synchronous so it still plays on mobile: the
-  // context is created/resumed inside the click gesture that calls this.
-  const playOpenSound = () => {
+  // The real envelope-opening recording (the final 3 seconds of the supplied
+  // clip). One element is reused and rewound on every open. play() is called
+  // synchronously inside the click gesture, which is what mobile browsers
+  // require for audio to be allowed.
+  const playOpenSound = useCallback(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
 
-    const AudioContextClass: typeof AudioContext | undefined =
-      window.AudioContext ??
-      (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AudioContextClass) return;
-
-    if (!audioContextRef.current) {
-      audioContextRef.current = new AudioContextClass();
+    let audio = openSoundRef.current;
+    if (!audio) {
+      audio = new Audio("/audio/envelope-opening.mp3");
+      audio.preload = "auto";
+      audio.volume = 0.9;
+      openSoundRef.current = audio;
     }
-    const context = audioContextRef.current;
-    if (context.state === "suspended") {
-      void context.resume();
-    }
+    audio.currentTime = 0;
+    void audio.play().catch(() => {
+      // Playback can still be declined by the browser; fail silently so
+      // opening a letter never breaks.
+    });
+  }, []);
 
-    const now = context.currentTime;
-    const buffer = getNoiseBuffer(context);
-
-    // Tiny variations keep repeated opens from sounding mechanically identical.
-    const vary = (value: number, amount: number) =>
-      value * (1 + (Math.random() * 2 - 1) * amount);
-
-    type Rustle = {
-      start: number;
-      duration: number;
-      frequency: number;
-      endFrequency?: number;
-      attack?: number;
-      q?: number;
-      peak: number;
-      type?: BiquadFilterType;
-    };
-
-    // Filtered noise with a soft swell (and an optional filter sweep) — the
-    // raw material for paper rustles, page turns and the final settle.
-    const rustle = ({
-      start,
-      duration,
-      frequency,
-      endFrequency,
-      attack = 0.05,
-      q = 0.7,
-      peak,
-      type = "bandpass",
-    }: Rustle) => {
-      const source = context.createBufferSource();
-      source.buffer = buffer;
-
-      const filter = context.createBiquadFilter();
-      filter.type = type;
-      filter.Q.value = q;
-      filter.frequency.setValueAtTime(vary(frequency, 0.04), start);
-      if (endFrequency !== undefined) {
-        filter.frequency.exponentialRampToValueAtTime(
-          vary(endFrequency, 0.04),
-          start + duration
-        );
-      }
-
-      const gain = context.createGain();
-      const end = start + duration;
-      gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.linearRampToValueAtTime(
-        vary(peak, 0.1),
-        start + Math.min(attack, duration * 0.5)
-      );
-      gain.gain.exponentialRampToValueAtTime(0.0001, end);
-
-      source.connect(filter);
-      filter.connect(gain);
-      gain.connect(context.destination);
-
-      // Draw each layer from a different slice of the shared noise buffer.
-      const offset = Math.random() * Math.max(0, buffer.duration - duration);
-      source.start(start, offset);
-      source.stop(end + 0.02);
-    };
-
-    // A soft sine "note" with a slow attack and long decay — the chime.
-    const tone = (start: number, frequency: number, duration: number, peak: number) => {
-      const oscillator = context.createOscillator();
-      oscillator.type = "sine";
-      oscillator.frequency.value = frequency;
-
-      const gain = context.createGain();
-      gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.linearRampToValueAtTime(peak, start + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-      oscillator.start(start);
-      oscillator.stop(start + duration + 0.02);
-    };
-
-    const t = now;
-
-    // 1. Lift — the first soft crinkle as the flap is raised.
-    rustle({ start: t, duration: 0.5, frequency: 1500, endFrequency: 1900, attack: 0.06, q: 0.6, peak: 0.05 });
-
-    // 2. Page turn — a longer swell whose brightness climbs, then softens.
-    rustle({ start: t + 0.18, duration: 0.95, attack: 0.12, frequency: 900, endFrequency: 2800, q: 0.5, peak: 0.07 });
-
-    // 3. Unfold — two gentle, lower creases as the letter is opened flat.
-    rustle({ start: t + 0.95, duration: 0.55, frequency: 750, endFrequency: 1100, q: 0.7, peak: 0.04 });
-    rustle({ start: t + 1.15, duration: 0.45, frequency: 1300, q: 0.8, peak: 0.025 });
-
-    // 4. Chime — a warm, understated C-major shimmer.
-    tone(t + 1.3, 523.25, 0.9, 0.032);
-    tone(t + 1.42, 659.25, 0.85, 0.026);
-    tone(t + 1.56, 783.99, 0.8, 0.02);
-
-    // 5. Settle — a very quiet, low rustle as the paper comes to rest.
-    rustle({ start: t + 1.85, duration: 0.5, attack: 0.1, frequency: 800, q: 0.5, peak: 0.018, type: "lowpass" });
-  };
-
-  // Release the audio hardware when the component unmounts.
+  // Stop any in-flight sound if the section unmounts.
   useEffect(() => {
     return () => {
-      const context = audioContextRef.current;
-      if (context && context.state !== "closed") {
-        void context.close();
-      }
-      audioContextRef.current = null;
-      noiseBufferRef.current = null;
+      const audio = openSoundRef.current;
+      if (audio) audio.pause();
+      openSoundRef.current = null;
     };
   }, []);
 
